@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import Navbar from "./components/Navbar.vue";
+import Header from "./components/Header.vue";
 </script>
 
 <template>
-  <main class="w-full min-h-screen bg-primary text-white">
-    <Navbar />
-    <router-view />
-  </main>
+  <Header />
+  <router-view />
 </template>
