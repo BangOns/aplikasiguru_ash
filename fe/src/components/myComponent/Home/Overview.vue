@@ -6,9 +6,15 @@ import Vicon from "../Vicon.vue";
   <header class="w-full flex justify-between pt-10">
     <h1 class="font-mona-bold text-xl text-slate-900">Overview</h1>
   </header>
-  <section class="flex gap-4 mt-5">
-    <article class="flex basis-3/4 gap-10 justify-between items-center">
-      <section class="p-4 bg-blue-300/40 w-full rounded-sm">
+  <section class="flex gap-4 justify-between mt-5 max-xl:flex-col">
+    <article
+      class="flex basis-3/4 gap-5 max-lg:flex-col justify-between items-center"
+    >
+      <section
+        v-for="value in [1, 2, 3, 4]"
+        :key="value"
+        class="p-4 bg-blue-300/40 w-full rounded-2xl"
+      >
         <header class="flex gap-4 items-center">
           <Vicon
             name="hi-solid-user-circle"
@@ -16,61 +22,7 @@ import Vicon from "../Vicon.vue";
             scale="2"
             class="cursor-pointer"
           />
-          <h2 class="font-mona-bold">No Of Student</h2>
-        </header>
-        <article class="mt-3 w-full">
-          <h2
-            class="text-4xl font-mona-bold pb-5 w-fit border-b-4 border-blue-500"
-          >
-            250
-          </h2>
-        </article>
-      </section>
-      <section class="p-4 bg-blue-300/40 w-full rounded-sm">
-        <header class="flex gap-4 items-center">
-          <Vicon
-            name="hi-solid-user-circle"
-            fill="blue"
-            scale="2"
-            class="cursor-pointer"
-          />
-          <h2 class="font-mona-bold">No Of Student</h2>
-        </header>
-        <article class="mt-3 w-full">
-          <h2
-            class="text-4xl font-mona-bold pb-5 w-fit border-b-4 border-blue-500"
-          >
-            250
-          </h2>
-        </article>
-      </section>
-      <section class="p-4 bg-blue-300/40 w-full rounded-sm">
-        <header class="flex gap-4 items-center">
-          <Vicon
-            name="hi-solid-user-circle"
-            fill="blue"
-            scale="2"
-            class="cursor-pointer"
-          />
-          <h2 class="font-mona-bold">No Of Student</h2>
-        </header>
-        <article class="mt-3 w-full">
-          <h2
-            class="text-4xl font-mona-bold pb-5 w-fit border-b-4 border-blue-500"
-          >
-            250
-          </h2>
-        </article>
-      </section>
-      <section class="p-4 bg-blue-300/40 w-full rounded-sm">
-        <header class="flex gap-4 items-center">
-          <Vicon
-            name="hi-solid-user-circle"
-            fill="blue"
-            scale="2"
-            class="cursor-pointer"
-          />
-          <h2 class="font-mona-bold">No Of Student</h2>
+          <h2 class="font-mona-bold max-xl:text-sm">No Of Student</h2>
         </header>
         <article class="mt-3 w-full">
           <h2
@@ -81,7 +33,7 @@ import Vicon from "../Vicon.vue";
         </article>
       </section>
     </article>
-    <article class="flex basis-1/4">
+    <article class="flex basis-1/3">
       <section class="p-1 w-full flex gap-5">
         <figure>
           <img

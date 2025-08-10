@@ -1,12 +1,26 @@
 <script setup lang="ts">
 import Calendar from "@/components/ui/calendar/Calendar.vue";
 import Vicon from "../Vicon.vue";
+import type { DateValue } from "@internationalized/date";
+import type { Ref } from "vue";
+import { getLocalTimeZone, today } from "@internationalized/date";
+import { ref } from "vue";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { Doughnut } from "vue-chartjs";
+import * as chartConfig from "../../../lib/chartConfig";
+
+ChartJS.register(ArcElement, Tooltip, Legend);
+const value = ref(today(getLocalTimeZone())) as Ref<DateValue>;
+const chartdata = chartConfig;
+console.log(chartdata.data);
 </script>
 
 <template>
-  <article class="w-full flex justify-between gap-5 mt-5">
+  <article class="w-full flex max-xl:flex-col xl:justify-between gap-3 mt-5">
     <!-- Notifications -->
-    <section class="w-full basis-2/5 p-4 bg-slate-50 shadow-sm">
+    <section
+      class="w-full basis-2/5 p-4 bg-slate-50 shadow-sm border rounded-lg"
+    >
       <header class="w-full flex justify-between items-center">
         <h2 class="font-mona-bold text-xl">Notifications</h2>
         <RouterLink
@@ -15,8 +29,39 @@ import Vicon from "../Vicon.vue";
           >View All</RouterLink
         >
       </header>
+      <article
+        class="h-72 overflow-y-auto mt-4 space-y-2 scrollbar-track-white scrollbar-thumb-blue-400 scrollbar-thin"
+      >
+        <section class="w-full bg-slate-200 rounded-md p-4 flex flex-col">
+          <h6 class="font-mona-bold text-lg">Title Notif</h6>
+          <p class="font-mona-bold text-slate-600 text-sm">
+            Lorem ipsum dolor sit amet
+          </p>
+        </section>
+        <section class="w-full bg-slate-200 rounded-md p-4 flex flex-col">
+          <h6 class="font-mona-bold text-lg">Title Notif</h6>
+          <p class="font-mona-bold text-slate-600 text-sm">
+            Lorem ipsum dolor sit amet
+          </p>
+        </section>
+        <section class="w-full bg-slate-200 rounded-md p-4 flex flex-col">
+          <h6 class="font-mona-bold text-lg">Title Notif</h6>
+          <p class="font-mona-bold text-slate-600 text-sm">
+            Lorem ipsum dolor sit amet
+          </p>
+        </section>
+        <section class="w-full bg-slate-200 rounded-md p-4 flex flex-col">
+          <h6 class="font-mona-bold text-lg">Title Notif</h6>
+          <p class="font-mona-bold text-slate-600 text-sm">
+            Lorem ipsum dolor sit amet
+          </p>
+        </section>
+      </article>
     </section>
-    <section class="w-full basis-1/3 p-4 bg-slate-50 shadow-sm">
+    <!-- Statistik -->
+    <section
+      class="w-full basis-1/3 p-4 bg-slate-50 shadow-sm border rounded-lg"
+    >
       <header class="w-full flex justify-between items-center">
         <h2 class="font-mona-bold text-xl">Student performance</h2>
         <RouterLink to="#">
@@ -27,14 +72,18 @@ import Vicon from "../Vicon.vue";
           />
         </RouterLink>
       </header>
+      <article class="w-full mt-5">
+        <Doughnut :data="chartConfig.data" :options="chartdata.options" />
+      </article>
     </section>
-    <section class="w-full basis-1/3 bg-slate-50 shadow-sm flex justify-center">
+    <!-- Calendar -->
+    <section
+      class="w-full basis-1/3 bg-slate-50 shadow-sm flex justify-center rounded-lg"
+    >
       <Calendar
-        :weekday-format="'short'"
-        class="rounded-md border w-full font-mona-bold"
+        v-model="value"
+        class="rounded-lg border w-full font-mona-bold"
       />
     </section>
-    <!-- Statistik -->
-    <!-- Calendar -->
   </article>
 </template>
