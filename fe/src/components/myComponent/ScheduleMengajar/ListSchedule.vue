@@ -1,14 +1,8 @@
 <script setup lang="ts">
-import Vicon from "@/components/myComponent/Vicon.vue";
+import Vicon from "../Vicon.vue";
 </script>
 
 <template>
-  <section class="w-full flex justify-center mt-5">
-    <header class="w-full flex items-center gap-5">
-      <Vicon name="co-book" scale="2" animation="wrench" />
-      <h1 class="font-mona-bold text-2xl">Jadwal Mengajar</h1>
-    </header>
-  </section>
   <article class="w-full rounded border shadow p-5 mt-5">
     <section class="w-full flex justify-between">
       <article class="flex gap-5 items-center">
@@ -45,5 +39,39 @@ import Vicon from "@/components/myComponent/Vicon.vue";
         </button>
       </article>
     </section>
+    <article class="w-full mt-5 flex gap-2">
+      <section
+        v-for="value in [1, 2, 3, 4, 5, 6]"
+        class="w-96 flex flex-col gap-5"
+      >
+        <header class="text-center font-mona-bold text-lg">senin</header>
+        <section class="w-full p-4 bg-white border shadow rounded-xl">
+          <header class="w-full">
+            <h1 class="font-mona-bold">31 Juli</h1>
+          </header>
+          <article class="bg-blue-200 rounded p-2 font-mona mt-4">
+            <p class="font-mona-bold">12:00 - 21:00</p>
+            <p class="text-sm">Lorem ipsum dolor sit amet consectetur,</p>
+          </article>
+        </section>
+      </section>
+      <section class="w-96 flex flex-col gap-5">
+        <header class="text-center font-mona-bold text-lg">senin</header>
+        <section class="w-full p-4 bg-white border shadow rounded-xl">
+          <header class="w-full">
+            <h1 class="font-mona-bold">31 Juli</h1>
+          </header>
+          <article class="bg-blue-200 rounded p-2 font-mona mt-4">
+            <ul class="font-mona-bold">
+              <li>12:30 - 21:00</li>
+              <li>12:30 - 21:00</li>
+            </ul>
+            <p class="text-sm">
+              Lorem ipsum dolor sit amet consectetur, Lorem ipsum dolor sit.
+            </p>
+          </article>
+        </section>
+      </section>
+    </article>
   </article>
 </template>
