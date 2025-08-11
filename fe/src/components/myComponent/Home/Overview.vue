@@ -3,10 +3,12 @@ import Vicon from "../Vicon.vue";
 </script>
 
 <template>
-  <header class="w-full flex justify-between pt-10">
+  <header class="w-full flex justify-between pt-10 max-lg:px-5">
     <h1 class="font-mona-bold text-xl text-slate-900">Overview</h1>
   </header>
-  <section class="flex gap-4 justify-between mt-5 max-xl:flex-col">
+  <section
+    class="flex gap-4 justify-between mt-5 max-xl:flex-col-reverse max-lg:px-5"
+  >
     <article
       class="flex basis-3/4 gap-5 max-lg:flex-col justify-between items-center"
     >
@@ -35,19 +37,25 @@ import Vicon from "../Vicon.vue";
     </article>
     <article class="flex basis-1/3">
       <section class="p-1 w-full flex gap-5">
-        <figure>
+        <figure
+          class="basis-1/6 md:basis-1/5 lg:basis-1/3 w-full h-full flex items-center"
+        >
           <img
             src="https://images.unsplash.com/photo-1499714608240-22fc6ad53fb2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-            width="130"
-            height="130"
-            class="rounded-xl"
+            width="150"
+            height="150"
+            class="rounded-xl h-full object-cover"
             alt="pp profile"
           />
         </figure>
-        <article class="flex flex-col justify-center gap-1">
+        <article
+          class="flex basis-4/5 md:basis-3/4 w-full flex-col justify-center gap-1"
+        >
           <section class="space-y-1">
-            <p class="font-mona-bold text-xl">Syahroni</p>
-            <p class="font-mona text-slate-600">admin@example.com</p>
+            <p class="font-mona-bold md:text-xl">Syahroni</p>
+            <p class="font-mona max-md:text-sm text-slate-600">
+              admin@example.com
+            </p>
           </section>
           <section class="bg-slate-200 py-5 px-2 rounded-md">
             <p class="text-xs font-mona-bold">Guru Pendidikan Agama Islam</p>

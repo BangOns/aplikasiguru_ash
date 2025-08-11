@@ -10,6 +10,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import Badge from "@/components/ui/badge/Badge.vue";
+import DropdownMenu from "@/components/ui/dropdown-menu/DropdownMenu.vue";
+import DropdownMenuTrigger from "@/components/ui/dropdown-menu/DropdownMenuTrigger.vue";
+import DropdownMenuContent from "@/components/ui/dropdown-menu/DropdownMenuContent.vue";
+import DropdownMenuLabel from "@/components/ui/dropdown-menu/DropdownMenuLabel.vue";
+import DropdownMenuSeparator from "@/components/ui/dropdown-menu/DropdownMenuSeparator.vue";
+import DropdownMenuItem from "@/components/ui/dropdown-menu/DropdownMenuItem.vue";
 const invoices = [
   {
     invoice: "INV001",
@@ -111,15 +118,22 @@ const invoices = [
               <TableCell>{{ invoice.paymentStatus }}</TableCell>
               <TableCell>{{ invoice.paymentMethod }}</TableCell>
               <TableCell class="">
-                {{ invoice.totalAmount }}
+                <Badge variant="default" class="bg-green-500">Active</Badge>
               </TableCell>
               <TableCell class="">
-                <Vicon
-                  name="bi-three-dots-vertical"
-                  scale="1.5"
-                  class="cursor-pointer"
-                  color="blue"
-                />
+                <DropdownMenu>
+                  <DropdownMenuTrigger class="cursor-pointer">
+                    <Vicon name="bi-three-dots-vertical" scale="1.5" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent side="left" align="start">
+                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>Profile</DropdownMenuItem>
+                    <DropdownMenuItem>Billing</DropdownMenuItem>
+                    <DropdownMenuItem>Team</DropdownMenuItem>
+                    <DropdownMenuItem>Subscription</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </TableCell>
             </TableRow>
           </TableBody>

@@ -12,11 +12,12 @@ import * as chartConfig from "../../../lib/chartConfig";
 ChartJS.register(ArcElement, Tooltip, Legend);
 const value = ref(today(getLocalTimeZone())) as Ref<DateValue>;
 const chartdata = chartConfig;
-console.log(chartdata.data);
 </script>
 
 <template>
-  <article class="w-full flex max-xl:flex-col xl:justify-between gap-3 mt-5">
+  <article
+    class="w-full flex max-xl:flex-col xl:justify-between gap-3 mt-5 max-lg:px-5"
+  >
     <!-- Notifications -->
     <section
       class="w-full basis-2/5 p-4 bg-slate-50 shadow-sm border rounded-lg"

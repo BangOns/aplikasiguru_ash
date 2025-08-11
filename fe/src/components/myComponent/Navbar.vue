@@ -1,22 +1,37 @@
 <script setup lang="ts">
-import Button from "../ui/button/Button.vue";
 import Vicon from "./Vicon.vue";
+const listnav = [
+  {
+    name: "Dashboard",
+    icon: "md-spacedashboard",
+    link: "home",
+  },
+  {
+    name: "Jadwal Mengajar",
+    icon: "co-book",
+    link: "jadwal_mengajar",
+  },
+];
 </script>
 
 <template>
-  <header class="w-72 h-screen fixed top-0">
+  <header class="w-72 h-screen max-lg:hidden fixed top-0">
     <section class="w-full h-full py-4 pl-4 pr-10">
       <div
         class="w-full h-full rounded-2xl bg-slate-50 border shadow flex flex-col justify-between"
       >
-        <ul class="flex basis-3/5 w-full h-full flex-col justify-between p-4">
-          <li class="w-full" v-for="value in [1, 2, 3, 4, 5]" :key="value">
-            <Button
-              class="w-full px-2 py-8 bg-blue-500/50 hover:bg-blue-600/50 cursor-pointer font-mona items-center justify-start gap-5 text-xl"
+        <ul class="flex basis-3/5 w-full h-full flex-col gap-5 p-4">
+          <li class="w-full" v-for="(value, index) in listnav" :key="index">
+            <RouterLink
+              :to="{ name: value.link, params: { id: index } }"
+              :class="{
+                'bg-blue-600/50 text-white': $route.name == value.link,
+              }"
+              class="w-full flex px-2 py-3 rounded-xl hover:bg-blue-700 hover:text-white cursor-pointer font-mona items-center justify-start gap-2 text-lg"
             >
-              <Vicon name="md-spacedashboard" scale="2" />
-              Dashboard
-            </Button>
+              <Vicon :name="value.icon" scale="1.5" />
+              {{ value.name }}
+            </RouterLink>
           </li>
         </ul>
       </div>

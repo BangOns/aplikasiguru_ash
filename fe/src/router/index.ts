@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeViews from "../views/HomeViews.vue";
+import JadwalMengajarViews from "@/views/JadwalMengajarViews.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -8,6 +9,11 @@ const router = createRouter({
       path: "/",
       name: "home",
       component: HomeViews,
+    },
+    {
+      path: "/jadwal_mengajar/:id",
+      name: "jadwal_mengajar",
+      component: JadwalMengajarViews,
     },
   ],
 });
