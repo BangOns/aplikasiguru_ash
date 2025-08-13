@@ -10,8 +10,8 @@ import { Doughnut } from "vue-chartjs";
 import * as chartConfig from "../../../lib/chartConfig";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
-const value = ref(today(getLocalTimeZone())) as Ref<DateValue>;
 const chartdata = chartConfig;
+const value = ref(today(getLocalTimeZone())) as Ref<DateValue>;
 </script>
 
 <template>

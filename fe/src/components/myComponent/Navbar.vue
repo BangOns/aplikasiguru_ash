@@ -11,6 +11,16 @@ const listnav = [
     icon: "co-book",
     link: "jadwal_mengajar",
   },
+  {
+    name: "Absensi Siswa",
+    icon: "bi-calendar-check-fill",
+    link: "absensi",
+  },
+  {
+    name: "Penilaian Siswa",
+    icon: "ri-numbers-fill",
+    link: "penilaian",
+  },
 ];
 </script>
 
@@ -27,10 +37,12 @@ const listnav = [
               :class="{
                 'bg-blue-600/50 text-white': $route.name == value.link,
               }"
-              class="w-full flex px-2 py-3 rounded-xl hover:bg-blue-700 hover:text-white cursor-pointer font-mona items-center justify-start gap-2 text-lg"
+              class="w-full flex px-2 py-3 rounded-xl hover:bg-blue-700 hover:text-white cursor-pointer font-mona items-center justify-start gap-2"
             >
               <Vicon :name="value.icon" scale="1.5" />
-              {{ value.name }}
+              <p class="pt-1">
+                {{ value.name }}
+              </p>
             </RouterLink>
           </li>
         </ul>
