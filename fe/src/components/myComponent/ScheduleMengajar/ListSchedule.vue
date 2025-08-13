@@ -4,48 +4,63 @@ import Vicon from "../Vicon.vue";
 
 <template>
   <article class="w-full rounded border shadow p-5 mt-5">
-    <section class="w-full flex justify-between">
-      <article class="flex gap-5 items-center">
+    <section
+      class="w-full flex flex-col max-2xl:gap-5 2xl:flex-row justify-between"
+    >
+      <article class="flex gap-5 max-md:flex-col items-center">
+        <section class="flex gap-5">
+          <button
+            class="cursor-pointer gap-2 bg-blue-400 hover:bg-blue-500 flex items-center p-2 text-white rounded text-sm lg:text-xl font-mona-bold"
+          >
+            <Vicon name="bi-arrow-90deg-left" scale="1" class="p-0 font-bold" />
+            Minggu Sebelumnya
+          </button>
+          <button
+            class="cursor-pointer gap-2 bg-blue-400 hover:bg-blue-500 flex items-center p-2 text-white rounded text-sm lg:text-xl font-mona-bold"
+          >
+            Minggu berikutnya
+            <Vicon
+              name="bi-arrow-90deg-right"
+              scale="1"
+              class="p-0 font-bold"
+            />
+          </button>
+        </section>
         <button
-          class="cursor-pointer gap-2 bg-blue-400 hover:bg-blue-500 flex items-center p-2 text-white rounded text-xl font-mona-bold"
-        >
-          <Vicon name="bi-arrow-90deg-left" scale="1" class="p-0 font-bold" />
-          Minggu Sebelumnya
-        </button>
-        <button
-          class="cursor-pointer gap-2 bg-blue-400 hover:bg-blue-500 flex items-center p-2 text-white rounded text-xl font-mona-bold"
-        >
-          Minggu berikutnya
-          <Vicon name="bi-arrow-90deg-right" scale="1" class="p-0 font-bold" />
-        </button>
-        <button
-          class="cursor-pointer bg-green-400/20 hover:bg-green-100 gap-2 flex items-center p-2 text-green-500 rounded text-xl font-mona-bold"
+          class="cursor-pointer bg-green-400/20 hover:bg-green-100 gap-2 flex items-center p-2 text-green-500 rounded text-sm lg:text-xl font-mona-bold"
         >
           <Vicon name="co-book" scale="1.5" class="p-0 font-bold" />
           Minggu ini
         </button>
       </article>
-      <article class="flex gap-5 items-center">
-        <section class="flex gap-2 font-mona-bold text-blue-700">
+      <article
+        class="flex gap-5 max-md:flex-col-reverse items-center max-md:items-end max-2xl:justify-end"
+      >
+        <section class="flex gap-2 max-lg:text-sm font-mona-bold text-blue-700">
           <p>25 Februari 2025</p>
           -
           <p>31 Februari 2025</p>
         </section>
         <button
-          class="cursor-pointer gap-2 bg-green-400 hover:bg-green-500 flex items-center p-2 text-slate-700 rounded text-lg font-mona-bold"
+          class="cursor-pointer gap-2 bg-green-400 hover:bg-green-500 flex items-center p-2 text-slate-700 rounded text-sm lg:text-lg font-mona-bold"
         >
           <Vicon name="co-plus" scale="1.5" class="p-0 font-bold" />
           Tambah Jadwal
         </button>
       </article>
     </section>
-    <article class="w-full mt-5 flex gap-2">
+    <article
+      class="w-auto mt-5 flex flex-wrap items-center justify-center gap-5 overflow-x-auto"
+    >
       <section
         v-for="value in [1, 2, 3, 4, 5, 6]"
-        class="w-96 flex flex-col gap-5"
+        class="md:w-72 2xl:w-96 flex flex-col gap-5"
+        :key="value"
       >
         <header class="text-center font-mona-bold text-lg">senin</header>
-        <section class="w-full p-4 bg-white border shadow rounded-xl">
+        <section
+          class="w-full p-4 cursor-pointer hover:bg-slate-100 bg-white border shadow rounded-xl"
+        >
           <header class="w-full">
             <h1 class="font-mona-bold">31 Juli</h1>
           </header>
@@ -55,7 +70,7 @@ import Vicon from "../Vicon.vue";
           </article>
         </section>
       </section>
-      <section class="w-96 flex flex-col gap-5">
+      <section class="w-2xl 2xl:w-96 flex flex-col gap-5">
         <header class="text-center font-mona-bold text-lg">senin</header>
         <section class="w-full p-4 bg-white border shadow rounded-xl">
           <header class="w-full">

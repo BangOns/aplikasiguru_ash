@@ -1,5 +1,55 @@
 <script setup lang="ts">
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import Vicon from "../Vicon.vue";
+import { toTypedSchema } from "@vee-validate/zod";
+import { useForm } from "vee-validate";
+import * as z from "zod";
+
+import Input from "@/components/ui/input/Input.vue";
+
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+const formSchema = toTypedSchema(
+  z.object({
+    hari: z.string().min(2).max(50),
+    start_time: z.string().min(2).max(50),
+    end_time: z.string().min(2).max(50),
+    mapel: z.string().min(2).max(50),
+    classroom: z.string().min(2).max(50),
+  })
+);
+const form = useForm({
+  validationSchema: formSchema,
+});
+
+const onSubmit = form.handleSubmit((values) => {
+  console.log(values);
+});
+
+const listDay: string[] = [
+  "Senin",
+  "Selasa",
+  "Rabu",
+  "Kamis",
+  "Jumat",
+  "Sabtu",
+  "Minggu",
+];
 </script>
 
 <template>
@@ -24,6 +74,102 @@ import Vicon from "../Vicon.vue";
       </section>
     </header>
 
-    <section></section>
+    <form @submit="onSubmit" class="mt-5 space-y-4">
+      <!-- Row 1: Hari & Start Time -->
+      <section class="w-full flex max-md:flex-col justify-between gap-5">
+        <FormField v-slot="{ componentField }" name="hari" class="w-full">
+          <FormItem v-auto-animate class="w-full font-mona-bold">
+            <FormLabel>Hari</FormLabel>
+            <FormControl>
+              <Select v-bind="componentField">
+                <SelectTrigger class="w-full py-2 px-3 bg-white">
+                  <SelectValue placeholder="Select a fruit" />
+                </SelectTrigger>
+                <SelectContent class="p-3">
+                  <SelectGroup class="font-mona">
+                    <SelectLabel class="font-mona-bold">Day</SelectLabel>
+                    <SelectItem v-for="day in listDay" :key="day" :value="day">
+                      {{ day }}
+                    </SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </FormControl>
+          </FormItem>
+        </FormField>
+        <FormField v-slot="{ componentField }" name="start_time" class="w-full">
+          <FormItem v-auto-animate class="w-full font-mona-bold">
+            <FormLabel>Jam Selesai</FormLabel>
+            <FormControl>
+              <Input
+                type="time"
+                class="w-full py-2 font-mona-bold bg-white"
+                placeholder="Jam selesai"
+                v-bind="componentField"
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
+      </section>
+
+      <!-- Row 2: End Time & Mapel -->
+      <section class="w-full flex max-md:flex-col justify-between gap-5">
+        <FormField v-slot="{ componentField }" name="end_time" class="w-full">
+          <FormItem v-auto-animate class="w-full font-mona-bold">
+            <FormLabel>Jam Selesai</FormLabel>
+            <FormControl>
+              <Input
+                type="time"
+                class="w-full py-2 font-mona-bold bg-white"
+                placeholder="Jam selesai"
+                v-bind="componentField"
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
+
+        <FormField v-slot="{ componentField }" name="mapel" class="w-full">
+          <FormItem v-auto-animate class="w-full font-mona-bold">
+            <FormLabel>Mata Pelajaran</FormLabel>
+            <FormControl>
+              <Input
+                type="text"
+                class="w-full py-2 font-mona-bold bg-white"
+                placeholder="Mata pelajaran"
+                v-bind="componentField"
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
+      </section>
+
+      <!-- Row 3: Classroom -->
+      <FormField v-slot="{ componentField }" name="classroom" class="w-full">
+        <FormItem v-auto-animate class="w-full font-mona-bold">
+          <FormLabel>Ruang Kelas</FormLabel>
+          <FormControl>
+            <Input
+              type="text"
+              class="w-full py-2 font-mona-bold bg-white"
+              placeholder="Ruang kelas"
+              v-bind="componentField"
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      </FormField>
+
+      <!-- Submit Button -->
+      <Button
+        type="submit"
+        class="mt-5 bg-blue-500 hover:bg-blue-600 cursor-pointer w-full"
+        :disabled="!form.meta.value.valid"
+      >
+        Submit Jadwal
+      </Button>
+    </form>
   </article>
 </template>
