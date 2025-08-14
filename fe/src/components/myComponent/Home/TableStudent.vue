@@ -4,7 +4,6 @@ import Vicon from "../Vicon.vue";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -86,7 +85,7 @@ const invoices = [
         </section>
       </header>
       <section class="mt-4 font-mona-bold max-h-64 overflow-y-auto grow">
-        <Table class="w-full relative">
+        <Table class="w-full relative font-mona">
           <TableHeader>
             <TableRow class="border-slate-300">
               <TableHead class="text-left px-0 sticky top-0" :colspan="2">

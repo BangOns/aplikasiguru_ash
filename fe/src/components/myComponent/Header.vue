@@ -15,6 +15,29 @@ import SheetHeader from "@/components/ui/sheet/SheetHeader.vue";
 import SheetTitle from "@/components/ui/sheet/SheetTitle.vue";
 import SheetDescription from "@/components/ui/sheet/SheetDescription.vue";
 import { ref } from "vue";
+import { RouterLink } from "vue-router";
+const listnav = [
+  {
+    name: "Dashboard",
+    icon: "md-spacedashboard",
+    link: "home",
+  },
+  {
+    name: "Jadwal Mengajar",
+    icon: "co-book",
+    link: "jadwal_mengajar",
+  },
+  {
+    name: "Absensi Siswa",
+    icon: "bi-calendar-check-fill",
+    link: "absensi",
+  },
+  {
+    name: "Penilaian Siswa",
+    icon: "ri-numbers-fill",
+    link: "penilaian",
+  },
+];
 const components: { title: string; href: string; description: string }[] = [
   {
     title: "Alert Dialog",
@@ -67,7 +90,7 @@ const openSheet = ref(false);
     <section class="hidden md:flex gap-4 items-center">
       <NavigationMenu>
         <NavigationMenuList>
-          <NavigationMenuItem>
+          <!-- <NavigationMenuItem>
             <NavigationMenuTrigger :chevron="false" class="bg-slate-100/70">
               <Vicon
                 name="io-notifications-outline"
@@ -98,7 +121,7 @@ const openSheet = ref(false);
                 </li>
               </ul>
             </NavigationMenuContent>
-          </NavigationMenuItem>
+          </NavigationMenuItem> -->
           <NavigationMenuItem>
             <NavigationMenuTrigger :chevron="true" class="bg-slate-100/70">
               <Avatar>
@@ -108,24 +131,15 @@ const openSheet = ref(false);
               </Avatar>
             </NavigationMenuTrigger>
             <NavigationMenuContent>
-              <ul
-                class="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]"
-              >
-                <li v-for="component in components" :key="component.title">
+              <ul class="w-[400px] gap-3 p-4">
+                <li>
                   <NavigationMenuLink as-child>
-                    <a
-                      :href="component.href"
-                      class="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                    <RouterLink
+                      to="/"
+                      class="bg-red-400 hover:bg-red-600 hover:text-white text-white w-full p-2"
                     >
-                      <div class="text-sm font-medium leading-none">
-                        {{ component.title }}
-                      </div>
-                      <p
-                        class="line-clamp-2 text-sm leading-snug text-muted-foreground"
-                      >
-                        {{ component.description }}
-                      </p>
-                    </a>
+                      <h5 class="font-mona-bold">Logout</h5>
+                    </RouterLink>
                   </NavigationMenuLink>
                 </li>
               </ul>
@@ -149,13 +163,19 @@ const openSheet = ref(false);
 
         <SheetDescription class="font-mona-bold px-3">
           <ul class="flex basis-3/5 w-full h-full flex-col justify-between p-4">
-            <li class="w-full" v-for="value in [1, 2, 3, 4, 5]" :key="value">
-              <Button
-                class="w-full px-2 py-8 text-black bg-transparent hover:bg-slate-100 cursor-pointer shadow-none font-mona items-center justify-start gap-5 text-xl"
+            <li class="w-full" v-for="(value, index) in listnav" :key="index">
+              <RouterLink
+                :to="{ name: value.link, params: { id: index } }"
+                :class="{
+                  'bg-blue-600/50 text-white': $route.name == value.link,
+                }"
+                class="w-full flex px-2 py-3 rounded-xl hover:bg-blue-700 hover:text-white cursor-pointer font-mona items-center justify-start gap-2"
               >
-                <Vicon name="md-spacedashboard" scale="2" />
-                Dashboard
-              </Button>
+                <Vicon :name="value.icon" scale="1.5" />
+                <p class="pt-1">
+                  {{ value.name }}
+                </p>
+              </RouterLink>
             </li>
           </ul>
         </SheetDescription>
