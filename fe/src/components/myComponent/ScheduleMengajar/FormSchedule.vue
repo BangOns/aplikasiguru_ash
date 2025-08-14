@@ -10,7 +10,7 @@ import Vicon from "../Vicon.vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
 import * as z from "zod";
-
+import { v4 as uuidv4 } from "uuid";
 import Input from "@/components/ui/input/Input.vue";
 
 import { Button } from "@/components/ui/button";
@@ -23,14 +23,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { uesSchedule } from "@/lib/pinia/schedule";
+import { watch } from "vue";
+import type { ScheduleType } from "@/types/schedule";
 
+const scheduleUse = uesSchedule();
 const formSchema = toTypedSchema(
   z.object({
-    hari: z.string().min(2).max(50),
+    day: z.string().min(2).max(50),
     start_time: z.string().min(2).max(50),
     end_time: z.string().min(2).max(50),
-    mapel: z.string().min(2).max(50),
-    classroom: z.string().min(2).max(50),
+    activity: z.string().min(2).max(50),
+    description: z.string().min(2).max(50),
   })
 );
 const form = useForm({
@@ -38,7 +42,19 @@ const form = useForm({
 });
 
 const onSubmit = form.handleSubmit((values) => {
-  console.log(values);
+  const getDates = scheduleUse.datesSchedule.find(
+    (date) => date.dayName === values.day
+  );
+  const data: ScheduleType = {
+    id: uuidv4(),
+    date: getDates ? String(getDates.fullDate) : "",
+    start_time: values.start_time,
+    end_time: values.end_time,
+    activity: values.activity,
+    description: values.description,
+    is_active: true,
+  };
+  console.log(data);
 });
 
 const listDay: string[] = [
@@ -50,10 +66,24 @@ const listDay: string[] = [
   "Sabtu",
   "Minggu",
 ];
+watch(scheduleUse, (newVal) => {
+  if (!newVal.editSchedule) {
+    form.setFieldValue("day", newVal.daySchedule);
+  } else {
+    const getDay = newVal.datesSchedule.find(
+      (date) => date.fullDate === newVal.setDatesSchedule?.date
+    );
+    form.setFieldValue("day", getDay?.dayName);
+    form.setFieldValue("start_time", newVal.setDatesSchedule?.start_time);
+    form.setFieldValue("end_time", newVal.setDatesSchedule?.end_time);
+    form.setFieldValue("activity", newVal.setDatesSchedule?.activity);
+    form.setFieldValue("description", newVal.setDatesSchedule?.description);
+  }
+});
 </script>
 
 <template>
-  <article class="w-full rounded border shadow p-5 mt-5">
+  <article id="form-schedule" class="w-full rounded border shadow p-5 mt-5">
     <header class="w-full">
       <section class="flex font-mona-bold gap-2 items-center">
         <Vicon name="co-plus" scale="1.5" class="p-0 font-bold" />
@@ -77,13 +107,13 @@ const listDay: string[] = [
     <form @submit="onSubmit" class="mt-5 space-y-4">
       <!-- Row 1: Hari & Start Time -->
       <section class="w-full flex max-md:flex-col justify-between gap-5">
-        <FormField v-slot="{ componentField }" name="hari" class="w-full">
+        <FormField v-slot="{ componentField }" name="day" class="w-full">
           <FormItem v-auto-animate class="w-full font-mona-bold">
             <FormLabel>Hari</FormLabel>
             <FormControl>
-              <Select v-bind="componentField">
+              <Select v-bind="componentField" v-model="scheduleUse.daySchedule">
                 <SelectTrigger class="w-full py-2 px-3 bg-white">
-                  <SelectValue placeholder="Select a fruit" />
+                  <SelectValue placeholder="Pilih hari" />
                 </SelectTrigger>
                 <SelectContent class="p-3">
                   <SelectGroup class="font-mona">
@@ -130,7 +160,7 @@ const listDay: string[] = [
           </FormItem>
         </FormField>
 
-        <FormField v-slot="{ componentField }" name="mapel" class="w-full">
+        <FormField v-slot="{ componentField }" name="activity" class="w-full">
           <FormItem v-auto-animate class="w-full font-mona-bold">
             <FormLabel>Mata Pelajaran</FormLabel>
             <FormControl>
@@ -147,7 +177,7 @@ const listDay: string[] = [
       </section>
 
       <!-- Row 3: Classroom -->
-      <FormField v-slot="{ componentField }" name="classroom" class="w-full">
+      <FormField v-slot="{ componentField }" name="description" class="w-full">
         <FormItem v-auto-animate class="w-full font-mona-bold">
           <FormLabel>Ruang Kelas</FormLabel>
           <FormControl>

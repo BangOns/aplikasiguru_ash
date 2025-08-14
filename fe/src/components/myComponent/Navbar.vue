@@ -33,7 +33,7 @@ const listnav = [
         <ul class="flex basis-3/5 w-full h-full flex-col gap-5 p-4">
           <li class="w-full" v-for="(value, index) in listnav" :key="index">
             <RouterLink
-              :to="{ name: value.link, params: { id: index } }"
+              :to="{ name: value.link }"
               :class="{
                 'bg-blue-600/50 text-white': $route.name == value.link,
               }"

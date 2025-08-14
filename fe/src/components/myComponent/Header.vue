@@ -14,8 +14,10 @@ import SheetContent from "@/components/ui/sheet/SheetContent.vue";
 import SheetHeader from "@/components/ui/sheet/SheetHeader.vue";
 import SheetTitle from "@/components/ui/sheet/SheetTitle.vue";
 import SheetDescription from "@/components/ui/sheet/SheetDescription.vue";
-import { ref } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
 import { RouterLink } from "vue-router";
+import moment from "moment";
+
 const listnav = [
   {
     name: "Dashboard",
@@ -38,44 +40,26 @@ const listnav = [
     link: "penilaian",
   },
 ];
-const components: { title: string; href: string; description: string }[] = [
-  {
-    title: "Alert Dialog",
-    href: "/docs/components/alert-dialog",
-    description:
-      "A modal dialog that interrupts the user with important content and expects a response.",
-  },
-  {
-    title: "Hover Card",
-    href: "/docs/components/hover-card",
-    description:
-      "For sighted users to preview content available behind a link.",
-  },
-  {
-    title: "Progress",
-    href: "/docs/components/progress",
-    description:
-      "Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.",
-  },
-  {
-    title: "Scroll-area",
-    href: "/docs/components/scroll-area",
-    description: "Visually or semantically separates content.",
-  },
-  {
-    title: "Tabs",
-    href: "/docs/components/tabs",
-    description:
-      "A set of layered sections of content—known as tab panels—that are displayed one at a time.",
-  },
-  {
-    title: "Tooltip",
-    href: "/docs/components/tooltip",
-    description:
-      "A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.",
-  },
-];
+
 const openSheet = ref(false);
+const date = new Date();
+const options = {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+  locale: "id-ID",
+};
+
+const dateIndonesia = date.toLocaleDateString("id-ID", options as any);
+const timeNow = ref(moment().format("LTS"));
+
+onMounted(() => {
+  const timer = setInterval(() => {
+    timeNow.value = moment().format("LTS");
+  }, 1000);
+
+  onUnmounted(() => clearInterval(timer));
+});
 </script>
 <template>
   <header
@@ -85,7 +69,9 @@ const openSheet = ref(false);
       <h1 class="font-mona-bold text-sm md:text-xl text-slate-900">
         Welcome Back, admin
       </h1>
-      <p class="font-mona-light max-md:text-xs">31, Mei 2003</p>
+      <p class="font-mona-light max-md:text-xs">
+        {{ dateIndonesia }} {{ timeNow }}
+      </p>
     </section>
     <section class="hidden md:flex gap-4 items-center">
       <NavigationMenu>

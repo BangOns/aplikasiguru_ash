@@ -1,0 +1,28 @@
+{
+  "user": [
+    {
+      "id": 1,
+      "name": "John Doe",
+      "email": "M5lVb@example.com"
+    }
+  ],
+  "student": [
+    {
+      "id": 1,
+      "name": "John Doe",
+      "email": "M5lVb@example.com"
+    }
+  ],
+  "schedule": [
+    {
+      "id": 1,
+      "type": "activity",
+      "name": "Town Hall Meeting",
+      "description": "Acara perusahaan",
+      "date": "2025-08-22",
+      "start_time": "15:00",
+      "end_time": "17:00",
+      "is_active": true
+    }
+  ]
+}

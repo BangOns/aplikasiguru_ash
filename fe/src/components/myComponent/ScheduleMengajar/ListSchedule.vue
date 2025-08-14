@@ -1,22 +1,60 @@
 <script setup lang="ts">
 import Vicon from "../Vicon.vue";
+import { computed, ref, watch } from "vue";
+import { getWeekDates } from "@/utils/GenerateWeeks";
+import { uesSchedule } from "@/lib/pinia/schedule";
+const weeks = ref<number>(0);
+const scheduleUse = uesSchedule();
+
+const dates = computed(() => {
+  const date = getWeekDates(weeks.value);
+  scheduleUse.datesSchedule = date;
+  return date;
+});
+const editSchedules = () => {
+  scheduleUse.setDatesSchedule = {
+    id: "awdasdawd",
+    date: "2025-08-10",
+    start_time: "00:33",
+    end_time: "02:27",
+    activity: "asdasdsad",
+    description: "asdawdsad",
+    is_active: true,
+  };
+  scheduleUse.editSchedule = true;
+  scrollToForm();
+};
+
+const getSchedule = (day: string) => {
+  scheduleUse.daySchedule = day;
+  scrollToForm();
+};
+
+const scrollToForm = () => {
+  document.getElementById("form-schedule")?.scrollIntoView({
+    behavior: "smooth",
+    block: "start",
+  });
+};
 </script>
 
 <template>
   <article class="w-full rounded border shadow p-5 mt-5">
     <section
-      class="w-full flex flex-col max-2xl:gap-5 2xl:flex-row justify-between"
+      class="w-full flex flex-col max-2xl:gap-5 xl:flex-row justify-between"
     >
       <article class="flex gap-5 max-md:flex-col items-center">
         <section class="flex gap-5">
           <button
             class="cursor-pointer gap-2 bg-blue-400 hover:bg-blue-500 flex items-center p-2 text-white rounded text-sm lg:text-xl font-mona-bold"
+            @click="weeks--"
           >
             <Vicon name="bi-arrow-90deg-left" scale="1" class="p-0 font-bold" />
             Minggu Sebelumnya
           </button>
           <button
             class="cursor-pointer gap-2 bg-blue-400 hover:bg-blue-500 flex items-center p-2 text-white rounded text-sm lg:text-xl font-mona-bold"
+            @click="weeks++"
           >
             Minggu berikutnya
             <Vicon
@@ -28,49 +66,73 @@ import Vicon from "../Vicon.vue";
         </section>
         <button
           class="cursor-pointer bg-green-400/20 hover:bg-green-100 gap-2 flex items-center p-2 text-green-500 rounded text-sm lg:text-xl font-mona-bold"
+          @click="weeks = 0"
         >
           <Vicon name="co-book" scale="1.5" class="p-0 font-bold" />
           Minggu ini
         </button>
       </article>
       <article
-        class="flex gap-5 max-md:flex-col-reverse items-center max-md:items-end max-2xl:justify-end"
+        class="flex gap-5 max-md:flex-col-reverse items-center max-md:items-end max-2xl:justify-center"
       >
         <section class="flex gap-2 max-lg:text-sm font-mona-bold text-blue-700">
-          <p>25 Februari 2025</p>
+          <p>{{ dates[0]?.date }} {{ dates[0]?.month }} {{ dates[0]?.year }}</p>
           -
-          <p>31 Februari 2025</p>
+          <p>
+            {{ dates[dates.length - 1]?.date }}
+            {{ dates[dates.length - 1]?.month }}
+            {{ dates[dates.length - 1]?.year }}
+          </p>
         </section>
-        <button
+        <!-- <button
           class="cursor-pointer gap-2 bg-green-400 hover:bg-green-500 flex items-center p-2 text-slate-700 rounded text-sm lg:text-lg font-mona-bold"
         >
           <Vicon name="co-plus" scale="1.5" class="p-0 font-bold" />
           Tambah Jadwal
-        </button>
+        </button> -->
       </article>
     </section>
     <article
       class="w-auto mt-5 flex flex-wrap items-center justify-center gap-5 overflow-x-auto"
     >
       <section
-        v-for="value in [1, 2, 3, 4, 5, 6]"
+        v-for="(value, index) in dates"
         class="md:w-72 2xl:w-96 flex flex-col gap-5"
-        :key="value"
+        :key="index"
       >
-        <header class="text-center font-mona-bold text-lg">senin</header>
+        <header class="text-center font-mona-bold text-lg">
+          {{ value.dayName }}
+        </header>
         <section
+          @click="getSchedule(value.dayName)"
           class="w-full p-4 cursor-pointer hover:bg-slate-100 bg-white border shadow rounded-xl"
         >
           <header class="w-full">
-            <h1 class="font-mona-bold">31 Juli</h1>
+            <h1 class="font-mona-bold">{{ value.date }} {{ value.month }}</h1>
           </header>
-          <article class="bg-blue-200 rounded p-2 font-mona mt-4">
+          <article
+            class="bg-blue-200 rounded p-2 font-mona-bold mt-4 text-center"
+          >
+            <!-- <p class="text-center">Klik untuk tambah jadwal</p> -->
             <p class="font-mona-bold">12:00 - 21:00</p>
             <p class="text-sm">Lorem ipsum dolor sit amet consectetur,</p>
+            <section class="w-full flex justify-center gap-5 mt-5">
+              <button
+                class="text-white p-2 px-3 text-sm hover:bg-red-600 cursor-pointer rounded-md bg-red-500"
+              >
+                Hapus
+              </button>
+              <button
+                @click="editSchedules()"
+                class="text-white p-2 px-3 text-sm hover:bg-amber-600 cursor-pointer rounded-md bg-amber-500"
+              >
+                Edit
+              </button>
+            </section>
           </article>
         </section>
       </section>
-      <section class="w-2xl 2xl:w-96 flex flex-col gap-5">
+      <!-- <section class="w-2xl 2xl:w-96 flex flex-col gap-5">
         <header class="text-center font-mona-bold text-lg">senin</header>
         <section class="w-full p-4 bg-white border shadow rounded-xl">
           <header class="w-full">
@@ -86,7 +148,7 @@ import Vicon from "../Vicon.vue";
             </p>
           </article>
         </section>
-      </section>
+      </section> -->
     </article>
   </article>
 </template>

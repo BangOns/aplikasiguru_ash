@@ -13,7 +13,7 @@ const router = createRouter({
       component: HomeViews,
     },
     {
-      path: "/jadwal_mengajar/:id",
+      path: "/jadwal_mengajar",
       name: "jadwal_mengajar",
       component: ScheduleMengajarViews,
     },
