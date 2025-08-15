@@ -36,16 +36,6 @@ const dates = computed(() => {
 console.log(dates.value);
 
 const editSchedules = () => {
-  scheduleUse.setDatesSchedule = {
-    id: "awdasdawd",
-    date: "2025-08-10",
-    start_time: "00:33",
-    end_time: "02:27",
-    activity: "asdasdsad",
-    description: "asdawdsad",
-    is_active: true,
-  };
-  scheduleUse.editSchedule = true;
   scrollToForm();
 };
 const validateSchedule = (date: string) => {

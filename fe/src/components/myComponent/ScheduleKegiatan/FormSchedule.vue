@@ -57,16 +57,6 @@ const onSubmit = form.handleSubmit((values) => {
   };
 });
 
-const listDay: string[] = [
-  "Senin",
-  "Selasa",
-  "Rabu",
-  "Kamis",
-  "Jumat",
-  "Sabtu",
-  "Minggu",
-];
-
 watch(scheduleUse, (newVal) => {
   if (!newVal) return; // kalau null atau undefined, stop
 

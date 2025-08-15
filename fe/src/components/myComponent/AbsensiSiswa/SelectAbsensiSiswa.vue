@@ -9,6 +9,26 @@ import {
 } from "@/components/ui/select";
 import Vicon from "../Vicon.vue";
 import CardSiswa from "./CardSiswa.vue";
+import moment from "moment";
+import { onMounted, onUnmounted, ref } from "vue";
+const date = new Date();
+const options = {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+  locale: "id-ID",
+};
+
+const dateIndonesia = date.toLocaleDateString("id-ID", options as any);
+const timeNow = ref(moment().format("LTS"));
+
+onMounted(() => {
+  const timer = setInterval(() => {
+    timeNow.value = moment().format("LTS");
+  }, 1000);
+
+  onUnmounted(() => clearInterval(timer));
+});
 </script>
 
 <template>
@@ -23,7 +43,7 @@ import CardSiswa from "./CardSiswa.vue";
           <h2 class="font-mona-bold">Tanggal & Waktu</h2>
         </header>
         <section class="w-full bg-slate-100 p-2 rounded-md">
-          <p class="font-mona">Kamis, 2 Agustus 2023</p>
+          <p class="font-mona">{{ dateIndonesia }} - {{ timeNow }}</p>
         </section>
       </article>
       <article class="full basis-1/3 space-y-1">

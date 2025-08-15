@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeViews from "../views/HomeViews.vue";
-import ScheduleMengajarViews from "@/views/ScheduleMengajarViews.vue";
 import AbsensiSiswaViews from "@/views/AbsensiSiswaViews.vue";
 import PenilaianSiswaViews from "@/views/PenilaianSiswaViews.vue";
+import ScheduleKegiatanViews from "@/views/ScheduleKegiatanViews.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -13,9 +13,9 @@ const router = createRouter({
       component: HomeViews,
     },
     {
-      path: "/jadwal_mengajar",
-      name: "jadwal_mengajar",
-      component: ScheduleMengajarViews,
+      path: "/jadwal_kegiatan",
+      name: "jadwal_kegiatan",
+      component: ScheduleKegiatanViews,
     },
     {
       path: "/absensi",
