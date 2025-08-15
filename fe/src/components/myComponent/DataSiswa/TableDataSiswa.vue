@@ -17,6 +17,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useSiswa } from "@/lib/pinia/siswa";
 const invoices = [
   {
     invoice: "INV001",
@@ -61,10 +62,20 @@ const invoices = [
     paymentMethod: "Credit Card",
   },
 ];
+const siswa = useSiswa();
 </script>
 
 <template>
   <article class="w-full mt-5">
+    <section class="w-full flex justify-end">
+      <button
+        @click="siswa.openModalsSiswa = true"
+        class="py-2 px-3 cursor-pointer flex items-center bg-green-800 gap-2 hover:bg-green-900 text-white rounded-lg font-mona-bold border"
+      >
+        <Vicon name="bi-plus" scale="1.5" />
+        <p>Tambah Data Siswa</p>
+      </button>
+    </section>
     <Table class="w-full relative font-mona">
       <TableHeader>
         <TableRow class="border-slate-300 text-center">

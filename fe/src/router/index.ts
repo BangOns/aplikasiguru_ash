@@ -4,6 +4,8 @@ import AbsensiSiswaViews from "@/views/AbsensiSiswaViews.vue";
 import PenilaianSiswaViews from "@/views/PenilaianSiswaViews.vue";
 import ScheduleKegiatanViews from "@/views/ScheduleKegiatanViews.vue";
 import DataSiswaViews from "@/views/DataSiswaViews.vue";
+import DataKelasViews from "@/views/DataKelasViews.vue";
+import DataJurusanViews from "@/views/DataJurusanViews.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -32,6 +34,16 @@ const router = createRouter({
       path: "/siswa",
       name: "data_siswa",
       component: DataSiswaViews,
+    },
+    {
+      path: "/kelas",
+      name: "data_kelas",
+      component: DataKelasViews,
+    },
+    {
+      path: "/jurusan",
+      name: "data_jurusan",
+      component: DataJurusanViews,
     },
   ],
 });

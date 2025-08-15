@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ListNav } from "@/utils/ListNavbar";
 import {
   Accordion,
   AccordionContent,
@@ -6,39 +7,6 @@ import {
   AccordionTrigger,
 } from "../ui/accordion";
 import Vicon from "./Vicon.vue";
-const listnav = [
-  {
-    name: "Dashboard",
-    icon: "md-spacedashboard",
-    link: "home",
-  },
-  {
-    name: "Jadwal Kegiatan",
-    icon: "co-book",
-    link: "jadwal_kegiatan",
-  },
-  {
-    name: "Siswa",
-    icon: "bi-people-fill",
-    child: [
-      {
-        name: "Data Siswa",
-        icon: "bi-people-fill",
-        link: "data_siswa",
-      },
-      {
-        name: "Absensi Siswa",
-        icon: "bi-calendar-check-fill",
-        link: "absensi",
-      },
-      {
-        name: "Penilaian Siswa",
-        icon: "ri-numbers-fill",
-        link: "penilaian",
-      },
-    ],
-  },
-];
 </script>
 
 <template>
@@ -48,7 +16,7 @@ const listnav = [
         class="w-full h-full rounded-2xl bg-slate-50 border shadow flex flex-col justify-between"
       >
         <ul class="flex basis-3/5 w-full h-full flex-col gap-2 p-4">
-          <li v-for="(value, index) in listnav" :key="index" class="w-full">
+          <li v-for="(value, index) in ListNav" :key="index" class="w-full">
             <!-- Kalau ada child, pakai Accordion -->
             <template v-if="value.child?.length">
               <Accordion type="single" collapsible class="w-full">

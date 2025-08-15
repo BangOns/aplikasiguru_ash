@@ -13,6 +13,7 @@ import moment from "moment";
 import { onMounted, onUnmounted, ref } from "vue";
 
 import { useSiswa } from "@/lib/pinia/siswa";
+import { Input } from "@/components/ui/input";
 
 const timeNow = ref(moment().format("LTS"));
 const siswa = useSiswa();
@@ -32,13 +33,25 @@ onMounted(() => {
       <h1 class="font-mona-bold text-lg">Kelola Data Siswa</h1>
     </header>
     <section class="mt-5 w-full flex max-xl:flex-col gap-5 items-end">
-      <article class="w-full basis-1/3 space-y-1">
+      <article class="w-full basis-1/4 space-y-1">
+        <header>
+          <h2 class="font-mona-bold">Nama Siswa</h2>
+        </header>
+        <section class="w-full">
+          <Input
+            type="text"
+            class="w-full py-2 px-3 border"
+            placeholder="Ketik Nama Siswa"
+          />
+        </section>
+      </article>
+      <article class="w-full basis-1/6 space-y-1">
         <header>
           <h2 class="font-mona-bold">Kelas</h2>
         </header>
         <section class="w-full">
           <Select>
-            <SelectTrigger class="w-full py-2 px-3 bg-slate-100 border">
+            <SelectTrigger class="w-full py-2 px-3 border">
               <SelectValue placeholder="Pilih Kelas" class="font-mona" />
             </SelectTrigger>
             <SelectContent class="p-3">
@@ -56,14 +69,37 @@ onMounted(() => {
           </Select>
         </section>
       </article>
+      <article class="w-full basis-1/6 space-y-1">
+        <header>
+          <h2 class="font-mona-bold">Jurusan</h2>
+        </header>
+        <section class="w-full">
+          <Select>
+            <SelectTrigger class="w-full py-2 px-3 border">
+              <SelectValue placeholder="Pilih Jurusan" class="font-mona" />
+            </SelectTrigger>
+            <SelectContent class="p-3">
+              <SelectGroup class="font-mona">
+                <SelectLabel class="font-mona-bold">Pilih Jurusan</SelectLabel>
+                <SelectItem
+                  v-for="day in [12, 2, 3, 4]"
+                  :key="day"
+                  :value="day"
+                >
+                  {{ day }}
+                </SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </section>
+      </article>
 
       <article class="full flex items-center justify-end">
         <button
-          @click="siswa.openModalsSiswa = true"
-          class="py-2 px-3 cursor-pointer flex items-center bg-green-800 hover:bg-green-900 text-white rounded-lg font-mona-bold border"
+          class="py-2 px-5 cursor-pointer flex items-center bg-blue-800 gap-2 hover:bg-blue-900 text-white rounded-lg font-mona-bold border"
         >
-          <Vicon name="bi-plus" scale="1.5" />
-          <p>Tambah Data Siswa</p>
+          <Vicon name="bi-search" scale="1" />
+          <p>Search</p>
         </button>
       </article>
     </section>
