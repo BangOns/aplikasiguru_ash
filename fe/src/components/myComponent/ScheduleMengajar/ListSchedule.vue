@@ -3,14 +3,38 @@ import Vicon from "../Vicon.vue";
 import { computed, ref, watch } from "vue";
 import { getWeekDates } from "@/utils/GenerateWeeks";
 import { uesSchedule } from "@/lib/pinia/schedule";
+import moment from "moment";
+import type { ScheduleType } from "@/types/schedule";
+const ExampleSchedule: ScheduleType[] = [
+  {
+    id: "1",
+    activity: "Town Hall Meeting",
+    description: "Acara perusahaan",
+    date: "2025-08-16",
+    start_time: "15:00",
+    end_time: "17:00",
+    is_active: true,
+  },
+  {
+    id: "2",
+    activity: "Town Hall Meeting",
+    description: "Acara perusahaan",
+    date: "2025-08-14",
+    start_time: "15:00",
+    end_time: "17:00",
+    is_active: true,
+  },
+];
 const weeks = ref<number>(0);
 const scheduleUse = uesSchedule();
 
 const dates = computed(() => {
-  const date = getWeekDates(weeks.value);
+  const date = getWeekDates(weeks.value, ExampleSchedule);
   scheduleUse.datesSchedule = date;
   return date;
 });
+console.log(dates.value);
+
 const editSchedules = () => {
   scheduleUse.setDatesSchedule = {
     id: "awdasdawd",
@@ -23,6 +47,10 @@ const editSchedules = () => {
   };
   scheduleUse.editSchedule = true;
   scrollToForm();
+};
+const validateSchedule = (date: string) => {
+  const scheduleDate = moment(date, "YYYY-MM-DD");
+  return scheduleDate.isSameOrAfter(moment(), "day");
 };
 
 const getSchedule = (day: string) => {
@@ -104,32 +132,59 @@ const scrollToForm = () => {
           {{ value.dayName }}
         </header>
         <section
-          @click="getSchedule(value.dayName)"
-          class="w-full p-4 cursor-pointer hover:bg-slate-100 bg-white border shadow rounded-xl"
+          :class="[
+            'w-full p-4 border shadow rounded-xl',
+            validateSchedule(value.fullDate)
+              ? 'cursor-pointer hover:bg-slate-100 bg-white'
+              : 'cursor-not-allowed bg-slate-200',
+          ]"
+          @click="
+            validateSchedule(value.fullDate) && getSchedule(value.dayName)
+          "
         >
           <header class="w-full">
             <h1 class="font-mona-bold">{{ value.date }} {{ value.month }}</h1>
           </header>
-          <article
-            class="bg-blue-200 rounded p-2 font-mona-bold mt-4 text-center"
-          >
-            <!-- <p class="text-center">Klik untuk tambah jadwal</p> -->
-            <p class="font-mona-bold">12:00 - 21:00</p>
-            <p class="text-sm">Lorem ipsum dolor sit amet consectetur,</p>
-            <section class="w-full flex justify-center gap-5 mt-5">
-              <button
-                class="text-white p-2 px-3 text-sm hover:bg-red-600 cursor-pointer rounded-md bg-red-500"
+          <template v-if="value.schedule.length > 0">
+            <article
+              v-for="schedule in value.schedule"
+              class="bg-blue-200 rounded p-2 font-mona-bold mt-4 text-center"
+            >
+              <p class="font-mona-bold">
+                {{ schedule.start_time }} - {{ schedule.end_time }}
+              </p>
+              <p class="text-sm">{{ schedule.activity }}</p>
+              <section
+                v-if="validateSchedule(value.fullDate)"
+                class="w-full flex justify-center gap-5 mt-5"
               >
-                Hapus
-              </button>
-              <button
-                @click="editSchedules()"
-                class="text-white p-2 px-3 text-sm hover:bg-amber-600 cursor-pointer rounded-md bg-amber-500"
-              >
-                Edit
-              </button>
-            </section>
-          </article>
+                <button
+                  class="text-white p-2 px-3 text-sm hover:bg-red-600 cursor-pointer rounded-md bg-red-500"
+                >
+                  Hapus
+                </button>
+                <button
+                  @click="editSchedules()"
+                  class="text-white p-2 px-3 text-sm hover:bg-amber-600 cursor-pointer rounded-md bg-amber-500"
+                >
+                  Edit
+                </button>
+              </section>
+            </article>
+          </template>
+          <template v-else>
+            <article
+              class="bg-blue-200 rounded p-2 font-mona-bold mt-4 text-center"
+            >
+              <p class="font-mona-bold">
+                {{
+                  validateSchedule(value.fullDate)
+                    ? "Klik untuk tambah jadwal"
+                    : "Waktu sudah lewat"
+                }}
+              </p>
+            </article>
+          </template>
         </section>
       </section>
       <!-- <section class="w-2xl 2xl:w-96 flex flex-col gap-5">

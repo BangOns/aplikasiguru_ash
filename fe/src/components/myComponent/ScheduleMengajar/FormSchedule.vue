@@ -39,6 +39,7 @@ const formSchema = toTypedSchema(
 );
 const form = useForm({
   validationSchema: formSchema,
+  validateOnMount: false,
 });
 
 const onSubmit = form.handleSubmit((values) => {
@@ -54,7 +55,6 @@ const onSubmit = form.handleSubmit((values) => {
     description: values.description,
     is_active: true,
   };
-  console.log(data);
 });
 
 const listDay: string[] = [
@@ -66,18 +66,25 @@ const listDay: string[] = [
   "Sabtu",
   "Minggu",
 ];
+
 watch(scheduleUse, (newVal) => {
-  if (!newVal.editSchedule) {
-    form.setFieldValue("day", newVal.daySchedule);
-  } else {
-    const getDay = newVal.datesSchedule.find(
-      (date) => date.fullDate === newVal.setDatesSchedule?.date
-    );
-    form.setFieldValue("day", getDay?.dayName);
-    form.setFieldValue("start_time", newVal.setDatesSchedule?.start_time);
-    form.setFieldValue("end_time", newVal.setDatesSchedule?.end_time);
-    form.setFieldValue("activity", newVal.setDatesSchedule?.activity);
-    form.setFieldValue("description", newVal.setDatesSchedule?.description);
+  if (!newVal) return; // kalau null atau undefined, stop
+
+  const { editSchedule, daySchedule, datesSchedule, setDatesSchedule } = newVal;
+
+  if (daySchedule) {
+    form.setFieldValue("day", daySchedule);
+  }
+  if (editSchedule) {
+    const getDay = Array.isArray(datesSchedule)
+      ? datesSchedule.find((date) => date.fullDate === setDatesSchedule?.date)
+      : null;
+
+    form.setFieldValue("day", getDay?.dayName || "");
+    form.setFieldValue("start_time", setDatesSchedule?.start_time || "");
+    form.setFieldValue("end_time", setDatesSchedule?.end_time || "");
+    form.setFieldValue("activity", setDatesSchedule?.activity || "");
+    form.setFieldValue("description", setDatesSchedule?.description || "");
   }
 });
 </script>
@@ -98,7 +105,7 @@ watch(scheduleUse, (newVal) => {
         <h3 class="block text-sm">
           Catatan :
           <span class="text-blue-400"
-            >Jadwal yang ada masukkan akan berulang setiap minggu</span
+            >Jadwal yang ditambahkan hanya berlaku pada hari yang sama</span
           >
         </h3>
       </section>
@@ -111,15 +118,21 @@ watch(scheduleUse, (newVal) => {
           <FormItem v-auto-animate class="w-full font-mona-bold">
             <FormLabel>Hari</FormLabel>
             <FormControl>
-              <Select v-bind="componentField" v-model="scheduleUse.daySchedule">
+              <Select v-bind="componentField">
                 <SelectTrigger class="w-full py-2 px-3 bg-white">
                   <SelectValue placeholder="Pilih hari" />
                 </SelectTrigger>
                 <SelectContent class="p-3">
                   <SelectGroup class="font-mona">
                     <SelectLabel class="font-mona-bold">Day</SelectLabel>
-                    <SelectItem v-for="day in listDay" :key="day" :value="day">
-                      {{ day }}
+                    <SelectItem
+                      v-for="(day, index) in scheduleUse.filterDaySchedule(
+                        scheduleUse.datesSchedule
+                      )"
+                      :key="index"
+                      :value="day.dayName"
+                    >
+                      {{ day.dayName }}
                     </SelectItem>
                   </SelectGroup>
                 </SelectContent>

@@ -15,11 +15,19 @@
   ],
   "schedule": [
     {
-      "id": 1,
-      "type": "activity",
-      "name": "Town Hall Meeting",
+      "id": "1",
+      "activity": "Town Hall Meeting",
       "description": "Acara perusahaan",
-      "date": "2025-08-22",
+      "date": "2025-08-14",
+      "start_time": "15:00",
+      "end_time": "17:00",
+      "is_active": true
+    },
+    {
+      "id": "2",
+      "activity": "Town Hall Meeting",
+      "description": "Acara perusahaan",
+      "date": "2025-08-14",
       "start_time": "15:00",
       "end_time": "17:00",
       "is_active": true
