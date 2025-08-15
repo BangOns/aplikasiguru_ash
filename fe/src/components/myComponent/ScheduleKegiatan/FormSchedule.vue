@@ -199,7 +199,6 @@ watch(scheduleUse, (newVal) => {
       <Button
         type="submit"
         class="mt-5 bg-blue-500 hover:bg-blue-600 cursor-pointer w-full"
-        :disabled="!form.meta.value.valid"
       >
         Submit Jadwal
       </Button>

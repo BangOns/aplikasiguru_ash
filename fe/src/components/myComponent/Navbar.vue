@@ -22,6 +22,11 @@ const listnav = [
     icon: "bi-people-fill",
     child: [
       {
+        name: "Data Siswa",
+        icon: "bi-people-fill",
+        link: "data_siswa",
+      },
+      {
         name: "Absensi Siswa",
         icon: "bi-calendar-check-fill",
         link: "absensi",
