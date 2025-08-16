@@ -1,14 +1,14 @@
 {
   "user": [
     {
-      "id": 1,
+      "id": "1",
       "name": "John Doe",
       "email": "M5lVb@example.com"
     }
   ],
   "student": [
     {
-      "id": 1,
+      "id": "1",
       "name": "John Doe",
       "email": "M5lVb@example.com"
     }
@@ -31,6 +31,16 @@
       "start_time": "15:00",
       "end_time": "17:00",
       "is_active": true
+    }
+  ],
+  "jurusan": [
+    {
+      "id": "0a369335-b6c6-4715-8091-e5da2f190364",
+      "nama_jurusan": "awwww"
+    },
+    {
+      "id": "f98a6c48-b57a-4e7d-98a4-7ed04fbdf254",
+      "nama_jurusan": "tease"
     }
   ]
 }

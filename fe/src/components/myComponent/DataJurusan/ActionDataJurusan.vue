@@ -1,22 +1,11 @@
 <script setup lang="ts">
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import Vicon from "../Vicon.vue";
 import moment from "moment";
 import { onMounted, onUnmounted, ref } from "vue";
 
-import { useSiswa } from "@/lib/pinia/siswa";
 import { Input } from "@/components/ui/input";
 
 const timeNow = ref(moment().format("LTS"));
-const siswa = useSiswa();
 onMounted(() => {
   const timer = setInterval(() => {
     timeNow.value = moment().format("LTS");

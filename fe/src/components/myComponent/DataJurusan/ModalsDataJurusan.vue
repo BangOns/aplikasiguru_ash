@@ -23,42 +23,78 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useJurusan } from "@/lib/pinia/jurusan";
 import { useSiswa } from "@/lib/pinia/siswa";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
+import { computed, watch, watchEffect } from "vue";
+import { v4 as uuidv4 } from "uuid";
+
 import z from "zod";
-const siswa = useSiswa();
+import type { JurusanType } from "@/types/siswa";
 const formSchema = toTypedSchema(
   z.object({
     nama_jurusan: z.string().min(2).max(50),
   })
 );
-const { handleSubmit, errors } = useForm({
+const { handleSubmit, errors, setFieldValue } = useForm({
   validationSchema: formSchema,
   validateOnMount: false,
 });
 
+const jurusan = useJurusan();
+const queryClient = useQueryClient();
+const mutation = useMutation({
+  mutationFn: jurusan.postJurusan,
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ["jurusan"] });
+    jurusan.openModalJurusan = false;
+  },
+});
+
+const mutationEdit = useMutation({
+  mutationFn: ({ id, data }: { id: string; data: JurusanType }) =>
+    jurusan.editJurusanById(id, data),
+});
+
 const onSubmit = handleSubmit((values) => {
-  //   const getDates = scheduleUse.datesSchedule.find(
-  //     (date) => date.dayName === values.day
-  //   );
-  //   const data = {
-  //     id: uuidv4(),
-  //     date: getDates ? String(getDates.fullDate) : "",
-  //     start_time: values.start_time,
-  //     end_time: values.end_time,
-  //     activity: values.activity,
-  //     description: values.description,
-  //     is_active: true,
-  //   };
+  if (jurusan.idJurusan) {
+    const dataJurusan = {
+      id: jurusan.idJurusan,
+      nama_jurusan: values.nama_jurusan,
+    };
+    mutationEdit.mutate({ id: jurusan.idJurusan, data: dataJurusan });
+    return;
+  }
+  const dataJurusan: JurusanType = {
+    id: uuidv4(),
+    nama_jurusan: values.nama_jurusan,
+  };
+  mutation.mutate(dataJurusan);
+});
+const { data, isLoading, isSuccess } = useQuery({
+  queryKey: ["jurusan-id", jurusan.idJurusan],
+  queryFn: () => jurusan.getJurusanById(jurusan.idJurusan),
+  enabled: computed(() => !!jurusan.idJurusan),
+});
+
+watchEffect(() => {
+  if (isSuccess.value && data.value?.id) {
+    console.log("Setting field value:", data.value.nama_jurusan);
+    setFieldValue("nama_jurusan", data.value.nama_jurusan);
+  }
+  console.log("Jurusan ID:", jurusan.idJurusan);
 });
 </script>
 
 <template>
-  <Dialog v-model:open="siswa.openModalsSiswa">
+  <Dialog v-model:open="jurusan.openModalJurusan">
     <DialogContent class="font-mona">
       <DialogHeader>
-        <DialogTitle>Tambah Data Jurusan</DialogTitle>
+        <DialogTitle>{{
+          jurusan.idJurusan ? "Edit Data Jurusan" : "Tambah Data Jurusan"
+        }}</DialogTitle>
       </DialogHeader>
       <form id="dialogForm" @submit="onSubmit" class="space-y-4">
         <FormField v-slot="{ componentField }" name="nama_jurusan">
@@ -80,7 +116,7 @@ const onSubmit = handleSubmit((values) => {
           <button
             type="button"
             class="cursor-pointer py-2 px-3 bg-slate-200 hover:bg-slate-400 rounded-lg font-mona-bold"
-            @click="siswa.openModalsSiswa = false"
+            @click="jurusan.openModalJurusan = false"
           >
             Cancel
           </button>

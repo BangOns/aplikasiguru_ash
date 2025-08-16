@@ -6,13 +6,14 @@ import { addIcons, OhVueIcon } from "oh-vue-icons";
 import * as FaIcons from "oh-vue-icons/icons";
 import autoAnimate from "@formkit/auto-animate";
 import { createPinia } from "pinia";
-
+import { VueQueryPlugin } from "@tanstack/vue-query";
 const pinia = createPinia();
 const app = createApp(App);
 const Fa = Object.values({ ...FaIcons });
 addIcons(...Fa);
 app.component("v-icon", OhVueIcon);
 app.directive("auto-animate", (el) => autoAnimate(el));
+app.use(VueQueryPlugin);
 app.use(pinia);
 app.use(router);
 app.mount("#app");

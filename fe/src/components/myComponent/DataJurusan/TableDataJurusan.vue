@@ -15,7 +15,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useSiswa } from "@/lib/pinia/siswa";
+import { useQuery } from "@tanstack/vue-query";
+import { useJurusan } from "@/lib/pinia/jurusan";
+import { watch } from "vue";
 const invoices = [
   {
     invoice: "INV001",
@@ -39,14 +41,18 @@ const invoices = [
     invoice: "INV007",
   },
 ];
-const siswa = useSiswa();
+const jurusan = useJurusan();
+const query = useQuery({
+  queryKey: ["jurusan"],
+  queryFn: jurusan.getJurusan,
+});
 </script>
 
 <template>
   <article class="w-full mt-5">
     <section class="w-full flex justify-end">
       <button
-        @click="siswa.openModalsSiswa = true"
+        @click="jurusan.openModals"
         class="py-2 px-3 cursor-pointer flex items-center bg-green-800 gap-2 hover:bg-green-900 text-white rounded-lg font-mona-bold border"
       >
         <Vicon name="bi-plus" scale="1.5" />
@@ -68,14 +74,14 @@ const siswa = useSiswa();
       <TableBody class="w-full overflow-y-auto">
         <TableRow
           class="border-none text-center"
-          v-for="(invoice, index) in invoices"
-          :key="invoice.invoice"
+          v-for="(values, index) in query.data.value"
+          :key="index"
         >
           <TableCell class="text-left" :colspan="2">
             <div class="flex items-center gap-3">
-              <p>{{ index + 1 }}</p>
+              <p>{{ Number(index) + 1 }}</p>
               <p>
-                {{ invoice.invoice }}
+                {{ values.nama_jurusan }}
               </p>
             </div>
           </TableCell>
@@ -90,19 +96,21 @@ const siswa = useSiswa();
                 align="start"
                 class="font-mona space-y-2"
               >
-                <DropdownMenuItem
-                  @click="siswa.openModalsSiswa = true"
-                  class="flex w-full p-2 items-center gap-2 cursor-pointer bg-amber-500 hover:bg-amber-600 text-white"
-                >
-                  <Vicon
-                    name="fa-regular-edit"
-                    scale="1.5"
-                    class="text-white"
-                  />
-                  <p class="pt-1">Edit</p>
+                <DropdownMenuItem as-child>
+                  <button
+                    @click="jurusan.openModalsWithEdit(values.id)"
+                    class="flex w-full p-2 items-center gap-2 cursor-pointer bg-amber-500 hover:bg-amber-600 text-white"
+                  >
+                    <Vicon
+                      name="fa-regular-edit"
+                      scale="1.5"
+                      class="text-white"
+                    />
+                    <p class="pt-1">Edit</p>
+                  </button>
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  @click="siswa.openModalsSiswa = true"
+                  @click="jurusan.openModalJurusan = true"
                   class="flex w-full p-2 items-center gap-2 cursor-pointer bg-red-500 hover:bg-red-600 text-white"
                 >
                   <Vicon
