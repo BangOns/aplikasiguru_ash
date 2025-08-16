@@ -13,53 +13,30 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useSiswa } from "@/lib/pinia/siswa";
 const invoices = [
   {
     invoice: "INV001",
-    paymentStatus: "Paid",
-    totalAmount: "$250.00",
-    paymentMethod: "Credit Card",
   },
   {
     invoice: "INV002",
-    paymentStatus: "Pending",
-    totalAmount: "$150.00",
-    paymentMethod: "PayPal",
   },
   {
     invoice: "INV003",
-    paymentStatus: "Unpaid",
-    totalAmount: "$350.00",
-    paymentMethod: "Bank Transfer",
   },
   {
     invoice: "INV004",
-    paymentStatus: "Paid",
-    totalAmount: "$450.00",
-    paymentMethod: "Credit Card",
   },
   {
     invoice: "INV005",
-    paymentStatus: "Paid",
-    totalAmount: "$550.00",
-    paymentMethod: "PayPal",
   },
   {
     invoice: "INV006",
-    paymentStatus: "Pending",
-    totalAmount: "$200.00",
-    paymentMethod: "Bank Transfer",
   },
   {
     invoice: "INV007",
-    paymentStatus: "Unpaid",
-    totalAmount: "$300.00",
-    paymentMethod: "Credit Card",
   },
 ];
 const siswa = useSiswa();
@@ -73,7 +50,7 @@ const siswa = useSiswa();
         class="py-2 px-3 cursor-pointer flex items-center bg-green-800 gap-2 hover:bg-green-900 text-white rounded-lg font-mona-bold border"
       >
         <Vicon name="bi-plus" scale="1.5" />
-        <p>Tambah Data Siswa</p>
+        <p>Tambah Data Jurusan</p>
       </button>
     </section>
     <Table class="w-full relative font-mona">
@@ -82,12 +59,9 @@ const siswa = useSiswa();
           <TableHead class="text-left px-0" :colspan="2">
             <div class="flex items-center gap-1">
               <Vicon name="fa-sort" scale="1" color="black" />
-              <p class="text-black">Siswa</p>
+              <p class="text-black">Nama Jurusan</p>
             </div>
           </TableHead>
-          <TableHead class="text-black text-center">Kelas</TableHead>
-          <TableHead class="text-black text-center">Jurusan</TableHead>
-          <TableHead class="text-black text-center"> Jenis Kelamin</TableHead>
           <TableHead class="text-black text-center"> </TableHead>
         </TableRow>
       </TableHeader>
@@ -104,16 +78,6 @@ const siswa = useSiswa();
                 {{ invoice.invoice }}
               </p>
             </div>
-          </TableCell>
-
-          <TableCell>
-            <p>L</p>
-          </TableCell>
-          <TableCell>
-            <p>L</p>
-          </TableCell>
-          <TableCell class="font-mona-bold">
-            <p>L</p>
           </TableCell>
 
           <TableCell class="">

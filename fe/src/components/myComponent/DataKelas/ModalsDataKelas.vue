@@ -30,10 +30,8 @@ import z from "zod";
 const siswa = useSiswa();
 const formSchema = toTypedSchema(
   z.object({
-    nama_siswa: z.string().min(2).max(50),
-    kelas: z.string().min(2).max(50),
+    nama_kelas: z.string().min(2).max(50),
     jurusan: z.string().min(2).max(50),
-    jenis_kelamin: z.string().min(2).max(50),
   })
 );
 const { handleSubmit, errors } = useForm({
@@ -61,16 +59,16 @@ const onSubmit = handleSubmit((values) => {
   <Dialog v-model:open="siswa.openModalsSiswa">
     <DialogContent class="font-mona">
       <DialogHeader>
-        <DialogTitle>Tambah Data Siswa</DialogTitle>
+        <DialogTitle>Tambah Data Kelas</DialogTitle>
       </DialogHeader>
       <form id="dialogForm" @submit="onSubmit" class="space-y-4">
-        <FormField v-slot="{ componentField }" name="nama_siswa">
+        <FormField v-slot="{ componentField }" name="nama_kelas">
           <FormItem v-auto-animate>
-            <FormLabel>Nama Siswa</FormLabel>
+            <FormLabel>Nama Kelas</FormLabel>
             <FormControl>
               <Input
                 type="text"
-                placeholder="nama siswa"
+                placeholder="nama kelas"
                 v-bind="componentField"
               />
             </FormControl>
@@ -80,11 +78,11 @@ const onSubmit = handleSubmit((values) => {
         </FormField>
         <FormField v-slot="{ componentField }" name="kelas">
           <FormItem v-auto-animate>
-            <FormLabel>Kelas</FormLabel>
+            <FormLabel>Jurusan</FormLabel>
             <FormControl>
               <Select v-bind="componentField">
                 <SelectTrigger
-                  :class="errors.kelas ? 'border-red-500' : ''"
+                  :class="errors.jurusan ? 'border-red-500' : ''"
                   class="w-full py-2 px-3 bg-white border"
                 >
                   <SelectValue placeholder="Select a fruit" class="font-mona" />
@@ -108,38 +106,6 @@ const onSubmit = handleSubmit((values) => {
           </FormItem>
         </FormField>
 
-        <FormField v-slot="{ componentField }" name="jenis_kelamin">
-          <FormItem v-auto-animate>
-            <FormLabel>Jenis Kelamin</FormLabel>
-            <FormControl>
-              <Select v-bind="componentField">
-                <SelectTrigger
-                  :class="errors.jenis_kelamin ? 'border-red-500' : ''"
-                  class="w-full py-2 px-3 bg-white border"
-                >
-                  <SelectValue
-                    placeholder="Pilih Jenis Kelamin"
-                    class="font-mona"
-                  />
-                </SelectTrigger>
-                <SelectContent class="p-3">
-                  <SelectGroup class="font-mona">
-                    <SelectLabel class="font-mona-bold">Day</SelectLabel>
-                    <SelectItem
-                      v-for="day in [12, 2, 3, 4]"
-                      :key="day"
-                      :value="day"
-                    >
-                      {{ day }}
-                    </SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </FormControl>
-
-            <FormMessage />
-          </FormItem>
-        </FormField>
         <DialogFooter class="pt-2">
           <button
             type="button"

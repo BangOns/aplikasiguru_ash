@@ -73,7 +73,7 @@ const siswa = useSiswa();
         class="py-2 px-3 cursor-pointer flex items-center bg-green-800 gap-2 hover:bg-green-900 text-white rounded-lg font-mona-bold border"
       >
         <Vicon name="bi-plus" scale="1.5" />
-        <p>Tambah Data Siswa</p>
+        <p>Tambah Data Kelas</p>
       </button>
     </section>
     <Table class="w-full relative font-mona">
@@ -82,12 +82,10 @@ const siswa = useSiswa();
           <TableHead class="text-left px-0" :colspan="2">
             <div class="flex items-center gap-1">
               <Vicon name="fa-sort" scale="1" color="black" />
-              <p class="text-black">Siswa</p>
+              <p class="text-black">Nama Kelas</p>
             </div>
           </TableHead>
-          <TableHead class="text-black text-center">Kelas</TableHead>
           <TableHead class="text-black text-center">Jurusan</TableHead>
-          <TableHead class="text-black text-center"> Jenis Kelamin</TableHead>
           <TableHead class="text-black text-center"> </TableHead>
         </TableRow>
       </TableHeader>
@@ -107,12 +105,6 @@ const siswa = useSiswa();
           </TableCell>
 
           <TableCell>
-            <p>L</p>
-          </TableCell>
-          <TableCell>
-            <p>L</p>
-          </TableCell>
-          <TableCell class="font-mona-bold">
             <p>L</p>
           </TableCell>
 
