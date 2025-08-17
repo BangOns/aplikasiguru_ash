@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Vicon from "../Vicon.vue";
 import moment from "moment";
-import { computed, onMounted, onUnmounted, ref, watch, watchEffect } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
 
 import { Input } from "@/components/ui/input";
 import { useJurusan } from "@/lib/pinia/jurusan";

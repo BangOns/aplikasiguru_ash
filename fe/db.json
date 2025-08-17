@@ -6,6 +6,13 @@
       "email": "M5lVb@example.com"
     }
   ],
+  "teacher": [
+    {
+      "id": "1",
+      "name": "John Doe",
+      "email": "M5lVb@example.com"
+    }
+  ],
   "student": [
     {
       "id": "1",
@@ -57,6 +64,18 @@
     {
       "id": "2527f54b-397b-41dd-ae20-545e375c7b61",
       "nama_jurusan": "asdasdasdas"
+    }
+  ],
+  "kelas": [
+    {
+      "id": "1",
+      "nama_kelas": "X",
+      "jurusan_id": "f89cf88c-77df-42fd-b224-11695b307223"
+    },
+    {
+      "id": "2",
+      "nama_kelas": "XII",
+      "jurusan_id": "f89cf88c-77df-42fd-b224-11695b307223"
     }
   ]
 }

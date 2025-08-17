@@ -13,11 +13,9 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useSiswa } from "@/lib/pinia/siswa";
+import { useKelas } from "@/lib/pinia/kelas";
 const invoices = [
   {
     invoice: "INV001",
@@ -62,14 +60,14 @@ const invoices = [
     paymentMethod: "Credit Card",
   },
 ];
-const siswa = useSiswa();
+const kelas = useKelas();
 </script>
 
 <template>
   <article class="w-full mt-5">
     <section class="w-full flex justify-end">
       <button
-        @click="siswa.openModalsSiswa = true"
+        @click="kelas.openModalKelas = true"
         class="py-2 px-3 cursor-pointer flex items-center bg-green-800 gap-2 hover:bg-green-900 text-white rounded-lg font-mona-bold border"
       >
         <Vicon name="bi-plus" scale="1.5" />
@@ -119,7 +117,7 @@ const siswa = useSiswa();
                 class="font-mona space-y-2"
               >
                 <DropdownMenuItem
-                  @click="siswa.openModalsSiswa = true"
+                  @click="kelas.openModalKelas = true"
                   class="flex w-full p-2 items-center gap-2 cursor-pointer bg-amber-500 hover:bg-amber-600 text-white"
                 >
                   <Vicon
@@ -130,7 +128,7 @@ const siswa = useSiswa();
                   <p class="pt-1">Edit</p>
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  @click="siswa.openModalsSiswa = true"
+                  @click="kelas.openModalKelas = true"
                   class="flex w-full p-2 items-center gap-2 cursor-pointer bg-red-500 hover:bg-red-600 text-white"
                 >
                   <Vicon

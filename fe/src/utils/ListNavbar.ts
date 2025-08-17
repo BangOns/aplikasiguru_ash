@@ -40,4 +40,15 @@ export const ListNav = [
       },
     ],
   },
+  {
+    name: "Guru",
+    icon: "bi-person-fill",
+    child: [
+      {
+        name: "Data Guru",
+        icon: "bi-person-fill",
+        link: "data_guru",
+      },
+    ],
+  },
 ];

@@ -11,12 +11,13 @@ export const useJurusan = defineStore("jurusan", () => {
     openModalJurusan.value = true;
     idJurusan.value = id;
   };
-  const setSearchJurusan = (value: string) => {
-    searchJurusan.value = value;
-  };
+
   const openModals = () => {
     openModalJurusan.value = true;
     idJurusan.value = "";
+  };
+  const setSearchJurusan = (value: string) => {
+    searchJurusan.value = value;
   };
   const postJurusan = async (data: JurusanType) => {
     try {
@@ -74,8 +75,12 @@ export const useJurusan = defineStore("jurusan", () => {
     }
   };
   const getJurusanById = async (id: string): Promise<JurusanType> => {
-    const response = await api.get(`/jurusan/${id}`);
-    return response.data;
+    try {
+      const response = await api.get(`/jurusan/${id}`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
   };
   return {
     openModalJurusan,

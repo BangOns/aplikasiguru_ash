@@ -6,6 +6,7 @@ import ScheduleKegiatanViews from "@/views/ScheduleKegiatanViews.vue";
 import DataSiswaViews from "@/views/DataSiswaViews.vue";
 import DataKelasViews from "@/views/DataKelasViews.vue";
 import DataJurusanViews from "@/views/DataJurusanViews.vue";
+import DataGuruViews from "@/views/DataGuruViews.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -44,6 +45,15 @@ const router = createRouter({
       path: "/jurusan",
       name: "data_jurusan",
       component: DataJurusanViews,
+    },
+    {
+      path: "/guru",
+      name: "data_guru",
+      component: DataGuruViews,
+    },
+    {
+      path: "/:catchAll(.*)",
+      redirect: "/",
     },
   ],
 });

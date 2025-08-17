@@ -23,11 +23,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useJurusan } from "@/lib/pinia/jurusan";
+import { useKelas } from "@/lib/pinia/kelas";
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
 import z from "zod";
-const jurusan = useJurusan();
+const kelas = useKelas();
 const formSchema = toTypedSchema(
   z.object({
     nama_kelas: z.string().min(2).max(50),
@@ -56,7 +56,7 @@ const onSubmit = handleSubmit((values) => {
 </script>
 
 <template>
-  <Dialog v-model:open="jurusan.openModalJurusan">
+  <Dialog v-model:open="kelas.openModalKelas">
     <DialogContent class="font-mona">
       <DialogHeader>
         <DialogTitle>Tambah Data Kelas</DialogTitle>
@@ -110,7 +110,7 @@ const onSubmit = handleSubmit((values) => {
           <button
             type="button"
             class="cursor-pointer py-2 px-3 bg-slate-200 hover:bg-slate-400 rounded-lg font-mona-bold"
-            @click="jurusan.openModalJurusan = false"
+            @click="kelas.openModalKelas = false"
           >
             Cancel
           </button>
