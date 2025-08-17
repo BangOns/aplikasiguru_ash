@@ -30,6 +30,20 @@ const handleMutationEditResponse = (data: any) => {
     duration: 1000,
   });
 };
+const handleMutationDeleteResponse = (data: any) => {
+  const isSuccess = data?.status === 200;
+  const message = isSuccess ? "Success Delete Data" : "Gagal Delete Data";
+
+  toast(message, {
+    style: {
+      backgroundColor: isSuccess ? "green" : "red",
+      color: "white",
+      fontFamily: "mona",
+      alignItems: "center",
+    },
+    duration: 1000,
+  });
+};
 
 export const usePostJurusan = () => {
   const queryClient = useQueryClient();
@@ -51,6 +65,18 @@ export const useEditJurusan = () => {
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: JurusanType }) =>
       jurusan.editJurusanById(id, data),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["jurusan"] });
+      handleMutationEditResponse(data);
+    },
+  });
+};
+export const useDeleteJurusan = () => {
+  const queryClient = useQueryClient();
+  const jurusan = useJurusan();
+
+  return useMutation({
+    mutationFn: ({ id }: { id: string }) => jurusan.deleteJurusanById(id),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["jurusan"] });
       handleMutationEditResponse(data);

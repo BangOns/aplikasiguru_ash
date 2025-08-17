@@ -58,6 +58,21 @@ export const useJurusan = defineStore("jurusan", () => {
       };
     }
   };
+  const deleteJurusanById = async (id: string) => {
+    try {
+      const response = await api.delete(`/jurusan/${id}`);
+
+      return {
+        status: 200,
+        data: response.data,
+      };
+    } catch (error) {
+      return {
+        status: 500,
+        data: error,
+      };
+    }
+  };
   const getJurusanById = async (id: string): Promise<JurusanType> => {
     const response = await api.get(`/jurusan/${id}`);
     return response.data;
@@ -71,6 +86,7 @@ export const useJurusan = defineStore("jurusan", () => {
     openModals,
     postJurusan,
     editJurusanById,
+    deleteJurusanById,
     getJurusan,
     getJurusanById,
   };

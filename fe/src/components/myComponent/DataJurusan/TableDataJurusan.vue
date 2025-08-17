@@ -15,11 +15,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useQuery } from "@tanstack/vue-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import { useJurusan } from "@/lib/pinia/jurusan";
 import type { JurusanType } from "@/types/siswa";
 import { computed, watch, watchEffect } from "vue";
-
+import { useDeleteJurusan } from "@/lib/query/jurusan";
+const queryCLient = useQueryClient();
 const jurusan = useJurusan();
 const query = useQuery({
   queryKey: ["jurusan", jurusan.searchJurusan],
@@ -32,6 +33,12 @@ const filteredJurusan = computed(() => {
     j.nama_jurusan.toLowerCase().includes(searchTerm)
   );
 });
+const mutationDelete = useDeleteJurusan();
+const handleDeleteJurusan = (id: string) => {
+  if (confirm("Apakah anda yakin ingin menghapus data ini?")) {
+    mutationDelete.mutate({ id });
+  }
+};
 </script>
 
 <template>
@@ -118,16 +125,18 @@ const filteredJurusan = computed(() => {
                     <p class="pt-1">Edit</p>
                   </button>
                 </DropdownMenuItem>
-                <DropdownMenuItem
-                  @click="jurusan.openModalJurusan = true"
-                  class="flex w-full p-2 items-center gap-2 cursor-pointer bg-red-500 hover:bg-red-600 text-white"
-                >
-                  <Vicon
-                    name="md-deleteforever"
-                    scale="1.5"
-                    class="text-white"
-                  />
-                  <p class="pt-1">Hapus</p>
+                <DropdownMenuItem as-child>
+                  <button
+                    @click="handleDeleteJurusan(values.id)"
+                    class="flex w-full p-2 items-center gap-2 cursor-pointer bg-red-500 hover:bg-red-600 text-white"
+                  >
+                    <Vicon
+                      name="md-deleteforever"
+                      scale="1.5"
+                      class="text-white"
+                    />
+                    <p class="pt-1">Hapus</p>
+                  </button>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
