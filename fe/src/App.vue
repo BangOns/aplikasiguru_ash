@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import Header from "./components/myComponent/Header.vue";
 import Navbar from "./components/myComponent/Navbar.vue";
+import { Toaster } from "./components/ui/sonner";
+import "vue-sonner/style.css";
 </script>
 
 <template>
@@ -11,4 +13,5 @@ import Navbar from "./components/myComponent/Navbar.vue";
       <router-view />
     </article>
   </main>
+  <Toaster />
 </template>

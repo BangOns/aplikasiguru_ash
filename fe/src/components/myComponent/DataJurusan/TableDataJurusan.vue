@@ -17,34 +17,20 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useQuery } from "@tanstack/vue-query";
 import { useJurusan } from "@/lib/pinia/jurusan";
-import { watch } from "vue";
-const invoices = [
-  {
-    invoice: "INV001",
-  },
-  {
-    invoice: "INV002",
-  },
-  {
-    invoice: "INV003",
-  },
-  {
-    invoice: "INV004",
-  },
-  {
-    invoice: "INV005",
-  },
-  {
-    invoice: "INV006",
-  },
-  {
-    invoice: "INV007",
-  },
-];
+import type { JurusanType } from "@/types/siswa";
+import { computed, watch, watchEffect } from "vue";
+
 const jurusan = useJurusan();
 const query = useQuery({
-  queryKey: ["jurusan"],
+  queryKey: ["jurusan", jurusan.searchJurusan],
   queryFn: jurusan.getJurusan,
+});
+const filteredJurusan = computed(() => {
+  if (!query.data.value) return [];
+  const searchTerm = jurusan.searchJurusan.toLowerCase();
+  return query.data.value.filter((j: JurusanType) =>
+    j.nama_jurusan.toLowerCase().includes(searchTerm)
+  );
 });
 </script>
 
@@ -59,7 +45,30 @@ const query = useQuery({
         <p>Tambah Data Jurusan</p>
       </button>
     </section>
-    <Table class="w-full relative font-mona">
+    <!-- Loading State -->
+    <section
+      v-if="query.isPending.value"
+      class="w-full h-40 flex items-center justify-center"
+    >
+      <p>Loading...</p>
+    </section>
+
+    <!-- Error State -->
+    <section
+      v-else-if="query.isError.value"
+      class="w-full h-40 flex items-center justify-center"
+    >
+      <p>Error: {{ query.error }}</p>
+    </section>
+
+    <!-- Empty State -->
+    <section
+      v-else-if="!query.data.value || query.data.value.length === 0"
+      class="w-full h-40 flex items-center justify-center"
+    >
+      <p>No data available</p>
+    </section>
+    <Table v-else class="w-full relative font-mona">
       <TableHeader>
         <TableRow class="border-slate-300 text-center">
           <TableHead class="text-left px-0" :colspan="2">
@@ -74,7 +83,7 @@ const query = useQuery({
       <TableBody class="w-full overflow-y-auto">
         <TableRow
           class="border-none text-center"
-          v-for="(values, index) in query.data.value"
+          v-for="(values, index) in filteredJurusan"
           :key="index"
         >
           <TableCell class="text-left" :colspan="2">

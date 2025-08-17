@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import Vicon from "../Vicon.vue";
 import moment from "moment";
-import { onMounted, onUnmounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch, watchEffect } from "vue";
 
 import { Input } from "@/components/ui/input";
+import { useJurusan } from "@/lib/pinia/jurusan";
 
+const jurusan = useJurusan();
 const timeNow = ref(moment().format("LTS"));
 onMounted(() => {
   const timer = setInterval(() => {
@@ -31,6 +33,7 @@ onMounted(() => {
             type="text"
             class="w-full py-2 px-3 border"
             placeholder="Ketik Nama Jurusan"
+            v-model="jurusan.searchJurusan"
           />
         </section>
       </article>

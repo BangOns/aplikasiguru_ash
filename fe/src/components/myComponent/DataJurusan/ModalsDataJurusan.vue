@@ -33,6 +33,8 @@ import { v4 as uuidv4 } from "uuid";
 
 import z from "zod";
 import type { JurusanType } from "@/types/siswa";
+import { toast } from "vue-sonner";
+import { useEditJurusan, usePostJurusan } from "@/lib/query/jurusan";
 const formSchema = toTypedSchema(
   z.object({
     nama_jurusan: z.string().min(2).max(50),
@@ -44,47 +46,35 @@ const { handleSubmit, errors, setFieldValue } = useForm({
 });
 
 const jurusan = useJurusan();
-const queryClient = useQueryClient();
-const mutation = useMutation({
-  mutationFn: jurusan.postJurusan,
-  onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ["jurusan"] });
-    jurusan.openModalJurusan = false;
-  },
-});
-
-const mutationEdit = useMutation({
-  mutationFn: ({ id, data }: { id: string; data: JurusanType }) =>
-    jurusan.editJurusanById(id, data),
-});
-
+const mutation = usePostJurusan();
+const mutationEdit = useEditJurusan();
+const isEditMode = computed(() => !!jurusan.idJurusan);
 const onSubmit = handleSubmit((values) => {
-  if (jurusan.idJurusan) {
-    const dataJurusan = {
-      id: jurusan.idJurusan,
-      nama_jurusan: values.nama_jurusan,
-    };
-    mutationEdit.mutate({ id: jurusan.idJurusan, data: dataJurusan });
-    return;
-  }
-  const dataJurusan: JurusanType = {
-    id: uuidv4(),
+  const payload = {
+    id: isEditMode.value ? jurusan.idJurusan : uuidv4(),
     nama_jurusan: values.nama_jurusan,
   };
-  mutation.mutate(dataJurusan);
+
+  if (isEditMode.value) {
+    mutationEdit.mutate({ id: payload.id, data: payload });
+  } else {
+    mutation.mutate(payload);
+  }
+
+  jurusan.openModalJurusan = false;
 });
-const { data, isLoading, isSuccess } = useQuery({
+const { data, isSuccess } = useQuery({
   queryKey: ["jurusan-id", jurusan.idJurusan],
   queryFn: () => jurusan.getJurusanById(jurusan.idJurusan),
-  enabled: computed(() => !!jurusan.idJurusan),
+  enabled: isEditMode,
 });
 
 watchEffect(() => {
-  if (isSuccess.value && data.value?.id) {
-    console.log("Setting field value:", data.value.nama_jurusan);
+  if (jurusan.idJurusan && isSuccess.value && data.value?.id) {
     setFieldValue("nama_jurusan", data.value.nama_jurusan);
+  } else {
+    setFieldValue("nama_jurusan", "", false);
   }
-  console.log("Jurusan ID:", jurusan.idJurusan);
 });
 </script>
 
