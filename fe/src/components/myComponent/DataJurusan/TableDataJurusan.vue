@@ -15,16 +15,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useQuery } from "@tanstack/vue-query";
 import { useJurusan } from "@/lib/pinia/jurusan";
 import type { JurusanType } from "@/types/siswa";
 import { computed } from "vue";
-import { useDeleteJurusan } from "@/lib/query/jurusan";
+import { useDeleteJurusan, useGetJurusan } from "@/lib/query/jurusan";
 const jurusan = useJurusan();
-const query = useQuery({
-  queryKey: ["jurusan", jurusan.searchJurusan],
-  queryFn: jurusan.getJurusan,
-});
+const query = useGetJurusan();
 const filteredJurusan = computed(() => {
   if (!query.data.value) return [];
   const searchTerm = jurusan.searchJurusan.toLowerCase();

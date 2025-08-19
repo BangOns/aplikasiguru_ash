@@ -24,34 +24,65 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useKelas } from "@/lib/pinia/kelas";
+import { useGetTeacher } from "@/lib/query/guru";
+import { useGetJurusan } from "@/lib/query/jurusan";
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
+import { computed } from "vue";
+import { watchEffect } from "vue";
+import { v4 as uuidv4 } from "uuid";
+
 import z from "zod";
+import type { KelasType } from "@/types/siswa/data_kelas";
+import { useEditKelas, useGetKelasById, usePostKelas } from "@/lib/query/kelas";
 const kelas = useKelas();
+const { data: get_jurusan } = useGetJurusan();
+const { data: get_teacher } = useGetTeacher();
+const mutation = usePostKelas();
+const mutationEdit = useEditKelas();
+
 const formSchema = toTypedSchema(
   z.object({
-    nama_kelas: z.string().min(2).max(50),
-    jurusan: z.string().min(2).max(50),
+    nama_kelas: z.string().min(1).max(50),
+    jurusan: z.string().min(1).max(50),
+    wali_kelas: z.string().min(1).max(50),
   })
 );
-const { handleSubmit, errors } = useForm({
+const { handleSubmit, errors, setFieldValue } = useForm({
   validationSchema: formSchema,
   validateOnMount: false,
 });
+const isEditMode = computed(() => !!kelas.idKelas);
+const {
+  data: kelasData,
+  isSuccess,
+  data,
+} = useGetKelasById(get_jurusan.value, get_teacher.value, kelas.idKelas);
 
 const onSubmit = handleSubmit((values) => {
-  //   const getDates = scheduleUse.datesSchedule.find(
-  //     (date) => date.dayName === values.day
-  //   );
-  //   const data = {
-  //     id: uuidv4(),
-  //     date: getDates ? String(getDates.fullDate) : "",
-  //     start_time: values.start_time,
-  //     end_time: values.end_time,
-  //     activity: values.activity,
-  //     description: values.description,
-  //     is_active: true,
-  //   };
+  const payload: KelasType = {
+    id: isEditMode.value ? kelas.idKelas : uuidv4(),
+    ...values,
+  };
+
+  if (isEditMode.value) {
+    mutationEdit.mutate({ id: payload.id, data: payload });
+  } else {
+    mutation.mutate(payload);
+  }
+  kelas.openModalKelas = false;
+});
+
+watchEffect(() => {
+  if (kelas.idKelas && isSuccess.value && data.value?.id) {
+    setFieldValue("nama_kelas", kelasData.value?.nama_kelas);
+    setFieldValue("jurusan", kelasData.value?.jurusan?.id);
+    setFieldValue("wali_kelas", kelasData.value?.wali_kelas);
+  } else {
+    setFieldValue("nama_kelas", "", false);
+    setFieldValue("jurusan", "", false);
+    setFieldValue("wali_kelas", "", false);
+  }
 });
 </script>
 
@@ -59,7 +90,11 @@ const onSubmit = handleSubmit((values) => {
   <Dialog v-model:open="kelas.openModalKelas">
     <DialogContent class="font-mona">
       <DialogHeader>
-        <DialogTitle>Tambah Data Kelas</DialogTitle>
+        <DialogTitle>
+          {{
+            kelas.idKelas ? "Edit Data Kelas" : "Tambah Data Kelas"
+          }}</DialogTitle
+        >
       </DialogHeader>
       <form id="dialogForm" @submit="onSubmit" class="space-y-4">
         <FormField v-slot="{ componentField }" name="nama_kelas">
@@ -76,7 +111,7 @@ const onSubmit = handleSubmit((values) => {
             <FormMessage />
           </FormItem>
         </FormField>
-        <FormField v-slot="{ componentField }" name="kelas">
+        <FormField v-slot="{ componentField }" name="jurusan">
           <FormItem v-auto-animate>
             <FormLabel>Jurusan</FormLabel>
             <FormControl>
@@ -89,13 +124,49 @@ const onSubmit = handleSubmit((values) => {
                 </SelectTrigger>
                 <SelectContent class="p-3">
                   <SelectGroup class="font-mona">
-                    <SelectLabel class="font-mona-bold">Day</SelectLabel>
-                    <SelectItem
-                      v-for="day in [12, 2, 3, 4]"
-                      :key="day"
-                      :value="day"
+                    <SelectLabel class="font-mona-bold"
+                      >Pilih Jurusan</SelectLabel
                     >
-                      {{ day }}
+                    <SelectItem
+                      v-for="(jurusan, index) in get_jurusan"
+                      :key="index"
+                      :value="jurusan.id"
+                    >
+                      {{ jurusan.nama_jurusan }}
+                    </SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </FormControl>
+
+            <FormMessage />
+          </FormItem>
+        </FormField>
+        <FormField v-slot="{ componentField }" name="wali_kelas">
+          <FormItem v-auto-animate>
+            <FormLabel>Wali Kelas</FormLabel>
+            <FormControl>
+              <Select v-bind="componentField">
+                <SelectTrigger
+                  :class="errors.jurusan ? 'border-red-500' : ''"
+                  class="w-full py-2 px-3 bg-white border"
+                >
+                  <SelectValue
+                    placeholder="Pilih Wali Kelas"
+                    class="font-mona"
+                  />
+                </SelectTrigger>
+                <SelectContent class="p-3">
+                  <SelectGroup class="font-mona">
+                    <SelectLabel class="font-mona-bold"
+                      >Pilih Wali Kelas</SelectLabel
+                    >
+                    <SelectItem
+                      v-for="(teacher, index) in get_teacher"
+                      :key="index"
+                      :value="teacher.id"
+                    >
+                      {{ teacher.nama }}
                     </SelectItem>
                   </SelectGroup>
                 </SelectContent>

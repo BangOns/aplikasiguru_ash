@@ -3,11 +3,14 @@ import ActionDataJurusan from "@/components/myComponent/DataJurusan/ActionDataJu
 import HeaderJurusan from "@/components/myComponent/DataJurusan/HeaderJurusan.vue";
 import ModalsDataJurusan from "@/components/myComponent/DataJurusan/ModalsDataJurusan.vue";
 import TableDataJurusan from "@/components/myComponent/DataJurusan/TableDataJurusan.vue";
+import { useJurusan } from "@/lib/pinia/jurusan";
+
+const jurusan = useJurusan();
 </script>
 
 <template>
   <HeaderJurusan />
   <ActionDataJurusan />
   <TableDataJurusan />
-  <ModalsDataJurusan />
+  <ModalsDataJurusan v-if="jurusan.openModalJurusan" />
 </template>

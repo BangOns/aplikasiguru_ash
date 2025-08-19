@@ -7,6 +7,8 @@ export const useKelas = defineStore("kelas", () => {
   const openModalKelas = ref<boolean>(false);
   const idKelas = ref<string>("");
   const searchKelas = ref<string>("");
+  const searchJurusan = ref<string>("");
+  const searchWaliKelas = ref<string>("");
   const openModalsWithEdit = (id: string) => {
     openModalKelas.value = true;
     idKelas.value = id;
@@ -85,6 +87,8 @@ export const useKelas = defineStore("kelas", () => {
     openModalKelas,
     idKelas,
     searchKelas,
+    searchJurusan,
+    searchWaliKelas,
     setSearchKelas,
     openModalsWithEdit,
     openModals,

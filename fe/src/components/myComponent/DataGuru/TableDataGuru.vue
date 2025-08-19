@@ -15,25 +15,23 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useQuery } from "@tanstack/vue-query";
-import { useJurusan } from "@/lib/pinia/jurusan";
-import type { JurusanType } from "@/types/siswa";
+
 import { computed } from "vue";
-import { useDeleteJurusan } from "@/lib/query/jurusan";
-const jurusan = useJurusan();
-const query = useQuery({
-  queryKey: ["jurusan", jurusan.searchJurusan],
-  queryFn: jurusan.getJurusan,
-});
-const filteredJurusan = computed(() => {
+import { useTeacher } from "@/lib/pinia/guru";
+import { useDeleteTeacher, useGetTeacher } from "@/lib/query/guru";
+import type { GuruType } from "@/types/guru";
+const teacher = useTeacher();
+const query = useGetTeacher();
+const filteredTeacher = computed(() => {
   if (!query.data.value) return [];
-  const searchTerm = jurusan.searchJurusan.toLowerCase();
-  return query.data.value.filter((j: JurusanType) =>
-    j.nama_jurusan.toLowerCase().includes(searchTerm)
+  const searchTerm = teacher.searchTeacher.toLowerCase();
+  return query.data.value.filter((j: GuruType) =>
+    j.nama.toLowerCase().includes(searchTerm)
   );
 });
-const mutationDelete = useDeleteJurusan();
-const handleDeleteJurusan = (id: string) => {
+
+const mutationDelete = useDeleteTeacher();
+const handleDeleteTeacher = (id: string) => {
   if (confirm("Apakah anda yakin ingin menghapus data ini?")) {
     mutationDelete.mutate({ id });
   }
@@ -44,11 +42,11 @@ const handleDeleteJurusan = (id: string) => {
   <article class="w-full mt-5">
     <section class="w-full flex justify-end">
       <button
-        @click="jurusan.openModals"
+        @click="teacher.openModals"
         class="py-2 px-3 cursor-pointer flex items-center bg-green-800 gap-2 hover:bg-green-900 text-white rounded-lg font-mona-bold border"
       >
         <Vicon name="bi-plus" scale="1.5" />
-        <p>Tambah Data Jurusan</p>
+        <p>Tambah Data Guru</p>
       </button>
     </section>
     <!-- Loading State -->
@@ -80,8 +78,15 @@ const handleDeleteJurusan = (id: string) => {
           <TableHead class="text-left px-0" :colspan="2">
             <div class="flex items-center gap-1">
               <Vicon name="fa-sort" scale="1" color="black" />
-              <p class="text-black">Nama Jurusan</p>
+              <p class="text-black">Nama Guru</p>
             </div>
+          </TableHead>
+          <TableHead
+            v-for="(value, index) in teacher.listHeadTable"
+            :key="index"
+            class="text-black text-center"
+          >
+            {{ value }}
           </TableHead>
           <TableHead class="text-black text-center"> </TableHead>
         </TableRow>
@@ -89,16 +94,31 @@ const handleDeleteJurusan = (id: string) => {
       <TableBody class="w-full overflow-y-auto">
         <TableRow
           class="border-none text-center"
-          v-for="(values, index) in filteredJurusan"
+          v-for="(values, index) in filteredTeacher as GuruType[]"
           :key="index"
         >
           <TableCell class="text-left" :colspan="2">
             <div class="flex items-center gap-3">
               <p>{{ Number(index) + 1 }}</p>
               <p>
-                {{ values.nama_jurusan }}
+                {{ values.nama }}
               </p>
             </div>
+          </TableCell>
+          <TableCell class="text-center">
+            <p>
+              {{ values.email }}
+            </p>
+          </TableCell>
+          <TableCell class="text-center">
+            <p>
+              {{ values.telp }}
+            </p>
+          </TableCell>
+          <TableCell class="text-center">
+            <p>
+              {{ values.jkl }}
+            </p>
           </TableCell>
 
           <TableCell class="">
@@ -113,7 +133,7 @@ const handleDeleteJurusan = (id: string) => {
               >
                 <DropdownMenuItem as-child>
                   <button
-                    @click="jurusan.openModalsWithEdit(values.id)"
+                    @click="teacher.openModalsWithEdit(values.id)"
                     class="flex w-full p-2 items-center gap-2 cursor-pointer bg-amber-500 hover:bg-amber-600 text-white"
                   >
                     <Vicon
@@ -126,7 +146,7 @@ const handleDeleteJurusan = (id: string) => {
                 </DropdownMenuItem>
                 <DropdownMenuItem as-child>
                   <button
-                    @click="handleDeleteJurusan(values.id)"
+                    @click="handleDeleteTeacher(values.id)"
                     class="flex w-full p-2 items-center gap-2 cursor-pointer bg-red-500 hover:bg-red-600 text-white"
                   >
                     <Vicon

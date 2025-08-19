@@ -12,18 +12,18 @@ import Vicon from "../Vicon.vue";
 import moment from "moment";
 import { onMounted, onUnmounted, ref } from "vue";
 
-import { useSiswa } from "@/lib/pinia/siswa";
 import { Input } from "@/components/ui/input";
+import { useTeacher } from "@/lib/pinia/guru";
 
-const timeNow = ref(moment().format("LTS"));
-const siswa = useSiswa();
-onMounted(() => {
-  const timer = setInterval(() => {
-    timeNow.value = moment().format("LTS");
-  }, 1000);
+const teacher = useTeacher();
+// const timeNow = ref(moment().format("LTS"));
+// onMounted(() => {
+//   const timer = setInterval(() => {
+//     timeNow.value = moment().format("LTS");
+//   }, 1000);
 
-  onUnmounted(() => clearInterval(timer));
-});
+//   onUnmounted(() => clearInterval(timer));
+// });
 </script>
 
 <template>
@@ -45,54 +45,6 @@ onMounted(() => {
           />
         </section>
       </article>
-      <!-- <article class="w-full basis-1/6 space-y-1">
-        <header>
-          <h2 class="font-mona-bold">Kelas</h2>
-        </header>
-        <section class="w-full">
-          <Select>
-            <SelectTrigger class="w-full py-2 px-3 border">
-              <SelectValue placeholder="Pilih Kelas" class="font-mona" />
-            </SelectTrigger>
-            <SelectContent class="p-3">
-              <SelectGroup class="font-mona">
-                <SelectLabel class="font-mona-bold">Pilih Kelas</SelectLabel>
-                <SelectItem
-                  v-for="day in [12, 2, 3, 4]"
-                  :key="day"
-                  :value="day"
-                >
-                  {{ day }}
-                </SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </section>
-      </article>
-      <article class="w-full basis-1/6 space-y-1">
-        <header>
-          <h2 class="font-mona-bold">Jurusan</h2>
-        </header>
-        <section class="w-full">
-          <Select>
-            <SelectTrigger class="w-full py-2 px-3 border">
-              <SelectValue placeholder="Pilih Jurusan" class="font-mona" />
-            </SelectTrigger>
-            <SelectContent class="p-3">
-              <SelectGroup class="font-mona">
-                <SelectLabel class="font-mona-bold">Pilih Jurusan</SelectLabel>
-                <SelectItem
-                  v-for="day in [12, 2, 3, 4]"
-                  :key="day"
-                  :value="day"
-                >
-                  {{ day }}
-                </SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </section>
-      </article> -->
 
       <article class="full flex items-center justify-end">
         <button

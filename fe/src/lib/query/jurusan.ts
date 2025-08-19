@@ -1,5 +1,5 @@
 import type { JurusanType } from "@/types/siswa";
-import { useMutation, useQueryClient } from "@tanstack/vue-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import { toast } from "vue-sonner";
 import { useJurusan } from "../pinia/jurusan";
 const handleMutationResponse = (data: any) => {
@@ -28,6 +28,13 @@ const handleMutationEditResponse = (data: any) => {
       alignItems: "center",
     },
     duration: 1000,
+  });
+};
+export const useGetJurusan = () => {
+  const jurusan = useJurusan();
+  return useQuery({
+    queryKey: ["jurusan"],
+    queryFn: jurusan.getJurusan,
   });
 };
 const handleMutationDeleteResponse = (data: any) => {

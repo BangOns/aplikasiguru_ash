@@ -16,63 +16,92 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useKelas } from "@/lib/pinia/kelas";
-const invoices = [
-  {
-    invoice: "INV001",
-    paymentStatus: "Paid",
-    totalAmount: "$250.00",
-    paymentMethod: "Credit Card",
-  },
-  {
-    invoice: "INV002",
-    paymentStatus: "Pending",
-    totalAmount: "$150.00",
-    paymentMethod: "PayPal",
-  },
-  {
-    invoice: "INV003",
-    paymentStatus: "Unpaid",
-    totalAmount: "$350.00",
-    paymentMethod: "Bank Transfer",
-  },
-  {
-    invoice: "INV004",
-    paymentStatus: "Paid",
-    totalAmount: "$450.00",
-    paymentMethod: "Credit Card",
-  },
-  {
-    invoice: "INV005",
-    paymentStatus: "Paid",
-    totalAmount: "$550.00",
-    paymentMethod: "PayPal",
-  },
-  {
-    invoice: "INV006",
-    paymentStatus: "Pending",
-    totalAmount: "$200.00",
-    paymentMethod: "Bank Transfer",
-  },
-  {
-    invoice: "INV007",
-    paymentStatus: "Unpaid",
-    totalAmount: "$300.00",
-    paymentMethod: "Credit Card",
-  },
-];
+import { useDeleteKelas, useGetKelas } from "@/lib/query/kelas";
+import { computed } from "vue";
+import type { KelasType } from "@/types/siswa/data_kelas";
+import { useGetJurusan } from "@/lib/query/jurusan";
+import { useGetTeacher } from "@/lib/query/guru";
+import type { JurusanType } from "@/types/siswa";
+import type { GuruType } from "@/types/guru";
+
 const kelas = useKelas();
+const query = useGetKelas();
+const { data: get_jurusan } = useGetJurusan();
+const { data: get_teacher } = useGetTeacher();
+
+const filteredKelas = computed(() => {
+  if (!query.data.value) return [];
+
+  const searchTerm = kelas.searchKelas.toLowerCase();
+  const searchTermJurusan = kelas.searchJurusan.toLowerCase();
+  const searchTermWaliKelas = kelas.searchWaliKelas.toLowerCase();
+
+  return query.data.value
+    .map((kelasItem: KelasType) => {
+      const jurusan = get_jurusan.value?.find(
+        (item: JurusanType) => item.id === kelasItem.jurusan
+      );
+      const wali_kelas = get_teacher.value?.find(
+        (item: GuruType) => item.id === kelasItem.wali_kelas
+      );
+
+      return {
+        ...kelasItem,
+        jurusan,
+        wali_kelas,
+        jurusanNama: jurusan?.nama_jurusan,
+        wali_kelasNama: wali_kelas?.nama,
+      };
+    })
+    .filter(
+      (kelasMerged: any) =>
+        kelasMerged.nama_kelas.toLowerCase().includes(searchTerm) &&
+        kelasMerged.jurusanNama.toLowerCase().includes(searchTermJurusan) &&
+        kelasMerged.wali_kelasNama.toLowerCase().includes(searchTermWaliKelas)
+    );
+});
+
+const mutationDelete = useDeleteKelas();
+const handleDeleteKelas = (id: string) => {
+  if (confirm("Apakah anda yakin ingin menghapus data ini?")) {
+    mutationDelete.mutate({ id });
+  }
+};
 </script>
 
 <template>
   <article class="w-full mt-5">
     <section class="w-full flex justify-end">
       <button
-        @click="kelas.openModalKelas = true"
+        @click="kelas.openModals"
         class="py-2 px-3 cursor-pointer flex items-center bg-green-800 gap-2 hover:bg-green-900 text-white rounded-lg font-mona-bold border"
       >
         <Vicon name="bi-plus" scale="1.5" />
         <p>Tambah Data Kelas</p>
       </button>
+    </section>
+    <!-- Loading State -->
+    <section
+      v-if="query.isPending.value"
+      class="w-full h-40 flex items-center justify-center"
+    >
+      <p>Loading...</p>
+    </section>
+
+    <!-- Error State -->
+    <section
+      v-else-if="query.isError.value"
+      class="w-full h-40 flex items-center justify-center"
+    >
+      <p>Error: {{ query.error }}</p>
+    </section>
+
+    <!-- Empty State -->
+    <section
+      v-else-if="!query.data.value || query.data.value.length === 0"
+      class="w-full h-40 flex items-center justify-center"
+    >
+      <p>No data available</p>
     </section>
     <Table class="w-full relative font-mona">
       <TableHeader>
@@ -83,6 +112,7 @@ const kelas = useKelas();
               <p class="text-black">Nama Kelas</p>
             </div>
           </TableHead>
+          <TableHead class="text-black text-center">Wali Kelas</TableHead>
           <TableHead class="text-black text-center">Jurusan</TableHead>
           <TableHead class="text-black text-center"> </TableHead>
         </TableRow>
@@ -90,20 +120,23 @@ const kelas = useKelas();
       <TableBody class="w-full overflow-y-auto">
         <TableRow
           class="border-none text-center"
-          v-for="(invoice, index) in invoices"
-          :key="invoice.invoice"
+          v-for="(data, index) in filteredKelas"
+          :key="index"
         >
           <TableCell class="text-left" :colspan="2">
             <div class="flex items-center gap-3">
-              <p>{{ index + 1 }}</p>
+              <p>{{ Number(index) + 1 }}</p>
               <p>
-                {{ invoice.invoice }}
+                {{ data?.nama_kelas }}
               </p>
             </div>
           </TableCell>
 
           <TableCell>
-            <p>L</p>
+            <p>{{ data.wali_kelas?.nama }}</p>
+          </TableCell>
+          <TableCell>
+            <p>{{ data.jurusan?.nama_jurusan }}</p>
           </TableCell>
 
           <TableCell class="">
@@ -117,7 +150,7 @@ const kelas = useKelas();
                 class="font-mona space-y-2"
               >
                 <DropdownMenuItem
-                  @click="kelas.openModalKelas = true"
+                  @click="kelas.openModalsWithEdit(data.id)"
                   class="flex w-full p-2 items-center gap-2 cursor-pointer bg-amber-500 hover:bg-amber-600 text-white"
                 >
                   <Vicon
@@ -128,7 +161,7 @@ const kelas = useKelas();
                   <p class="pt-1">Edit</p>
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  @click="kelas.openModalKelas = true"
+                  @click="() => handleDeleteKelas(data.id)"
                   class="flex w-full p-2 items-center gap-2 cursor-pointer bg-red-500 hover:bg-red-600 text-white"
                 >
                   <Vicon

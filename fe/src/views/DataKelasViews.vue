@@ -3,11 +3,13 @@ import ActionDataKelas from "@/components/myComponent/DataKelas/ActionDataKelas.
 import HeaderKelas from "@/components/myComponent/DataKelas/HeaderKelas.vue";
 import ModalsDataKelas from "@/components/myComponent/DataKelas/ModalsDataKelas.vue";
 import TableDataKelas from "@/components/myComponent/DataKelas/TableDataKelas.vue";
+import { useKelas } from "@/lib/pinia/kelas";
+const kelas = useKelas();
 </script>
 
 <template>
   <HeaderKelas />
   <ActionDataKelas />
   <TableDataKelas />
-  <ModalsDataKelas />
+  <ModalsDataKelas v-if="kelas.openModalKelas" />
 </template>

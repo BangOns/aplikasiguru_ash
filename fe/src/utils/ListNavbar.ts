@@ -41,7 +41,7 @@ export const ListNav = [
     ],
   },
   {
-    name: "Guru",
+    name: "Guru / Wali Kelas",
     icon: "bi-person-fill",
     child: [
       {

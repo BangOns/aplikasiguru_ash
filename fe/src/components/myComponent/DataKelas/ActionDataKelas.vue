@@ -12,11 +12,17 @@ import Vicon from "../Vicon.vue";
 import moment from "moment";
 import { onMounted, onUnmounted, ref } from "vue";
 
-import { useSiswa } from "@/lib/pinia/siswa";
 import { Input } from "@/components/ui/input";
+import { useKelas } from "@/lib/pinia/kelas";
+import { useGetJurusan } from "@/lib/query/jurusan";
+import { useGetTeacher } from "@/lib/query/guru";
+import type { JurusanType } from "@/types/siswa";
+import type { GuruType } from "@/types/guru";
 
 const timeNow = ref(moment().format("LTS"));
-const siswa = useSiswa();
+const kelas = useKelas();
+const { data: get_jurusan } = useGetJurusan();
+const { data: get_teacher } = useGetTeacher();
 onMounted(() => {
   const timer = setInterval(() => {
     timeNow.value = moment().format("LTS");
@@ -42,6 +48,7 @@ onMounted(() => {
             type="text"
             class="w-full py-2 px-3 border"
             placeholder="Ketik Nama Kelas"
+            v-model="kelas.searchKelas"
           />
         </section>
       </article>
@@ -51,7 +58,7 @@ onMounted(() => {
           <h2 class="font-mona-bold">Jurusan</h2>
         </header>
         <section class="w-full">
-          <Select>
+          <Select v-model="kelas.searchJurusan">
             <SelectTrigger class="w-full py-2 px-3 border">
               <SelectValue placeholder="Pilih Jurusan" class="font-mona" />
             </SelectTrigger>
@@ -59,11 +66,37 @@ onMounted(() => {
               <SelectGroup class="font-mona">
                 <SelectLabel class="font-mona-bold">Pilih Jurusan</SelectLabel>
                 <SelectItem
-                  v-for="day in [12, 2, 3, 4]"
-                  :key="day"
-                  :value="day"
+                  v-for="(data, index) in get_jurusan as JurusanType[]"
+                  :key="index"
+                  :value="data.nama_jurusan"
                 >
-                  {{ day }}
+                  {{ data.nama_jurusan }}
+                </SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </section>
+      </article>
+      <article class="w-full basis-1/6 space-y-1">
+        <header>
+          <h2 class="font-mona-bold">Wali Kelas</h2>
+        </header>
+        <section class="w-full">
+          <Select v-model="kelas.searchWaliKelas">
+            <SelectTrigger class="w-full py-2 px-3 border">
+              <SelectValue placeholder="Pilih Wali Kelas" class="font-mona" />
+            </SelectTrigger>
+            <SelectContent class="p-3">
+              <SelectGroup class="font-mona">
+                <SelectLabel class="font-mona-bold"
+                  >Pilih Wali Kelas</SelectLabel
+                >
+                <SelectItem
+                  v-for="(data, index) in get_teacher as GuruType[]"
+                  :key="index"
+                  :value="data.nama"
+                >
+                  {{ data.nama }}
                 </SelectItem>
               </SelectGroup>
             </SelectContent>

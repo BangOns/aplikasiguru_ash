@@ -8,16 +8,20 @@
   ],
   "teacher": [
     {
-      "id": "1",
-      "name": "John Doe",
-      "email": "M5lVb@example.com"
+      "id": "e08159c3-0fee-4179-a02f-a0cb8a9324f5",
+      "nama": "roni",
+      "telp": "08123456789",
+      "email": "admin@nodewave.id",
+      "jkl": "L"
     }
   ],
   "student": [
     {
       "id": "1",
-      "name": "John Doe",
-      "email": "M5lVb@example.com"
+      "nama": "John Doe",
+      "email": "M5lVb@example.com",
+      "kelas": "asdawd",
+      "jkl": "L"
     }
   ],
   "schedule": [
@@ -68,14 +72,16 @@
   ],
   "kelas": [
     {
-      "id": "1",
-      "nama_kelas": "X",
-      "jurusan_id": "f89cf88c-77df-42fd-b224-11695b307223"
+      "id": "e8da3e77-667e-4063-8334-478ab0e70259",
+      "nama_kelas": "asdasd",
+      "jurusan": "215d3ff5-ded1-45fe-8c38-3bff8d82a6cc",
+      "wali_kelas": "e08159c3-0fee-4179-a02f-a0cb8a9324f5"
     },
     {
-      "id": "2",
-      "nama_kelas": "XII",
-      "jurusan_id": "f89cf88c-77df-42fd-b224-11695b307223"
+      "id": "62ab9986-32d4-4ced-8602-dff8df912261",
+      "nama_kelas": "sssss",
+      "jurusan": "f89cf88c-77df-42fd-b224-11695b307223",
+      "wali_kelas": "e08159c3-0fee-4179-a02f-a0cb8a9324f5"
     }
   ]
 }

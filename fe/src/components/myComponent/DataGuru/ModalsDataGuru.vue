@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-import { useJurusan } from "@/lib/pinia/jurusan";
 import { useQuery } from "@tanstack/vue-query";
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
@@ -23,25 +22,50 @@ import { computed, watchEffect } from "vue";
 import { v4 as uuidv4 } from "uuid";
 
 import z from "zod";
-import { useEditJurusan, usePostJurusan } from "@/lib/query/jurusan";
+import { useTeacher } from "@/lib/pinia/guru";
+import { useEditTeacher, usePostTeacher } from "@/lib/query/guru";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import type { GuruType } from "@/types/guru";
 const formSchema = toTypedSchema(
   z.object({
-    nama_jurusan: z.string().min(2).max(50),
+    nama: z.string().min(2).max(50),
+    telp: z.string().min(2).max(50),
+    email: z.string().email(),
+    jkl: z.string().min(1).max(50),
   })
 );
-const { handleSubmit, setFieldValue } = useForm({
+const { handleSubmit, setFieldValue, errors } = useForm({
   validationSchema: formSchema,
   validateOnMount: false,
 });
-
-const jurusan = useJurusan();
-const mutation = usePostJurusan();
-const mutationEdit = useEditJurusan();
-const isEditMode = computed(() => !!jurusan.idJurusan);
+const genderOptions = [
+  {
+    value: "L",
+    name: "Laki-laki",
+  },
+  {
+    value: "P",
+    name: "Perempuan",
+  },
+];
+const teacher = useTeacher();
+const mutation = usePostTeacher();
+const mutationEdit = useEditTeacher();
+const isEditMode = computed(() => !!teacher.idTeacher);
 const onSubmit = handleSubmit((values) => {
-  const payload = {
-    id: isEditMode.value ? jurusan.idJurusan : uuidv4(),
-    nama_jurusan: values.nama_jurusan,
+  console.log(values);
+
+  const payload: GuruType = {
+    id: isEditMode.value ? teacher.idTeacher : uuidv4(),
+    ...values,
   };
 
   if (isEditMode.value) {
@@ -49,42 +73,108 @@ const onSubmit = handleSubmit((values) => {
   } else {
     mutation.mutate(payload);
   }
-
-  jurusan.openModalJurusan = false;
+  teacher.openModalTeacher = false;
 });
 const { data, isSuccess } = useQuery({
-  queryKey: ["jurusan-id", jurusan.idJurusan],
-  queryFn: () => jurusan.getJurusanById(jurusan.idJurusan),
+  queryKey: ["teacher-id", teacher.idTeacher],
+  queryFn: () => teacher.getTeacherById(teacher.idTeacher),
   enabled: isEditMode,
 });
-
+const allowedFields = ["nama", "telp", "email", "jkl"] as const;
 watchEffect(() => {
-  if (jurusan.idJurusan && isSuccess.value && data.value?.id) {
-    setFieldValue("nama_jurusan", data.value.nama_jurusan);
+  if (teacher.idTeacher && isSuccess.value && data.value?.id) {
+    allowedFields.forEach((key) => {
+      setFieldValue(key, data.value[key] ?? "");
+    });
   } else {
-    setFieldValue("nama_jurusan", "", false);
+    // reset semua field kecuali id
+    allowedFields.forEach((key) => {
+      setFieldValue(key, "", false);
+    });
   }
 });
 </script>
 
 <template>
-  <Dialog v-model:open="jurusan.openModalJurusan">
+  <Dialog v-model:open="teacher.openModalTeacher">
     <DialogContent class="font-mona">
       <DialogHeader>
         <DialogTitle>{{
-          jurusan.idJurusan ? "Edit Data Jurusan" : "Tambah Data Jurusan"
+          teacher.idTeacher ? "Edit Data teacher" : "Tambah Data teacher"
         }}</DialogTitle>
       </DialogHeader>
       <form id="dialogForm" @submit="onSubmit" class="space-y-4">
-        <FormField v-slot="{ componentField }" name="nama_jurusan">
+        <FormField v-slot="{ componentField }" name="nama">
           <FormItem v-auto-animate>
-            <FormLabel>Nama Jurusan</FormLabel>
+            <FormLabel>Nama Guru</FormLabel>
             <FormControl>
               <Input
                 type="text"
-                placeholder="nama jurusan"
+                placeholder="nama guru"
                 v-bind="componentField"
               />
+            </FormControl>
+
+            <FormMessage />
+          </FormItem>
+        </FormField>
+        <FormField v-slot="{ componentField }" name="email">
+          <FormItem v-auto-animate>
+            <FormLabel>Email</FormLabel>
+            <FormControl>
+              <Input
+                type="email"
+                placeholder="email mu"
+                v-bind="componentField"
+              />
+            </FormControl>
+
+            <FormMessage />
+          </FormItem>
+        </FormField>
+        <FormField v-slot="{ componentField }" name="telp">
+          <FormItem v-auto-animate>
+            <FormLabel>No. Telp</FormLabel>
+            <FormControl>
+              <Input
+                type="text"
+                placeholder="089********"
+                v-bind="componentField"
+              />
+            </FormControl>
+
+            <FormMessage />
+          </FormItem>
+        </FormField>
+        <FormField v-slot="{ componentField }" name="jkl">
+          <FormItem v-auto-animate>
+            <FormLabel>Jenis Kelamin</FormLabel>
+            <FormControl>
+              <Select v-bind="componentField">
+                <SelectTrigger
+                  :class="errors.jkl ? 'border-red-500' : ''"
+                  class="w-full py-2 px-3 bg-white border"
+                >
+                  <SelectValue
+                    placeholder="Pilih Jenis Kelamin"
+                    class="font-mona"
+                  />
+                </SelectTrigger>
+                <SelectContent class="p-3">
+                  <SelectGroup class="font-mona">
+                    <SelectLabel class="font-mona-bold"
+                      >Pilih Jenis Kelamin</SelectLabel
+                    >
+                    <SelectItem
+                      v-for="(value, index) in genderOptions"
+                      :key="index"
+                      :value="value.value"
+                    >
+                      {{ value.name }}
+                    </SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
             </FormControl>
 
             <FormMessage />
@@ -95,7 +185,7 @@ watchEffect(() => {
           <button
             type="button"
             class="cursor-pointer py-2 px-3 bg-slate-200 hover:bg-slate-400 rounded-lg font-mona-bold"
-            @click="jurusan.openModalJurusan = false"
+            @click="teacher.openModalTeacher = false"
           >
             Cancel
           </button>
