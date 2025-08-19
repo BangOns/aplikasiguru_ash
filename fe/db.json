@@ -17,10 +17,15 @@
   ],
   "student": [
     {
-      "id": "1",
-      "nama": "John Doe",
-      "email": "M5lVb@example.com",
-      "kelas": "asdawd",
+      "id": "be706b75-11d2-4cd2-8f0d-f76eb97d3dab",
+      "nama": "roni",
+      "kelas": "62ab9986-32d4-4ced-8602-dff8df912261",
+      "jkl": "L"
+    },
+    {
+      "id": "958ee55f-04a3-456c-8792-85bc2a089548",
+      "nama": "rehan",
+      "kelas": "e8da3e77-667e-4063-8334-478ab0e70259",
       "jkl": "L"
     }
   ],

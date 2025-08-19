@@ -16,6 +16,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useSiswa } from "@/lib/pinia/siswa";
+import { computed } from "vue";
+import { useGetSiswa } from "@/lib/query/siswa";
+import type { StudentType } from "@/types/siswa/data_siswa";
+import type { JurusanType } from "@/types/siswa";
+import { useGetKelas } from "@/lib/query/kelas";
+import type { KelasType } from "@/types/siswa/data_kelas";
+import { useGetJurusan } from "@/lib/query/jurusan";
 const invoices = [
   {
     invoice: "INV001",
@@ -61,13 +68,43 @@ const invoices = [
   },
 ];
 const siswa = useSiswa();
+const { data: get_siswa } = useGetSiswa();
+const { data: get_kelas } = useGetKelas();
+const { data: get_jurusan } = useGetJurusan();
+const filteredSiswa = computed(() => {
+  if (!get_siswa.value) return [];
+
+  const searchTerm = siswa.searchKelas?.toLowerCase() || "";
+  const searchTermKelas = siswa.searchKelas?.toLowerCase() || "";
+
+  return get_siswa.value
+    .map((siswaItem: StudentType) => {
+      const kelas = get_kelas.value?.find(
+        (item: KelasType) => item.id === siswaItem.kelas
+      );
+      const jurusan = get_jurusan.value?.find(
+        (item: JurusanType) => item.id === kelas?.jurusan
+      );
+
+      return {
+        ...siswaItem,
+        kelas: kelas?.nama_kelas || "",
+        jurusan: jurusan?.nama_jurusan || "",
+      };
+    })
+    .filter(
+      (siswaMerged: any) =>
+        siswaMerged.nama.toLowerCase().includes(searchTerm) &&
+        siswaMerged.kelas.toLowerCase().includes(searchTermKelas)
+    );
+});
 </script>
 
 <template>
   <article class="w-full mt-5">
     <section class="w-full flex justify-end">
       <button
-        @click="siswa.openModalsSiswa = true"
+        @click="siswa.openModals"
         class="py-2 px-3 cursor-pointer flex items-center bg-green-800 gap-2 hover:bg-green-900 text-white rounded-lg font-mona-bold border"
       >
         <Vicon name="bi-plus" scale="1.5" />
@@ -92,26 +129,26 @@ const siswa = useSiswa();
       <TableBody class="w-full overflow-y-auto">
         <TableRow
           class="border-none text-center"
-          v-for="(invoice, index) in invoices"
-          :key="invoice.invoice"
+          v-for="(data, index) in filteredSiswa"
+          :key="index"
         >
           <TableCell class="text-left" :colspan="2">
             <div class="flex items-center gap-3">
-              <p>{{ index + 1 }}</p>
+              <p>{{ Number(index) + 1 }}</p>
               <p>
-                {{ invoice.invoice }}
+                {{ data.nama }}
               </p>
             </div>
           </TableCell>
 
           <TableCell>
-            <p>L</p>
+            <p>{{ data.kelas }}</p>
           </TableCell>
           <TableCell>
-            <p>L</p>
+            <p>{{ data.jurusan }}</p>
           </TableCell>
           <TableCell class="font-mona-bold">
-            <p>L</p>
+            <p>{{ data.jkl }}</p>
           </TableCell>
 
           <TableCell class="">
@@ -125,7 +162,7 @@ const siswa = useSiswa();
                 class="font-mona space-y-2"
               >
                 <DropdownMenuItem
-                  @click="siswa.openModalsSiswa = true"
+                  @click="siswa.openModalsWithEdit"
                   class="flex w-full p-2 items-center gap-2 cursor-pointer bg-amber-500 hover:bg-amber-600 text-white"
                 >
                   <Vicon
@@ -136,7 +173,7 @@ const siswa = useSiswa();
                   <p class="pt-1">Edit</p>
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  @click="siswa.openModalsSiswa = true"
+                  @click="siswa.openModals"
                   class="flex w-full p-2 items-center gap-2 cursor-pointer bg-red-500 hover:bg-red-600 text-white"
                 >
                   <Vicon

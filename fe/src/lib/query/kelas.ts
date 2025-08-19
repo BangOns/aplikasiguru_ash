@@ -70,7 +70,7 @@ export const useGetKelasById = (
     Object.fromEntries(get_teacher?.map((t) => [t.id, t]) || [])
   );
   return useQuery({
-    queryKey: ["jurusan-id", idKelas],
+    queryKey: ["kelas-id", idKelas],
     queryFn: () => kelas.getKelasById(idKelas),
     enabled: !!idKelas,
     select: (data) => ({
@@ -84,7 +84,7 @@ export const useGetKelasByIdBiasa = (idKelas: string) => {
   const kelas = useKelas();
 
   return useQuery({
-    queryKey: ["jurusan-id", idKelas],
+    queryKey: ["kelas-id", idKelas],
     queryFn: () => kelas.getKelasById(idKelas),
     enabled: !!idKelas,
   });

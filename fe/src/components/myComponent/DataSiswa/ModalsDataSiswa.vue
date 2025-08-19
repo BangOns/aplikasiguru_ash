@@ -24,47 +24,84 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useSiswa } from "@/lib/pinia/siswa";
+import { useGetJurusan } from "@/lib/query/jurusan";
+import { useGetKelas } from "@/lib/query/kelas";
+import type { JurusanType } from "@/types/siswa";
+import type { KelasType } from "@/types/siswa/data_kelas";
+import type { StudentType } from "@/types/siswa/data_siswa";
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
+import { computed } from "vue";
 import z from "zod";
+import { v4 as uuidv4 } from "uuid";
+import { useEditSiswa, usePostSiswa } from "@/lib/query/siswa";
+
 const siswa = useSiswa();
+const { data: get_kelas } = useGetKelas();
+const { data: get_jurusan } = useGetJurusan();
+
+const labelFormKelasDanJurusan = computed(() => {
+  if (!get_kelas.value || !get_jurusan.value) return [];
+  return get_kelas.value.map((kelas: KelasType) => {
+    const nameJurusan = get_jurusan.value.find(
+      (jurusan: JurusanType) => jurusan.id === kelas.jurusan
+    );
+    return {
+      ...kelas,
+      jurusan: nameJurusan?.nama_jurusan,
+    };
+  });
+});
+
 const formSchema = toTypedSchema(
   z.object({
-    nama_siswa: z.string().min(2).max(50),
+    nama: z.string().min(2).max(50),
     kelas: z.string().min(2).max(50),
-    jurusan: z.string().min(2).max(50),
-    jenis_kelamin: z.string().min(2).max(50),
+    jkl: z.string().min(1).max(50),
   })
 );
 const { handleSubmit, errors } = useForm({
   validationSchema: formSchema,
   validateOnMount: false,
 });
+const mutation = usePostSiswa();
+const mutationEdit = useEditSiswa();
+
+const isEditMode = computed(() => !!siswa.idSiswa);
 
 const onSubmit = handleSubmit((values) => {
-  //   const getDates = scheduleUse.datesSchedule.find(
-  //     (date) => date.dayName === values.day
-  //   );
-  //   const data = {
-  //     id: uuidv4(),
-  //     date: getDates ? String(getDates.fullDate) : "",
-  //     start_time: values.start_time,
-  //     end_time: values.end_time,
-  //     activity: values.activity,
-  //     description: values.description,
-  //     is_active: true,
-  //   };
+  const payload: StudentType = {
+    id: isEditMode.value ? siswa.idSiswa : uuidv4(),
+    ...values,
+  };
+
+  if (isEditMode.value) {
+    mutationEdit.mutate({ data: payload });
+  } else {
+    mutation.mutate(payload);
+  }
+  siswa.openModalSiswa = false;
 });
+const genderOption: { value: string; label: string }[] = [
+  {
+    value: "L",
+    label: "Laki-laki",
+  },
+  {
+    value: "P",
+    label: "Perempuan",
+  },
+];
 </script>
 
 <template>
-  <Dialog v-model:open="siswa.openModalsSiswa">
+  <Dialog v-model:open="siswa.openModalSiswa">
     <DialogContent class="font-mona">
       <DialogHeader>
         <DialogTitle>Tambah Data Siswa</DialogTitle>
       </DialogHeader>
       <form id="dialogForm" @submit="onSubmit" class="space-y-4">
-        <FormField v-slot="{ componentField }" name="nama_siswa">
+        <FormField v-slot="{ componentField }" name="nama">
           <FormItem v-auto-animate>
             <FormLabel>Nama Siswa</FormLabel>
             <FormControl>
@@ -87,17 +124,19 @@ const onSubmit = handleSubmit((values) => {
                   :class="errors.kelas ? 'border-red-500' : ''"
                   class="w-full py-2 px-3 bg-white border"
                 >
-                  <SelectValue placeholder="Select a fruit" class="font-mona" />
+                  <SelectValue placeholder="Pilih Kelas" class="font-mona" />
                 </SelectTrigger>
                 <SelectContent class="p-3">
                   <SelectGroup class="font-mona">
-                    <SelectLabel class="font-mona-bold">Day</SelectLabel>
-                    <SelectItem
-                      v-for="day in [12, 2, 3, 4]"
-                      :key="day"
-                      :value="day"
+                    <SelectLabel class="font-mona-bold"
+                      >Pilih Kelas</SelectLabel
                     >
-                      {{ day }}
+                    <SelectItem
+                      v-for="(data, index) in labelFormKelasDanJurusan as KelasType[]"
+                      :key="index"
+                      :value="data.id"
+                    >
+                      {{ data.nama_kelas }}-{{ data.jurusan }}
                     </SelectItem>
                   </SelectGroup>
                 </SelectContent>
@@ -108,13 +147,13 @@ const onSubmit = handleSubmit((values) => {
           </FormItem>
         </FormField>
 
-        <FormField v-slot="{ componentField }" name="jenis_kelamin">
+        <FormField v-slot="{ componentField }" name="jkl">
           <FormItem v-auto-animate>
             <FormLabel>Jenis Kelamin</FormLabel>
             <FormControl>
               <Select v-bind="componentField">
                 <SelectTrigger
-                  :class="errors.jenis_kelamin ? 'border-red-500' : ''"
+                  :class="errors.jkl ? 'border-red-500' : ''"
                   class="w-full py-2 px-3 bg-white border"
                 >
                   <SelectValue
@@ -124,13 +163,15 @@ const onSubmit = handleSubmit((values) => {
                 </SelectTrigger>
                 <SelectContent class="p-3">
                   <SelectGroup class="font-mona">
-                    <SelectLabel class="font-mona-bold">Day</SelectLabel>
-                    <SelectItem
-                      v-for="day in [12, 2, 3, 4]"
-                      :key="day"
-                      :value="day"
+                    <SelectLabel class="font-mona-bold"
+                      >Pilih Jenis Kelamin</SelectLabel
                     >
-                      {{ day }}
+                    <SelectItem
+                      v-for="(data, index) in genderOption"
+                      :key="index"
+                      :value="data.value"
+                    >
+                      {{ data.label }}
                     </SelectItem>
                   </SelectGroup>
                 </SelectContent>
@@ -144,7 +185,7 @@ const onSubmit = handleSubmit((values) => {
           <button
             type="button"
             class="cursor-pointer py-2 px-3 bg-slate-200 hover:bg-slate-400 rounded-lg font-mona-bold"
-            @click="siswa.openModalsSiswa = false"
+            @click="siswa.openModalSiswa = false"
           >
             Cancel
           </button>
