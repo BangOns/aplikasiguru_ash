@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useSiswa } from "@/lib/pinia/siswa";
-import { computed } from "vue";
+import { computed, watchEffect } from "vue";
 import { useGetSiswa } from "@/lib/query/siswa";
 import type { StudentType } from "@/types/siswa/data_siswa";
 import type { JurusanType } from "@/types/siswa";
@@ -74,8 +74,9 @@ const { data: get_jurusan } = useGetJurusan();
 const filteredSiswa = computed(() => {
   if (!get_siswa.value) return [];
 
-  const searchTerm = siswa.searchKelas?.toLowerCase() || "";
+  const searchTerm = siswa.searchSiswa?.toLowerCase() || "";
   const searchTermKelas = siswa.searchKelas?.toLowerCase() || "";
+  const searchTermJurusan = siswa.searchJurusan?.toLowerCase() || "";
 
   return get_siswa.value
     .map((siswaItem: StudentType) => {
@@ -88,15 +89,20 @@ const filteredSiswa = computed(() => {
 
       return {
         ...siswaItem,
+        nama: siswaItem.nama || "",
         kelas: kelas?.nama_kelas || "",
         jurusan: jurusan?.nama_jurusan || "",
       };
     })
     .filter(
       (siswaMerged: any) =>
-        siswaMerged.nama.toLowerCase().includes(searchTerm) &&
-        siswaMerged.kelas.toLowerCase().includes(searchTermKelas)
+        (siswaMerged.nama || "").toLowerCase().includes(searchTerm) &&
+        (siswaMerged.kelas || "").toLowerCase().includes(searchTermKelas) &&
+        (siswaMerged.jurusan || "").toLowerCase().includes(searchTermJurusan)
     );
+});
+watchEffect(() => {
+  console.log(filteredSiswa.value);
 });
 </script>
 
@@ -162,7 +168,7 @@ const filteredSiswa = computed(() => {
                 class="font-mona space-y-2"
               >
                 <DropdownMenuItem
-                  @click="siswa.openModalsWithEdit"
+                  @click="siswa.openModalsWithEdit(data.id)"
                   class="flex w-full p-2 items-center gap-2 cursor-pointer bg-amber-500 hover:bg-amber-600 text-white"
                 >
                   <Vicon

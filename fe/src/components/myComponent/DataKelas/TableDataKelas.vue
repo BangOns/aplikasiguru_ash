@@ -55,9 +55,13 @@ const filteredKelas = computed(() => {
     })
     .filter(
       (kelasMerged: any) =>
-        kelasMerged.nama_kelas.toLowerCase().includes(searchTerm) &&
-        kelasMerged.jurusanNama.toLowerCase().includes(searchTermJurusan) &&
-        kelasMerged.wali_kelasNama.toLowerCase().includes(searchTermWaliKelas)
+        (kelasMerged.nama_kelas || "").toLowerCase().includes(searchTerm) &&
+        (kelasMerged.jurusanNama || "")
+          .toLowerCase()
+          .includes(searchTermJurusan) &&
+        (kelasMerged.wali_kelasNama || "")
+          .toLowerCase()
+          .includes(searchTermWaliKelas)
     );
 });
 

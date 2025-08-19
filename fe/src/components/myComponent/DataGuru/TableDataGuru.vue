@@ -26,7 +26,7 @@ const filteredTeacher = computed(() => {
   if (!query.data.value) return [];
   const searchTerm = teacher.searchTeacher.toLowerCase();
   return query.data.value.filter((j: GuruType) =>
-    j.nama.toLowerCase().includes(searchTerm)
+    (j.nama || "").toLowerCase().includes(searchTerm)
   );
 });
 

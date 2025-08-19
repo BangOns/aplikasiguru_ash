@@ -3,6 +3,8 @@ import { toast } from "vue-sonner";
 
 import { useSiswa } from "../pinia/siswa";
 import type { StudentType } from "@/types/siswa/data_siswa";
+import { computed } from "vue";
+import type { KelasType } from "@/types/siswa/data_kelas";
 const handleMutationResponse = (data: any) => {
   const isSuccess = data?.status === 200;
   const message = isSuccess ? "Success Post Data" : "Gagal Post Data";
@@ -54,24 +56,23 @@ export const useGetSiswa = () => {
   });
 };
 
-export const useGetgetSiswaById = (
-  // get_kelas: KelasType[]
-  idSiswa: string
-) => {
+export const useGetSiswaById = (get_kelas: KelasType[], idSiswa: string) => {
   const siswa = useSiswa();
   // Konversi ke lookup object
 
-  //   const kelasLookup = computed(() =>
-  //     Object.fromEntries(get_kelas?.map((t) => [t.id, t]) || [])
-  //   );
+  const kelasLookup = computed(() =>
+    Object.fromEntries(get_kelas?.map((t) => [t.id, t]) || [])
+  );
+  console.log(idSiswa);
+
   return useQuery({
     queryKey: ["siswa-id", idSiswa],
     queryFn: () => siswa.getSiswaById(idSiswa),
     enabled: !!idSiswa,
-    // select: (data) => ({
-    //   ...data,
-    //   kelas: kelasLookup.value[data.kelas],
-    // }),
+    select: (data) => ({
+      ...data,
+      kelas: kelasLookup.value[data.kelas],
+    }),
   });
 };
 export const useGetgetSiswaByIdBiasa = (idSiswa: string) => {

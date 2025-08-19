@@ -25,7 +25,7 @@ const filteredJurusan = computed(() => {
   if (!query.data.value) return [];
   const searchTerm = jurusan.searchJurusan.toLowerCase();
   return query.data.value.filter((j: JurusanType) =>
-    j.nama_jurusan.toLowerCase().includes(searchTerm)
+    (j.nama_jurusan || "").toLowerCase().includes(searchTerm)
   );
 });
 const mutationDelete = useDeleteJurusan();

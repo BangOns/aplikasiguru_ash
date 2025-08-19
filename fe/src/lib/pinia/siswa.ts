@@ -9,6 +9,7 @@ export const useSiswa = defineStore("siswa", () => {
   const idSiswa = ref<string>("");
   const searchSiswa = ref<string>("");
   const searchKelas = ref<string>("");
+  const searchJurusan = ref<string>("");
   const openModalsWithEdit = (id: string) => {
     openModalSiswa.value = true;
     idSiswa.value = id;
@@ -88,6 +89,7 @@ export const useSiswa = defineStore("siswa", () => {
     idSiswa,
     searchSiswa,
     searchKelas,
+    searchJurusan,
     setSearchSiswa,
     openModalsWithEdit,
     openModals,

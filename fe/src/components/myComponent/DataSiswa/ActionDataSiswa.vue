@@ -14,9 +14,15 @@ import { onMounted, onUnmounted, ref } from "vue";
 
 import { useSiswa } from "@/lib/pinia/siswa";
 import { Input } from "@/components/ui/input";
+import { useGetKelas } from "@/lib/query/kelas";
+import { useGetJurusan } from "@/lib/query/jurusan";
+import type { KelasType } from "@/types/siswa/data_kelas";
+import type { JurusanType } from "@/types/siswa";
 
 const timeNow = ref(moment().format("LTS"));
 const siswa = useSiswa();
+const { data: get_kelas } = useGetKelas();
+const { data: get_jurusan } = useGetJurusan();
 onMounted(() => {
   const timer = setInterval(() => {
     timeNow.value = moment().format("LTS");
@@ -42,6 +48,7 @@ onMounted(() => {
             type="text"
             class="w-full py-2 px-3 border"
             placeholder="Ketik Nama Siswa"
+            v-model="siswa.searchSiswa"
           />
         </section>
       </article>
@@ -58,11 +65,11 @@ onMounted(() => {
               <SelectGroup class="font-mona">
                 <SelectLabel class="font-mona-bold">Pilih Kelas</SelectLabel>
                 <SelectItem
-                  v-for="day in [12, 2, 3, 4]"
-                  :key="day"
-                  :value="day"
+                  v-for="(data,index) in get_kelas as KelasType[]"
+                  :key="index"
+                  :value="data.nama_kelas"
                 >
-                  {{ day }}
+                  {{ data.nama_kelas }}
                 </SelectItem>
               </SelectGroup>
             </SelectContent>
@@ -82,11 +89,11 @@ onMounted(() => {
               <SelectGroup class="font-mona">
                 <SelectLabel class="font-mona-bold">Pilih Jurusan</SelectLabel>
                 <SelectItem
-                  v-for="day in [12, 2, 3, 4]"
-                  :key="day"
-                  :value="day"
+                  v-for="(data,index) in get_jurusan as JurusanType[]"
+                  :key="index"
+                  :value="data.nama_jurusan"
                 >
-                  {{ day }}
+                  {{ data.nama_jurusan }}
                 </SelectItem>
               </SelectGroup>
             </SelectContent>

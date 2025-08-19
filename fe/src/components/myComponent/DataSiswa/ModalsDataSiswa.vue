@@ -31,14 +31,39 @@ import type { KelasType } from "@/types/siswa/data_kelas";
 import type { StudentType } from "@/types/siswa/data_siswa";
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
-import { computed } from "vue";
+import { computed, watchEffect } from "vue";
 import z from "zod";
 import { v4 as uuidv4 } from "uuid";
-import { useEditSiswa, usePostSiswa } from "@/lib/query/siswa";
+import { useEditSiswa, useGetSiswaById, usePostSiswa } from "@/lib/query/siswa";
 
+const formSchema = toTypedSchema(
+  z.object({
+    nama: z.string().min(2).max(50),
+    kelas: z.string().min(2).max(50),
+    jkl: z.string().min(1).max(50),
+  })
+);
+const { handleSubmit, errors, setFieldValue } = useForm({
+  validationSchema: formSchema,
+  validateOnMount: false,
+});
+
+const genderOption: { value: string; label: string }[] = [
+  {
+    value: "L",
+    label: "Laki-laki",
+  },
+  {
+    value: "P",
+    label: "Perempuan",
+  },
+];
 const siswa = useSiswa();
 const { data: get_kelas } = useGetKelas();
 const { data: get_jurusan } = useGetJurusan();
+const mutation = usePostSiswa();
+const mutationEdit = useEditSiswa();
+const isEditMode = computed(() => !!siswa.idSiswa);
 
 const labelFormKelasDanJurusan = computed(() => {
   if (!get_kelas.value || !get_jurusan.value) return [];
@@ -53,21 +78,10 @@ const labelFormKelasDanJurusan = computed(() => {
   });
 });
 
-const formSchema = toTypedSchema(
-  z.object({
-    nama: z.string().min(2).max(50),
-    kelas: z.string().min(2).max(50),
-    jkl: z.string().min(1).max(50),
-  })
+const { data: dataEditSiswa, isSuccess } = useGetSiswaById(
+  get_kelas.value,
+  siswa.idSiswa
 );
-const { handleSubmit, errors } = useForm({
-  validationSchema: formSchema,
-  validateOnMount: false,
-});
-const mutation = usePostSiswa();
-const mutationEdit = useEditSiswa();
-
-const isEditMode = computed(() => !!siswa.idSiswa);
 
 const onSubmit = handleSubmit((values) => {
   const payload: StudentType = {
@@ -82,23 +96,27 @@ const onSubmit = handleSubmit((values) => {
   }
   siswa.openModalSiswa = false;
 });
-const genderOption: { value: string; label: string }[] = [
-  {
-    value: "L",
-    label: "Laki-laki",
-  },
-  {
-    value: "P",
-    label: "Perempuan",
-  },
-];
+
+watchEffect(() => {
+  if (siswa.idSiswa && isSuccess.value && dataEditSiswa.value?.id) {
+    setFieldValue("nama", dataEditSiswa.value.nama);
+    setFieldValue("kelas", dataEditSiswa.value.kelas.id);
+    setFieldValue("jkl", dataEditSiswa.value.jkl);
+  } else {
+    setFieldValue("nama", "", false);
+    setFieldValue("kelas", "", false);
+    setFieldValue("jkl", "", false);
+  }
+});
 </script>
 
 <template>
   <Dialog v-model:open="siswa.openModalSiswa">
     <DialogContent class="font-mona">
       <DialogHeader>
-        <DialogTitle>Tambah Data Siswa</DialogTitle>
+        <DialogTitle>
+          {{ isEditMode ? "Edit Data Siswa" : "Tambah Data Siswa" }}
+        </DialogTitle>
       </DialogHeader>
       <form id="dialogForm" @submit="onSubmit" class="space-y-4">
         <FormField v-slot="{ componentField }" name="nama">
