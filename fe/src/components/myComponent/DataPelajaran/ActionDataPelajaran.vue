@@ -10,14 +10,14 @@ import {
 } from "@/components/ui/select";
 import Vicon from "../Vicon.vue";
 
-import { useSiswa } from "@/lib/pinia/siswa";
 import { Input } from "@/components/ui/input";
 import { useGetKelas } from "@/lib/query/kelas";
 import { useGetJurusan } from "@/lib/query/jurusan";
 import type { KelasType } from "@/types/siswa/data_kelas";
 import type { JurusanType } from "@/types/siswa";
+import { useLesson } from "@/lib/pinia/pelajaran";
 
-const siswa = useSiswa();
+const lesson = useLesson();
 const { data: get_kelas } = useGetKelas();
 const { data: get_jurusan } = useGetJurusan();
 </script>
@@ -38,7 +38,7 @@ const { data: get_jurusan } = useGetJurusan();
             type="text"
             class="w-full py-2 px-3 border"
             placeholder="Ketik Nama Siswa"
-            v-model="siswa.searchSiswa"
+            v-model="lesson.searchLesson"
           />
         </section>
       </article>
@@ -47,7 +47,7 @@ const { data: get_jurusan } = useGetJurusan();
           <h2 class="font-mona-bold">Kelas</h2>
         </header>
         <section class="w-full">
-          <Select>
+          <Select v-model="lesson.searchKelas">
             <SelectTrigger class="w-full py-2 px-3 border">
               <SelectValue placeholder="Pilih Kelas" class="font-mona" />
             </SelectTrigger>
@@ -71,7 +71,7 @@ const { data: get_jurusan } = useGetJurusan();
           <h2 class="font-mona-bold">Jurusan</h2>
         </header>
         <section class="w-full">
-          <Select>
+          <Select v-model="lesson.searchJurusan">
             <SelectTrigger class="w-full py-2 px-3 border">
               <SelectValue placeholder="Pilih Jurusan" class="font-mona" />
             </SelectTrigger>

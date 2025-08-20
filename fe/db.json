@@ -17,16 +17,10 @@
   ],
   "student": [
     {
-      "id": "be706b75-11d2-4cd2-8f0d-f76eb97d3dab",
-      "nama": "roniss",
-      "kelas": "e8da3e77-667e-4063-8334-478ab0e70259",
-      "jkl": "L"
-    },
-    {
-      "id": "958ee55f-04a3-456c-8792-85bc2a089548",
-      "nama": "rehan",
-      "kelas": "e8da3e77-667e-4063-8334-478ab0e70259",
-      "jkl": "L"
+      "id": "d27b7883-9afc-4262-8747-1b01615e4138",
+      "nama": "asssss",
+      "kelas": "9f4d67f8-de2b-43f0-a210-4927e65b8247",
+      "jkl": "P"
     }
   ],
   "schedule": [
@@ -73,27 +67,37 @@
     {
       "id": "2527f54b-397b-41dd-ae20-545e375c7b61",
       "nama_jurusan": "asdasdasdas"
+    },
+    {
+      "id": "25129098-914c-45a8-8782-4aaf7af8550e",
+      "nama_jurusan": "asdawww"
     }
   ],
   "kelas": [
-    {
-      "id": "e8da3e77-667e-4063-8334-478ab0e70259",
-      "nama_kelas": "asdasd",
-      "jurusan": "215d3ff5-ded1-45fe-8c38-3bff8d82a6cc",
-      "wali_kelas": "e08159c3-0fee-4179-a02f-a0cb8a9324f5"
-    },
     {
       "id": "62ab9986-32d4-4ced-8602-dff8df912261",
       "nama_kelas": "sssss",
       "jurusan": "f89cf88c-77df-42fd-b224-11695b307223",
       "wali_kelas": "e08159c3-0fee-4179-a02f-a0cb8a9324f5"
+    },
+    {
+      "id": "9f4d67f8-de2b-43f0-a210-4927e65b8247",
+      "nama_kelas": "asdasss",
+      "jurusan": "7df47c6f-1796-4d67-ade9-6635357212c6",
+      "wali_kelas": "e08159c3-0fee-4179-a02f-a0cb8a9324f5"
     }
   ],
   "lesson": [
     {
-      "id": "1",
+      "id": "22a720a7-a83a-43e4-9187-b73a2551b4bd",
+      "mapel": "asdasd",
       "kelas": "e8da3e77-667e-4063-8334-478ab0e70259",
+      "teacher": "e08159c3-0fee-4179-a02f-a0cb8a9324f5"
+    },
+    {
+      "id": "fbaedf94-9f99-4a1a-a60e-e72780b672d6",
       "mapel": "Matematika",
+      "kelas": "e8da3e77-667e-4063-8334-478ab0e70259",
       "teacher": "e08159c3-0fee-4179-a02f-a0cb8a9324f5"
     }
   ]

@@ -15,58 +15,58 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useKelas } from "@/lib/pinia/kelas";
-import { useDeleteKelas, useGetKelas } from "@/lib/query/kelas";
+import { useGetKelas } from "@/lib/query/kelas";
 import { computed } from "vue";
-import type { KelasType } from "@/types/siswa/data_kelas";
 import { useGetJurusan } from "@/lib/query/jurusan";
 import { useGetTeacher } from "@/lib/query/guru";
 import type { JurusanType } from "@/types/siswa";
 import type { GuruType } from "@/types/guru";
+import { useLesson } from "@/lib/pinia/pelajaran";
+import { useDeleteLesson, useGetLesson } from "@/lib/query/pelajaran";
+import type { LessonType } from "@/types/lesson";
 
-const kelas = useKelas();
-const query = useGetKelas();
+const lesson = useLesson();
+const query = useGetLesson();
+const { data: get_kelas } = useGetKelas();
 const { data: get_jurusan } = useGetJurusan();
 const { data: get_teacher } = useGetTeacher();
 
-const filteredKelas = computed(() => {
+const filteredLesson = computed(() => {
   if (!query.data.value) return [];
 
-  const searchTerm = kelas.searchKelas.toLowerCase();
-  const searchTermJurusan = kelas.searchJurusan.toLowerCase();
-  const searchTermWaliKelas = kelas.searchWaliKelas.toLowerCase();
+  const searchTerm = lesson.searchLesson.toLowerCase();
+  const searchTermKelas = lesson.searchKelas.toLowerCase();
+  const searchTermJurusan = lesson.searchJurusan.toLowerCase();
 
   return query.data.value
-    .map((kelasItem: KelasType) => {
-      const jurusan = get_jurusan.value?.find(
-        (item: JurusanType) => item.id === kelasItem.jurusan
+    .map((lessonItem: LessonType) => {
+      const kelas = get_kelas.value?.find(
+        (item: GuruType) => item.id === lessonItem.kelas
       );
-      const wali_kelas = get_teacher.value?.find(
-        (item: GuruType) => item.id === kelasItem.wali_kelas
+      const jurusan = get_jurusan.value?.find(
+        (item: JurusanType) => item.id === kelas.jurusan
+      );
+      const teacher = get_teacher.value?.find(
+        (item: JurusanType) => item.id === lessonItem.teacher
       );
 
       return {
-        ...kelasItem,
-        jurusan,
-        wali_kelas,
-        jurusanNama: jurusan?.nama_jurusan,
-        wali_kelasNama: wali_kelas?.nama,
+        ...lessonItem,
+        teacher: teacher?.nama ?? "",
+        kelas: kelas?.nama_kelas ?? "",
+        jurusan: jurusan?.nama_jurusan ?? "",
       };
     })
     .filter(
-      (kelasMerged: any) =>
-        (kelasMerged.nama_kelas || "").toLowerCase().includes(searchTerm) &&
-        (kelasMerged.jurusanNama || "")
-          .toLowerCase()
-          .includes(searchTermJurusan) &&
-        (kelasMerged.wali_kelasNama || "")
-          .toLowerCase()
-          .includes(searchTermWaliKelas)
+      (lessonMerged: any) =>
+        (lessonMerged.mapel || "").toLowerCase().includes(searchTerm) &&
+        (lessonMerged.kelas || "").toLowerCase().includes(searchTermKelas) &&
+        (lessonMerged.jurusan || "").toLowerCase().includes(searchTermJurusan)
     );
 });
 
-const mutationDelete = useDeleteKelas();
-const handleDeleteKelas = (id: string) => {
+const mutationDelete = useDeleteLesson();
+const handleDeleteLesson = (id: string) => {
   if (confirm("Apakah anda yakin ingin menghapus data ini?")) {
     mutationDelete.mutate({ id });
   }
@@ -77,11 +77,11 @@ const handleDeleteKelas = (id: string) => {
   <article class="w-full mt-5">
     <section class="w-full flex justify-end">
       <button
-        @click="kelas.openModals"
+        @click="lesson.openModals"
         class="py-2 px-3 cursor-pointer flex items-center bg-green-800 gap-2 hover:bg-green-900 text-white rounded-lg font-mona-bold border"
       >
         <Vicon name="bi-plus" scale="1.5" />
-        <p>Tambah Data Kelas</p>
+        <p>Tambah Data Pelajaran</p>
       </button>
     </section>
     <!-- Loading State -->
@@ -102,45 +102,53 @@ const handleDeleteKelas = (id: string) => {
 
     <!-- Empty State -->
     <section
-      v-else-if="!query.data.value || query.data.value.length === 0"
+      v-else-if="
+        !query.data.value ||
+        query.data.value.length === 0 ||
+        filteredLesson.length === 0
+      "
       class="w-full h-40 flex items-center justify-center"
     >
       <p>No data available</p>
     </section>
-    <Table class="w-full relative font-mona">
+    <Table v-else class="w-full relative font-mona">
       <TableHeader>
         <TableRow class="border-slate-300 text-center">
           <TableHead class="text-left px-0" :colspan="2">
             <div class="flex items-center gap-1">
               <Vicon name="fa-sort" scale="1" color="black" />
-              <p class="text-black">Nama Kelas</p>
+              <p class="text-black">Nama Pelajaran</p>
             </div>
           </TableHead>
-          <TableHead class="text-black text-center">Wali Kelas</TableHead>
+          <TableHead class="text-black text-center">Kelas</TableHead>
           <TableHead class="text-black text-center">Jurusan</TableHead>
+          <TableHead class="text-black text-center">Guru Pengajar</TableHead>
           <TableHead class="text-black text-center"> </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody class="w-full overflow-y-auto">
         <TableRow
           class="border-none text-center"
-          v-for="(data, index) in filteredKelas"
+          v-for="(data, index) in filteredLesson"
           :key="index"
         >
           <TableCell class="text-left" :colspan="2">
             <div class="flex items-center gap-3">
               <p>{{ Number(index) + 1 }}</p>
               <p>
-                {{ data?.nama_kelas }}
+                {{ data?.mapel }}
               </p>
             </div>
           </TableCell>
 
           <TableCell>
-            <p>{{ data.wali_kelas?.nama }}</p>
+            <p>{{ data.kelas }}</p>
           </TableCell>
           <TableCell>
-            <p>{{ data.jurusan?.nama_jurusan }}</p>
+            <p>{{ data.jurusan }}</p>
+          </TableCell>
+          <TableCell>
+            <p>{{ data.teacher }}</p>
           </TableCell>
 
           <TableCell class="">
@@ -154,7 +162,7 @@ const handleDeleteKelas = (id: string) => {
                 class="font-mona space-y-2"
               >
                 <DropdownMenuItem
-                  @click="kelas.openModalsWithEdit(data.id)"
+                  @click="lesson.openModalsWithEdit(data.id)"
                   class="flex w-full p-2 items-center gap-2 cursor-pointer bg-amber-500 hover:bg-amber-600 text-white"
                 >
                   <Vicon
@@ -165,7 +173,7 @@ const handleDeleteKelas = (id: string) => {
                   <p class="pt-1">Edit</p>
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  @click="() => handleDeleteKelas(data.id)"
+                  @click="() => handleDeleteLesson(data.id)"
                   class="flex w-full p-2 items-center gap-2 cursor-pointer bg-red-500 hover:bg-red-600 text-white"
                 >
                   <Vicon

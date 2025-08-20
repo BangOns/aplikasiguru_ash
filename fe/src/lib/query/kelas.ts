@@ -51,7 +51,7 @@ const handleMutationDeleteResponse = (data: any) => {
 export const useGetKelas = () => {
   const kelas = useKelas();
   return useQuery({
-    queryKey: ["kelas", kelas.searchKelas],
+    queryKey: ["kelas"],
     queryFn: () => kelas.getKelas(),
   });
 };

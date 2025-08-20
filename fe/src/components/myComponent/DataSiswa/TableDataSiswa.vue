@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useSiswa } from "@/lib/pinia/siswa";
 import { computed } from "vue";
-import { useGetSiswa } from "@/lib/query/siswa";
+import { useDeleteSiswa, useGetSiswa } from "@/lib/query/siswa";
 import type { StudentType } from "@/types/siswa/data_siswa";
 import type { JurusanType } from "@/types/siswa";
 import { useGetKelas } from "@/lib/query/kelas";
@@ -58,6 +58,12 @@ const filteredSiswa = computed(() => {
         (siswaMerged.jurusan || "").toLowerCase().includes(searchTermJurusan)
     );
 });
+const mutationDelete = useDeleteSiswa();
+const handleDeleteSiswa = (id: string) => {
+  if (confirm("Apakah anda yakin ingin menghapus data ini?")) {
+    mutationDelete.mutate({ id });
+  }
+};
 </script>
 
 <template>
@@ -133,7 +139,7 @@ const filteredSiswa = computed(() => {
                   <p class="pt-1">Edit</p>
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  @click="siswa.openModals"
+                  @click="() => handleDeleteSiswa(data.id)"
                   class="flex w-full p-2 items-center gap-2 cursor-pointer bg-red-500 hover:bg-red-600 text-white"
                 >
                   <Vicon

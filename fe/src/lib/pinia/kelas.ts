@@ -24,7 +24,6 @@ export const useKelas = defineStore("kelas", () => {
   const getKelas = async () => {
     try {
       const response = await api.get("/kelas");
-
       return response.data;
     } catch (error) {
       throw error;

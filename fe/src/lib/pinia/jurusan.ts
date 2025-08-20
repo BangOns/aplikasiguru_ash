@@ -39,8 +39,6 @@ export const useJurusan = defineStore("jurusan", () => {
 
       return response.data;
     } catch (error) {
-      console.log(error);
-
       return [];
     }
   };

@@ -63,8 +63,6 @@ export const useGetSiswaById = (get_kelas: KelasType[], idSiswa: string) => {
   const kelasLookup = computed(() =>
     Object.fromEntries(get_kelas?.map((t) => [t.id, t]) || [])
   );
-  console.log(idSiswa);
-
   return useQuery({
     queryKey: ["siswa-id", idSiswa],
     queryFn: () => siswa.getSiswaById(idSiswa),

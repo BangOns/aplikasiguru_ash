@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Vicon from "../Vicon.vue";
-import { computed, ref, watch } from "vue";
+import { computed, ref } from "vue";
 import { getWeekDates } from "@/utils/GenerateWeeks";
 import { uesSchedule } from "@/lib/pinia/schedule";
 import moment from "moment";
@@ -33,7 +33,6 @@ const dates = computed(() => {
   scheduleUse.datesSchedule = date;
   return date;
 });
-console.log(dates.value);
 
 const editSchedules = () => {
   scrollToForm();

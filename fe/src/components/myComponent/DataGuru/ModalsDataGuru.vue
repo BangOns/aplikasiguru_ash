@@ -61,8 +61,6 @@ const mutation = usePostTeacher();
 const mutationEdit = useEditTeacher();
 const isEditMode = computed(() => !!teacher.idTeacher);
 const onSubmit = handleSubmit((values) => {
-  console.log(values);
-
   const payload: GuruType = {
     id: isEditMode.value ? teacher.idTeacher : uuidv4(),
     ...values,

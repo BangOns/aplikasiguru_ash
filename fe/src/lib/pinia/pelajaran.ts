@@ -3,7 +3,7 @@ import { ref } from "vue";
 import api from "../axios/config";
 import type { LessonType } from "@/types/lesson";
 
-export const useLesson = defineStore("kelas", () => {
+export const useLesson = defineStore("lesson", () => {
   const openModalLesson = ref<boolean>(false);
   const idLesson = ref<string>("");
   const searchLesson = ref<string>("");
