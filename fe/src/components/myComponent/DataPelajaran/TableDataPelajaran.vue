@@ -43,9 +43,11 @@ const filteredLesson = computed(() => {
       const kelas = get_kelas.value?.find(
         (item: GuruType) => item.id === lessonItem.kelas
       );
-      const jurusan = get_jurusan.value?.find(
-        (item: JurusanType) => item.id === kelas.jurusan
-      );
+      const jurusan = kelas
+        ? get_jurusan.value?.find(
+            (item: JurusanType) => item.id === kelas.jurusan
+          )
+        : [];
       const teacher = get_teacher.value?.find(
         (item: JurusanType) => item.id === lessonItem.teacher
       );

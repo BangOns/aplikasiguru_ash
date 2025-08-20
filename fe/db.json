@@ -18,9 +18,9 @@
   "student": [
     {
       "id": "d27b7883-9afc-4262-8747-1b01615e4138",
-      "nama": "asssss",
+      "nama": "asssss update",
       "kelas": "9f4d67f8-de2b-43f0-a210-4927e65b8247",
-      "jkl": "P"
+      "jkl": "L"
     }
   ],
   "schedule": [
@@ -99,6 +99,22 @@
       "mapel": "Matematika",
       "kelas": "e8da3e77-667e-4063-8334-478ab0e70259",
       "teacher": "e08159c3-0fee-4179-a02f-a0cb8a9324f5"
+    }
+  ],
+  "present": [
+    {
+      "id": "8f006b15-7a98-4040-83f9-8c9884bfd739",
+      "date": "20 Agustus 2025 - 11:30:38 PM",
+      "id_siswa": "d27b7883-9afc-4262-8747-1b01615e4138",
+      "id_lesson": "22a720a7-a83a-43e4-9187-b73a2551b4bd",
+      "status": "HADIR"
+    },
+    {
+      "id": "95e6d6bf-3007-4c6b-afce-c01ae3848e49",
+      "date": "20 Agustus 2025 - 11:30:45 PM",
+      "id_siswa": "d27b7883-9afc-4262-8747-1b01615e4138",
+      "id_lesson": "fbaedf94-9f99-4a1a-a60e-e72780b672d6",
+      "status": "IZIN"
     }
   ]
 }

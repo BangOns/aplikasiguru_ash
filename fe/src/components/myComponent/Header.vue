@@ -57,7 +57,7 @@ onMounted(() => {
         {{ dateIndonesia }} {{ timeNow }}
       </p>
     </section>
-    <section class="hidden md:flex gap-4 items-center">
+    <section class="hidden lg:flex gap-4 items-center">
       <NavigationMenu>
         <NavigationMenuList>
           <!-- <NavigationMenuItem>
@@ -118,7 +118,7 @@ onMounted(() => {
         </NavigationMenuList>
       </NavigationMenu>
     </section>
-    <section class="md:hidden">
+    <section class="lg:hidden">
       <Button variant="ghost" @click="openSheet = !openSheet">
         <Vicon name="hi-menu-alt-3" scale="10" class="cursor-pointer" />
       </Button>

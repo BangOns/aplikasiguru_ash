@@ -11,7 +11,16 @@ import {
 import Vicon from "../Vicon.vue";
 import CardSiswa from "./CardSiswa.vue";
 import moment from "moment";
-import { onMounted, onUnmounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
+import { useGetKelas } from "@/lib/query/kelas";
+import { useGetLesson } from "@/lib/query/pelajaran";
+import { useGetJurusan } from "@/lib/query/jurusan";
+import type { KelasType } from "@/types/siswa/data_kelas";
+import type { JurusanType } from "@/types/siswa";
+import type { LessonType } from "@/types/lesson";
+import { usePresent } from "@/lib/pinia/absensi";
+import { useGetSiswa } from "@/lib/query/siswa";
+import type { StudentType } from "@/types/siswa/data_siswa";
 const date = new Date();
 const options = {
   year: "numeric",
@@ -19,9 +28,31 @@ const options = {
   day: "numeric",
   locale: "id-ID",
 };
-
 const dateIndonesia = date.toLocaleDateString("id-ID", options as any);
 const timeNow = ref(moment().format("LTS"));
+const absensi = usePresent();
+const { data: get_siswa } = useGetSiswa();
+const { data: get_kelas } = useGetKelas();
+const { data: get_mapel } = useGetLesson();
+const { data: get_jurusan } = useGetJurusan();
+const labelFormKelasDanJurusan = computed(() => {
+  if (!get_kelas.value || !get_jurusan.value) return [];
+  return get_kelas.value.map((kelas: KelasType) => {
+    const nameJurusan = get_jurusan.value.find(
+      (jurusan: JurusanType) => jurusan.id === kelas.jurusan
+    );
+    return {
+      ...kelas,
+      jurusan: nameJurusan?.nama_jurusan,
+    };
+  });
+});
+const listSiswa = computed(() => {
+  if (!absensi.searchKelas || !absensi.searchMapel) return [];
+  return get_siswa.value.filter(
+    (siswa: StudentType) => siswa.kelas === absensi.searchKelas
+  );
+});
 
 onMounted(() => {
   const timer = setInterval(() => {
@@ -30,6 +61,7 @@ onMounted(() => {
 
   onUnmounted(() => clearInterval(timer));
 });
+console.log(dateIndonesia);
 </script>
 
 <template>
@@ -49,22 +81,22 @@ onMounted(() => {
       </article>
       <article class="full basis-1/3 space-y-1">
         <header>
-          <h2 class="font-mona-bold">Kelas</h2>
+          <h2 class="font-mona-bold">Kelas & Jurusan</h2>
         </header>
         <section class="w-full">
-          <Select>
+          <Select v-model="absensi.searchKelas">
             <SelectTrigger class="w-full py-2 px-3 bg-slate-100 border">
-              <SelectValue placeholder="Select a fruit" class="font-mona" />
+              <SelectValue placeholder="Pilih kelas" class="font-mona" />
             </SelectTrigger>
             <SelectContent class="p-3">
               <SelectGroup class="font-mona">
-                <SelectLabel class="font-mona-bold">Day</SelectLabel>
+                <SelectLabel class="font-mona-bold">Pilih Kelas</SelectLabel>
                 <SelectItem
-                  v-for="day in [12, 2, 3, 4]"
-                  :key="day"
-                  :value="day"
+                  v-for="(data, index) in labelFormKelasDanJurusan"
+                  :key="index"
+                  :value="data.id"
                 >
-                  {{ day }}
+                  {{ data.nama_kelas }}-{{ data.jurusan }}
                 </SelectItem>
               </SelectGroup>
             </SelectContent>
@@ -76,19 +108,24 @@ onMounted(() => {
           <h2 class="font-mona-bold">Mata Pelajaran</h2>
         </header>
         <section class="w-full">
-          <Select>
+          <Select v-model="absensi.searchMapel">
             <SelectTrigger class="w-full py-2 px-3 bg-slate-100 border">
-              <SelectValue placeholder="Select a fruit" class="font-mona" />
+              <SelectValue
+                placeholder="Pilih Mata Pelajaran"
+                class="font-mona"
+              />
             </SelectTrigger>
             <SelectContent class="p-3">
               <SelectGroup class="font-mona">
-                <SelectLabel class="font-mona-bold">Day</SelectLabel>
-                <SelectItem
-                  v-for="day in [12, 2, 3, 4]"
-                  :key="day"
-                  :value="day"
+                <SelectLabel class="font-mona-bold"
+                  >pilih pelajaran</SelectLabel
                 >
-                  {{ day }}
+                <SelectItem
+                  v-for="(data,index) in get_mapel as LessonType[]"
+                  :key="index"
+                  :value="data.id"
+                >
+                  {{ data.mapel }}
                 </SelectItem>
               </SelectGroup>
             </SelectContent>
@@ -98,6 +135,7 @@ onMounted(() => {
     </section>
   </article>
   <!-- Card data -->
+
   <article class="w-full bg-white p-4 mt-10 rounded-md">
     <header class="w-full flex items-center text-blue-500 gap-2">
       <button
@@ -113,14 +151,30 @@ onMounted(() => {
         Export Excel
       </button>
     </header>
+
     <section class="mt-5 w-full flex flex-wrap gap-5 justify-between">
-      <CardSiswa />
-      <CardSiswa />
-      <CardSiswa />
-      <CardSiswa />
-      <CardSiswa />
-      <CardSiswa />
-      <CardSiswa />
+      <section
+        class="w-full flex justify-center flex-col items-center gap-2"
+        v-if="!absensi.searchKelas || !absensi.searchMapel"
+      >
+        <Vicon name="ri-error-warning-line" scale="1.5" />
+        <p class="font-mona pt-1 text-lg">
+          Silahkan Pilih Kelas dan Mata Pelajaran
+        </p>
+      </section>
+      <section
+        class="w-full flex justify-center flex-col items-center gap-2"
+        v-else-if="!listSiswa.length"
+      >
+        <Vicon name="ri-error-warning-line" scale="1.5" />
+        <p class="font-mona pt-1 text-lg">Data Kosong</p>
+      </section>
+      <template v-else v-for="value in listSiswa" :key="value.id">
+        <CardSiswa
+          :props="value"
+          :date="(dateIndonesia as string) + ' - ' + (timeNow as string)"
+        />
+      </template>
     </section>
   </article>
 </template>
