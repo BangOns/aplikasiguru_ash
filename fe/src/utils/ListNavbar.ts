@@ -29,6 +29,11 @@ export const ListNav = [
         link: "data_jurusan",
       },
       {
+        name: "Data Pelajaran",
+        icon: "gi-book-pile",
+        link: "data_lesson",
+      },
+      {
         name: "Absensi Siswa",
         icon: "bi-calendar-check-fill",
         link: "absensi",

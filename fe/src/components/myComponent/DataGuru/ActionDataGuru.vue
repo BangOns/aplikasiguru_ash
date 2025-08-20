@@ -1,29 +1,9 @@
 <script setup lang="ts">
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import Vicon from "../Vicon.vue";
-import moment from "moment";
-import { onMounted, onUnmounted, ref } from "vue";
-
 import { Input } from "@/components/ui/input";
 import { useTeacher } from "@/lib/pinia/guru";
 
 const teacher = useTeacher();
-// const timeNow = ref(moment().format("LTS"));
-// onMounted(() => {
-//   const timer = setInterval(() => {
-//     timeNow.value = moment().format("LTS");
-//   }, 1000);
-
-//   onUnmounted(() => clearInterval(timer));
-// });
 </script>
 
 <template>
@@ -42,6 +22,7 @@ const teacher = useTeacher();
             type="text"
             class="w-full py-2 px-3 border"
             placeholder="Ketik Nama Guru"
+            v-model="teacher.searchTeacher"
           />
         </section>
       </article>

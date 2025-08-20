@@ -15,61 +15,97 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useSiswa } from "@/lib/pinia/siswa";
+import { useKelas } from "@/lib/pinia/kelas";
+import { useDeleteKelas, useGetKelas } from "@/lib/query/kelas";
 import { computed } from "vue";
-import { useGetSiswa } from "@/lib/query/siswa";
-import type { StudentType } from "@/types/siswa/data_siswa";
-import type { JurusanType } from "@/types/siswa";
-import { useGetKelas } from "@/lib/query/kelas";
 import type { KelasType } from "@/types/siswa/data_kelas";
 import { useGetJurusan } from "@/lib/query/jurusan";
+import { useGetTeacher } from "@/lib/query/guru";
+import type { JurusanType } from "@/types/siswa";
+import type { GuruType } from "@/types/guru";
 
-const siswa = useSiswa();
-const { data: get_siswa } = useGetSiswa();
-const { data: get_kelas } = useGetKelas();
+const kelas = useKelas();
+const query = useGetKelas();
 const { data: get_jurusan } = useGetJurusan();
-const filteredSiswa = computed(() => {
-  if (!get_siswa.value) return [];
+const { data: get_teacher } = useGetTeacher();
 
-  const searchTerm = siswa.searchSiswa?.toLowerCase() || "";
-  const searchTermKelas = siswa.searchKelas?.toLowerCase() || "";
-  const searchTermJurusan = siswa.searchJurusan?.toLowerCase() || "";
+const filteredKelas = computed(() => {
+  if (!query.data.value) return [];
 
-  return get_siswa.value
-    .map((siswaItem: StudentType) => {
-      const kelas = get_kelas.value?.find(
-        (item: KelasType) => item.id === siswaItem.kelas
-      );
+  const searchTerm = kelas.searchKelas.toLowerCase();
+  const searchTermJurusan = kelas.searchJurusan.toLowerCase();
+  const searchTermWaliKelas = kelas.searchWaliKelas.toLowerCase();
+
+  return query.data.value
+    .map((kelasItem: KelasType) => {
       const jurusan = get_jurusan.value?.find(
-        (item: JurusanType) => item.id === kelas?.jurusan
+        (item: JurusanType) => item.id === kelasItem.jurusan
+      );
+      const wali_kelas = get_teacher.value?.find(
+        (item: GuruType) => item.id === kelasItem.wali_kelas
       );
 
       return {
-        ...siswaItem,
-        nama: siswaItem.nama || "",
-        kelas: kelas?.nama_kelas || "",
-        jurusan: jurusan?.nama_jurusan || "",
+        ...kelasItem,
+        jurusan,
+        wali_kelas,
+        jurusanNama: jurusan?.nama_jurusan,
+        wali_kelasNama: wali_kelas?.nama,
       };
     })
     .filter(
-      (siswaMerged: any) =>
-        (siswaMerged.kelas || "").toLowerCase().includes(searchTermKelas) &&
-        (siswaMerged.nama || "").toLowerCase().includes(searchTerm) &&
-        (siswaMerged.jurusan || "").toLowerCase().includes(searchTermJurusan)
+      (kelasMerged: any) =>
+        (kelasMerged.nama_kelas || "").toLowerCase().includes(searchTerm) &&
+        (kelasMerged.jurusanNama || "")
+          .toLowerCase()
+          .includes(searchTermJurusan) &&
+        (kelasMerged.wali_kelasNama || "")
+          .toLowerCase()
+          .includes(searchTermWaliKelas)
     );
 });
+
+const mutationDelete = useDeleteKelas();
+const handleDeleteKelas = (id: string) => {
+  if (confirm("Apakah anda yakin ingin menghapus data ini?")) {
+    mutationDelete.mutate({ id });
+  }
+};
 </script>
 
 <template>
   <article class="w-full mt-5">
     <section class="w-full flex justify-end">
       <button
-        @click="siswa.openModals"
+        @click="kelas.openModals"
         class="py-2 px-3 cursor-pointer flex items-center bg-green-800 gap-2 hover:bg-green-900 text-white rounded-lg font-mona-bold border"
       >
         <Vicon name="bi-plus" scale="1.5" />
-        <p>Tambah Data Siswa</p>
+        <p>Tambah Data Kelas</p>
       </button>
+    </section>
+    <!-- Loading State -->
+    <section
+      v-if="query.isPending.value"
+      class="w-full h-40 flex items-center justify-center"
+    >
+      <p>Loading...</p>
+    </section>
+
+    <!-- Error State -->
+    <section
+      v-else-if="query.isError.value"
+      class="w-full h-40 flex items-center justify-center"
+    >
+      <p>Error: {{ query.error }}</p>
+    </section>
+
+    <!-- Empty State -->
+    <section
+      v-else-if="!query.data.value || query.data.value.length === 0"
+      class="w-full h-40 flex items-center justify-center"
+    >
+      <p>No data available</p>
     </section>
     <Table class="w-full relative font-mona">
       <TableHeader>
@@ -77,38 +113,34 @@ const filteredSiswa = computed(() => {
           <TableHead class="text-left px-0" :colspan="2">
             <div class="flex items-center gap-1">
               <Vicon name="fa-sort" scale="1" color="black" />
-              <p class="text-black">Siswa</p>
+              <p class="text-black">Nama Kelas</p>
             </div>
           </TableHead>
-          <TableHead class="text-black text-center">Kelas</TableHead>
+          <TableHead class="text-black text-center">Wali Kelas</TableHead>
           <TableHead class="text-black text-center">Jurusan</TableHead>
-          <TableHead class="text-black text-center"> Jenis Kelamin</TableHead>
           <TableHead class="text-black text-center"> </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody class="w-full overflow-y-auto">
         <TableRow
           class="border-none text-center"
-          v-for="(data, index) in filteredSiswa"
+          v-for="(data, index) in filteredKelas"
           :key="index"
         >
           <TableCell class="text-left" :colspan="2">
             <div class="flex items-center gap-3">
               <p>{{ Number(index) + 1 }}</p>
               <p>
-                {{ data.nama }}
+                {{ data?.nama_kelas }}
               </p>
             </div>
           </TableCell>
 
           <TableCell>
-            <p>{{ data.kelas }}</p>
+            <p>{{ data.wali_kelas?.nama }}</p>
           </TableCell>
           <TableCell>
-            <p>{{ data.jurusan }}</p>
-          </TableCell>
-          <TableCell class="font-mona-bold">
-            <p>{{ data.jkl }}</p>
+            <p>{{ data.jurusan?.nama_jurusan }}</p>
           </TableCell>
 
           <TableCell class="">
@@ -122,7 +154,7 @@ const filteredSiswa = computed(() => {
                 class="font-mona space-y-2"
               >
                 <DropdownMenuItem
-                  @click="siswa.openModalsWithEdit(data.id)"
+                  @click="kelas.openModalsWithEdit(data.id)"
                   class="flex w-full p-2 items-center gap-2 cursor-pointer bg-amber-500 hover:bg-amber-600 text-white"
                 >
                   <Vicon
@@ -133,7 +165,7 @@ const filteredSiswa = computed(() => {
                   <p class="pt-1">Edit</p>
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  @click="siswa.openModals"
+                  @click="() => handleDeleteKelas(data.id)"
                   class="flex w-full p-2 items-center gap-2 cursor-pointer bg-red-500 hover:bg-red-600 text-white"
                 >
                   <Vicon

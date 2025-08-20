@@ -1,20 +1,10 @@
 <script setup lang="ts">
 import Vicon from "../Vicon.vue";
-import moment from "moment";
-import { onMounted, onUnmounted, ref } from "vue";
 
 import { Input } from "@/components/ui/input";
 import { useJurusan } from "@/lib/pinia/jurusan";
 
 const jurusan = useJurusan();
-const timeNow = ref(moment().format("LTS"));
-onMounted(() => {
-  const timer = setInterval(() => {
-    timeNow.value = moment().format("LTS");
-  }, 1000);
-
-  onUnmounted(() => clearInterval(timer));
-});
 </script>
 
 <template>

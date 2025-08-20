@@ -9,8 +9,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Vicon from "../Vicon.vue";
-import moment from "moment";
-import { onMounted, onUnmounted, ref } from "vue";
 
 import { useSiswa } from "@/lib/pinia/siswa";
 import { Input } from "@/components/ui/input";
@@ -19,17 +17,9 @@ import { useGetJurusan } from "@/lib/query/jurusan";
 import type { KelasType } from "@/types/siswa/data_kelas";
 import type { JurusanType } from "@/types/siswa";
 
-const timeNow = ref(moment().format("LTS"));
 const siswa = useSiswa();
 const { data: get_kelas } = useGetKelas();
 const { data: get_jurusan } = useGetJurusan();
-onMounted(() => {
-  const timer = setInterval(() => {
-    timeNow.value = moment().format("LTS");
-  }, 1000);
-
-  onUnmounted(() => clearInterval(timer));
-});
 </script>
 
 <template>
@@ -57,7 +47,7 @@ onMounted(() => {
           <h2 class="font-mona-bold">Kelas</h2>
         </header>
         <section class="w-full">
-          <Select>
+          <Select v-model="siswa.searchKelas">
             <SelectTrigger class="w-full py-2 px-3 border">
               <SelectValue placeholder="Pilih Kelas" class="font-mona" />
             </SelectTrigger>
@@ -81,7 +71,7 @@ onMounted(() => {
           <h2 class="font-mona-bold">Jurusan</h2>
         </header>
         <section class="w-full">
-          <Select>
+          <Select v-model="siswa.searchJurusan">
             <SelectTrigger class="w-full py-2 px-3 border">
               <SelectValue placeholder="Pilih Jurusan" class="font-mona" />
             </SelectTrigger>

@@ -88,5 +88,13 @@
       "jurusan": "f89cf88c-77df-42fd-b224-11695b307223",
       "wali_kelas": "e08159c3-0fee-4179-a02f-a0cb8a9324f5"
     }
+  ],
+  "lesson": [
+    {
+      "id": "1",
+      "kelas": "e8da3e77-667e-4063-8334-478ab0e70259",
+      "mapel": "Matematika",
+      "teacher": "e08159c3-0fee-4179-a02f-a0cb8a9324f5"
+    }
   ]
 }
