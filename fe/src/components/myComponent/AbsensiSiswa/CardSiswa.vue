@@ -10,24 +10,26 @@ import {
 import type { AbsensiType, StatusAbsensi } from "@/types/absensi";
 import { v4 as uuidv4 } from "uuid";
 import { ref, watchEffect } from "vue";
+import moment from "moment";
 
-const { props, date } = defineProps<{ props: StudentType; date: string }>();
+const { props } = defineProps<{ props: StudentType }>();
 const absensi = usePresent();
 const mutationPost = usePostAbsensi();
 const mutationEdit = useEditAbsensi();
 const { data: get_absensi } = useGetAbsensi();
 const StatusNow = ref<string>();
+const dateNow = moment().format("YYYY-MM-DD");
 
 const handlePostAbsensi = (status: StatusAbsensi) => {
   const isEditMode = get_absensi.value?.find(
     (item: AbsensiType) =>
       item.id_siswa === props.id &&
       item.id_lesson === absensi.searchMapel &&
-      item.date.split("-")[0].trim() === date.split("-")[0].trim()
+      item.date === dateNow
   );
   const data: AbsensiType = {
     id: isEditMode ? isEditMode.id : uuidv4(),
-    date: date,
+    date: dateNow,
     id_siswa: props.id,
     id_kelas: absensi.searchKelas,
     id_lesson: absensi.searchMapel,
@@ -45,7 +47,7 @@ watchEffect(() => {
     (item: AbsensiType) =>
       item.id_siswa === props.id &&
       item.id_lesson === absensi.searchMapel &&
-      item.date.split("-")[0].trim() === date.split("-")[0].trim()
+      item.date === dateNow
   )?.status;
 });
 </script>

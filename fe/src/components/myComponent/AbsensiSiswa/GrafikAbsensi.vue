@@ -1,35 +1,28 @@
 <script setup lang="ts">
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import Vicon from "../Vicon.vue";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "vue-chartjs";
-import * as chartConfig from "../../../lib/chartConfig";
+import { options } from "../../../lib/chartConfig";
 import { usePresent } from "@/lib/pinia/absensi";
-import { computed, ref, watchEffect } from "vue";
+import { reactive, ref, watchEffect } from "vue";
 import { useGetAbsensi } from "@/lib/query/absensi";
-import type { AbsensiType } from "@/types/absensi";
+import { useGetSiswa } from "@/lib/query/siswa";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
-const chartdata = chartConfig;
 const absensi = usePresent();
 const { data: get_absensi } = useGetAbsensi();
-const SumHadir = computed(() => {
-  if (!get_absensi.value) return 0;
-  return get_absensi.value.filter(
-    (item: AbsensiType) =>
-      item.status === "HADIR" &&
-      item.id_kelas === absensi.searchKelas &&
-      item.id_lesson === absensi.searchMapel &&
-      item.date.split("-")[0].trim() === absensi.DateIndonesia
-  ).length;
+const { data: get_siswa } = useGetSiswa();
+const chartConfig = reactive({
+  data: {
+    labels: ["Hadir", "Sakit", "Izin", "Alpa"],
+    datasets: [
+      {
+        label: "Status Absensi",
+        data: [0, 0, 0, 0],
+        backgroundColor: ["#4ade80", "#f87171", "#60a5fa", "#fbbf24"],
+      },
+    ],
+  },
 });
 const StatusAbsensi = ref({
   SumHadir: 0,
@@ -38,9 +31,35 @@ const StatusAbsensi = ref({
   SumAlpa: 0,
 });
 
+const StatusAbsensiHarian = ref<{ dayName: string; statuses: string[] }[]>([]);
+const getPercent = (statuses: string[] | undefined) => {
+  const total = get_siswa.value?.length ?? 1;
+  return ((statuses?.length ?? 0) / total) * 100;
+};
+
 watchEffect(() => {
   if (!get_absensi.value) return;
   StatusAbsensi.value = absensi.StatusAbsensi(get_absensi.value);
+  const absensiWeeks = absensi.StatusAbsensiMingguan(
+    get_absensi.value,
+    absensi.searchKelas,
+    absensi.searchMapel
+  );
+  StatusAbsensiHarian.value = absensiWeeks.groupDayAbsensi;
+  chartConfig.data = {
+    ...chartConfig.data,
+    datasets: [
+      {
+        ...chartConfig.data.datasets[0],
+        data: [
+          absensiWeeks.statusSummary.HADIR,
+          absensiWeeks.statusSummary.SAKIT,
+          absensiWeeks.statusSummary.IZIN,
+          absensiWeeks.statusSummary.ALPA,
+        ],
+      },
+    ],
+  };
 });
 </script>
 
@@ -79,9 +98,9 @@ watchEffect(() => {
         <header class="flex gap-2 items-center justify-between">
           <section class="flex gap-2 items-center">
             <Vicon name="bi-graph-up-arrow" scale="1" />
-            <h2 class="font-mona-bold pt-1">Grafik Absensi</h2>
+            <h2 class="font-mona-bold pt-1">Grafik Absensi Minggu ini</h2>
           </section>
-          <section>
+          <!-- <section>
             <Select>
               <SelectTrigger class="w-full py-2 px-3 bg-slate-100 border">
                 <SelectValue placeholder="Tahun ini" class="font-mona" />
@@ -99,10 +118,10 @@ watchEffect(() => {
                 </SelectGroup>
               </SelectContent>
             </Select>
-          </section>
+          </section> -->
         </header>
-        <article>
-          <Doughnut :data="chartConfig.data" :options="chartdata.options" />
+        <article class="mt-5 w-full">
+          <Doughnut :data="chartConfig.data" :options="options" />
         </article>
       </section>
       <section
@@ -116,67 +135,24 @@ watchEffect(() => {
           </h2>
         </header>
         <article class="mt-5 space-y-2 w-full">
-          <section class="flex justify-between items-center">
-            <h1 class="text-lg font-mona-bold">Senin</h1>
+          <section
+            v-for="(value, index) in StatusAbsensiHarian"
+            :key="index"
+            class="flex justify-between items-center"
+          >
+            <h1 class="text-lg font-mona-bold">{{ value.dayName }}</h1>
             <section class="flex gap-2 items-center">
               <div class="w-40 h-2 bg-slate-500 rounded-full">
-                <div class="w-[20%] rounded-full h-full bg-green-400"></div>
+                <div
+                  class="rounded-full h-full bg-green-400"
+                  :style="{
+                    width: getPercent(value.statuses).toFixed(1) + '%',
+                  }"
+                ></div>
               </div>
-              <h1 class="text-lg font-mona-bold">20%</h1>
-            </section>
-          </section>
-          <section class="flex justify-between items-center">
-            <h1 class="text-lg font-mona-bold">Senin</h1>
-            <section class="flex gap-2 items-center">
-              <div class="w-40 h-2 bg-slate-500 rounded-full">
-                <div class="w-[20%] rounded-full h-full bg-green-400"></div>
-              </div>
-              <h1 class="text-lg font-mona-bold">20%</h1>
-            </section>
-          </section>
-          <section class="flex justify-between items-center">
-            <h1 class="text-lg font-mona-bold">Senin</h1>
-            <section class="flex gap-2 items-center">
-              <div class="w-40 h-2 bg-slate-500 rounded-full">
-                <div class="w-[20%] rounded-full h-full bg-green-400"></div>
-              </div>
-              <h1 class="text-lg font-mona-bold">20%</h1>
-            </section>
-          </section>
-          <section class="flex justify-between items-center">
-            <h1 class="text-lg font-mona-bold">Senin</h1>
-            <section class="flex gap-2 items-center">
-              <div class="w-40 h-2 bg-slate-500 rounded-full">
-                <div class="w-[20%] rounded-full h-full bg-green-400"></div>
-              </div>
-              <h1 class="text-lg font-mona-bold">20%</h1>
-            </section>
-          </section>
-          <section class="flex justify-between items-center">
-            <h1 class="text-lg font-mona-bold">Senin</h1>
-            <section class="flex gap-2 items-center">
-              <div class="w-40 h-2 bg-slate-500 rounded-full">
-                <div class="w-[20%] rounded-full h-full bg-green-400"></div>
-              </div>
-              <h1 class="text-lg font-mona-bold">20%</h1>
-            </section>
-          </section>
-          <section class="flex justify-between items-center">
-            <h1 class="text-lg font-mona-bold">Senin</h1>
-            <section class="flex gap-2 items-center">
-              <div class="w-40 h-2 bg-slate-500 rounded-full">
-                <div class="w-[20%] rounded-full h-full bg-green-400"></div>
-              </div>
-              <h1 class="text-lg font-mona-bold">20%</h1>
-            </section>
-          </section>
-          <section class="flex justify-between items-center">
-            <h1 class="text-lg font-mona-bold">Senin</h1>
-            <section class="flex gap-2 items-center">
-              <div class="w-40 h-2 bg-slate-500 rounded-full">
-                <div class="w-[20%] rounded-full h-full bg-green-400"></div>
-              </div>
-              <h1 class="text-lg font-mona-bold">20%</h1>
+              <h1 class="text-lg font-mona-bold">
+                {{ getPercent(value.statuses).toFixed(1) }}%
+              </h1>
             </section>
           </section>
         </article>
