@@ -64,3 +64,14 @@ export const usePostAbsensi = () => {
     },
   });
 };
+export const useEditAbsensi = () => {
+  const queryClient = useQueryClient();
+  const absensi = usePresent();
+  return useMutation({
+    mutationFn: absensi.editAbsensi,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["absensi"] });
+      handleMutationEditResponse(data);
+    },
+  });
+};

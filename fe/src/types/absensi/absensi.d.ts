@@ -3,6 +3,7 @@ export type AbsensiType = {
   id: string;
   date: string;
   id_siswa: string;
+  id_kelas: string;
   id_lesson: string;
   status: StatusAbsensi;
 };

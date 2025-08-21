@@ -61,7 +61,6 @@ onMounted(() => {
 
   onUnmounted(() => clearInterval(timer));
 });
-console.log(dateIndonesia);
 </script>
 
 <template>

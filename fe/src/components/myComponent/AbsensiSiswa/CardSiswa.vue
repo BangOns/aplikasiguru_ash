@@ -2,7 +2,11 @@
 import type { StudentType } from "@/types/siswa/data_siswa";
 import Vicon from "../Vicon.vue";
 import { usePresent } from "@/lib/pinia/absensi";
-import { useGetAbsensi, usePostAbsensi } from "@/lib/query/absensi";
+import {
+  useEditAbsensi,
+  useGetAbsensi,
+  usePostAbsensi,
+} from "@/lib/query/absensi";
 import type { AbsensiType, StatusAbsensi } from "@/types/absensi";
 import { v4 as uuidv4 } from "uuid";
 import { ref, watchEffect } from "vue";
@@ -10,26 +14,38 @@ import { ref, watchEffect } from "vue";
 const { props, date } = defineProps<{ props: StudentType; date: string }>();
 const absensi = usePresent();
 const mutationPost = usePostAbsensi();
+const mutationEdit = useEditAbsensi();
 const { data: get_absensi } = useGetAbsensi();
 const StatusNow = ref<string>();
+
 const handlePostAbsensi = (status: StatusAbsensi) => {
   const isEditMode = get_absensi.value?.find(
     (item: AbsensiType) =>
-      item.id_siswa === props.id && item.id_lesson === absensi.searchMapel
+      item.id_siswa === props.id &&
+      item.id_lesson === absensi.searchMapel &&
+      item.date.split("-")[0].trim() === date.split("-")[0].trim()
   );
   const data: AbsensiType = {
     id: isEditMode ? isEditMode.id : uuidv4(),
     date: date,
     id_siswa: props.id,
+    id_kelas: absensi.searchKelas,
     id_lesson: absensi.searchMapel,
     status: status,
   };
-  mutationPost.mutate(data);
+
+  if (isEditMode) {
+    mutationEdit.mutate(data);
+  } else {
+    mutationPost.mutate(data);
+  }
 };
 watchEffect(() => {
   StatusNow.value = get_absensi.value?.find(
     (item: AbsensiType) =>
-      item.id_siswa === props.id && item.id_lesson === absensi.searchMapel
+      item.id_siswa === props.id &&
+      item.id_lesson === absensi.searchMapel &&
+      item.date.split("-")[0].trim() === date.split("-")[0].trim()
   )?.status;
 });
 </script>

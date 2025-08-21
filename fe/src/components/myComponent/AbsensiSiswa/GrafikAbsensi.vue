@@ -12,9 +12,36 @@ import Vicon from "../Vicon.vue";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "vue-chartjs";
 import * as chartConfig from "../../../lib/chartConfig";
+import { usePresent } from "@/lib/pinia/absensi";
+import { computed, ref, watchEffect } from "vue";
+import { useGetAbsensi } from "@/lib/query/absensi";
+import type { AbsensiType } from "@/types/absensi";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 const chartdata = chartConfig;
+const absensi = usePresent();
+const { data: get_absensi } = useGetAbsensi();
+const SumHadir = computed(() => {
+  if (!get_absensi.value) return 0;
+  return get_absensi.value.filter(
+    (item: AbsensiType) =>
+      item.status === "HADIR" &&
+      item.id_kelas === absensi.searchKelas &&
+      item.id_lesson === absensi.searchMapel &&
+      item.date.split("-")[0].trim() === absensi.DateIndonesia
+  ).length;
+});
+const StatusAbsensi = ref({
+  SumHadir: 0,
+  SumSakit: 0,
+  SumIzin: 0,
+  SumAlpa: 0,
+});
+
+watchEffect(() => {
+  if (!get_absensi.value) return;
+  StatusAbsensi.value = absensi.StatusAbsensi(get_absensi.value);
+});
 </script>
 
 <template>
@@ -23,26 +50,26 @@ const chartdata = chartConfig;
       <article
         class="w-full basis-1/4 p-4 text-center bg-slate-500 text-white rounded-2xl"
       >
-        <h2 class="font-mona-bold md:text-2xl">52</h2>
+        <h2 class="font-mona-bold md:text-2xl">{{ StatusAbsensi.SumHadir }}</h2>
         <p class="font-mona">Hadir</p>
       </article>
       <article
         class="w-full basis-1/4 p-4 text-center bg-slate-500 text-white rounded-2xl"
       >
-        <h2 class="font-mona-bold md:text-2xl">52</h2>
-        <p class="font-mona">Hadir</p>
+        <h2 class="font-mona-bold md:text-2xl">{{ StatusAbsensi.SumSakit }}</h2>
+        <p class="font-mona">Sakit</p>
       </article>
       <article
         class="w-full basis-1/4 p-4 text-center bg-slate-500 text-white rounded-2xl"
       >
-        <h2 class="font-mona-bold md:text-2xl">52</h2>
-        <p class="font-mona">Hadir</p>
+        <h2 class="font-mona-bold md:text-2xl">{{ StatusAbsensi.SumIzin }}</h2>
+        <p class="font-mona">Izin</p>
       </article>
       <article
         class="w-full basis-1/4 p-4 text-center bg-slate-500 text-white rounded-2xl"
       >
-        <h2 class="font-mona-bold md:text-2xl">52</h2>
-        <p class="font-mona">Hadir</p>
+        <h2 class="font-mona-bold md:text-2xl">{{ StatusAbsensi.SumAlpa }}</h2>
+        <p class="font-mona">Alpa</p>
       </article>
     </section>
     <section class="flex justify-between max-lg:flex-col gap-5 mt-5">
