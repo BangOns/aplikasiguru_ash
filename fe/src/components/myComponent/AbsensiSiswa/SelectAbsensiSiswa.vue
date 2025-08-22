@@ -33,8 +33,8 @@ const timeNow = ref(moment().format("LTS"));
 const absensi = usePresent();
 const { data: get_siswa } = useGetSiswa();
 const { data: get_kelas } = useGetKelas();
-const { data: get_mapel } = useGetLesson();
 const { data: get_jurusan } = useGetJurusan();
+const { data: get_mapel } = useGetLesson();
 const labelFormKelasDanJurusan = computed(() => {
   if (!get_kelas.value || !get_jurusan.value) return [];
   return get_kelas.value.map((kelas: KelasType) => {

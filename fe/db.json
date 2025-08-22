@@ -178,5 +178,17 @@
       "id_lesson": "22a720a7-a83a-43e4-9187-b73a2551b4bd",
       "status": "HADIR"
     }
+  ],
+  "nilai_siswa": [
+    {
+      "id": "1",
+      "id_siswa": "d27b7883-9afc-4262-8747-1b01615e4138",
+      "id_kelas": "9f4d67f8-de2b-43f0-a210-4927e65b8247",
+      "id_lesson": "fbaedf94-9f99-4a1a-a60e-e72780b672d6",
+      "tugas": 80,
+      "uts": 90,
+      "uas": 85,
+      "rata_rata": 85
+    }
   ]
 }

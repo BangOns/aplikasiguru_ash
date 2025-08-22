@@ -93,7 +93,6 @@ export const usePresent = defineStore("present", () => {
     searchMapel: string
   ) => {
     const WeeksDates = getWeekDates(0);
-    const dateNow = moment().format("YYYY-MM-DD");
 
     const groupWeeksAbsensi = WeeksDates.reduce(
       (acc: Record<string, string[]>, week: DateType) => {

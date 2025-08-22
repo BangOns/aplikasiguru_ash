@@ -18,15 +18,18 @@ import {
 } from "@/components/ui/table";
 import Vicon from "../Vicon.vue";
 import { Badge } from "@/components/ui/badge";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 import { Input } from "@/components/ui/input";
+import { computed, watchEffect } from "vue";
+import { useGetKelas } from "@/lib/query/kelas";
+import { useGetJurusan } from "@/lib/query/jurusan";
+import type { KelasType } from "@/types/siswa/data_kelas";
+import type { JurusanType } from "@/types/siswa";
+import type { LessonType } from "@/types/lesson";
+import { useGetLesson } from "@/lib/query/pelajaran";
+import { usePenilaian } from "@/lib/pinia/penilaian";
+import { useGetSiswa } from "@/lib/query/siswa";
+import type { StudentType } from "@/types/siswa/data_siswa";
 const invoices = [
   {
     invoice: "INV001",
@@ -71,42 +74,24 @@ const invoices = [
     paymentMethod: "Credit Card",
   },
 ];
+const { data: get_kelas } = useGetKelas();
+const { data: get_jurusan } = useGetJurusan();
+const { data: get_mapel } = useGetLesson();
+const { data: get_siswa } = useGetSiswa();
+
+const penilaian = usePenilaian();
+const listSiswa = computed(() => {
+  if (!penilaian.searchKelas || !penilaian.searchMapel) return [];
+  return (get_siswa.value ?? []).value.filter(
+    (siswa: StudentType) => siswa.kelas === penilaian.searchKelas
+  );
+});
+watchEffect(() => {
+  console.log(get_siswa.value);
+});
 </script>
 
 <template>
-  <header class="w-full flex gap-5 mt-5">
-    <section class="w-full basis-1/6">
-      <Select class="w-full">
-        <SelectTrigger class="w-full py-2 px-3 bg-white border-blue-300 border">
-          <SelectValue placeholder="Select a fruit" class="font-mona" />
-        </SelectTrigger>
-        <SelectContent class="p-3">
-          <SelectGroup class="font-mona">
-            <SelectLabel class="font-mona-bold">Day</SelectLabel>
-            <SelectItem v-for="day in [12, 2, 3, 4]" :key="day" :value="day">
-              {{ day }}
-            </SelectItem>
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-    </section>
-    <section class="w-full basis-1/5">
-      <Select>
-        <SelectTrigger class="w-full py-2 px-3 bg-white border-blue-300 border">
-          <SelectValue placeholder="Select a fruit" class="font-mona" />
-        </SelectTrigger>
-        <SelectContent class="p-3">
-          <SelectGroup class="font-mona">
-            <SelectLabel class="font-mona-bold">Day</SelectLabel>
-            <SelectItem v-for="day in [12, 2, 3, 4]" :key="day" :value="day">
-              {{ day }}
-            </SelectItem>
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-    </section>
-  </header>
-
   <article class="w-full mt-5">
     <Table class="w-full relative font-mona">
       <TableHeader>
@@ -127,14 +112,14 @@ const invoices = [
       <TableBody class="w-full overflow-y-auto">
         <TableRow
           class="border-none text-center"
-          v-for="(invoice, index) in invoices"
-          :key="invoice.invoice"
+          v-for="(data, index) in get_siswa as StudentType[]"
+          :key="index"
         >
           <TableCell class="text-left" :colspan="2">
             <div class="flex items-center gap-3">
-              <p>{{ index + 1 }}</p>
+              <p>{{ Number(index) + 1 }}</p>
               <p>
-                {{ invoice.invoice }}
+                {{ data.nama }}
               </p>
             </div>
           </TableCell>
