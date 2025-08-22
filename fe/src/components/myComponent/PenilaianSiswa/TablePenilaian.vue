@@ -1,14 +1,5 @@
 <script setup lang="ts">
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   Table,
   TableBody,
   TableCell,
@@ -20,77 +11,90 @@ import Vicon from "../Vicon.vue";
 import { Badge } from "@/components/ui/badge";
 
 import { Input } from "@/components/ui/input";
-import { computed, watchEffect } from "vue";
-import { useGetKelas } from "@/lib/query/kelas";
-import { useGetJurusan } from "@/lib/query/jurusan";
-import type { KelasType } from "@/types/siswa/data_kelas";
-import type { JurusanType } from "@/types/siswa";
-import type { LessonType } from "@/types/lesson";
-import { useGetLesson } from "@/lib/query/pelajaran";
+import { ref, watchEffect } from "vue";
+
 import { usePenilaian } from "@/lib/pinia/penilaian";
 import { useGetSiswa } from "@/lib/query/siswa";
 import type { StudentType } from "@/types/siswa/data_siswa";
-const invoices = [
-  {
-    invoice: "INV001",
-    paymentStatus: "Paid",
-    totalAmount: "$250.00",
-    paymentMethod: "Credit Card",
-  },
-  {
-    invoice: "INV002",
-    paymentStatus: "Pending",
-    totalAmount: "$150.00",
-    paymentMethod: "PayPal",
-  },
-  {
-    invoice: "INV003",
-    paymentStatus: "Unpaid",
-    totalAmount: "$350.00",
-    paymentMethod: "Bank Transfer",
-  },
-  {
-    invoice: "INV004",
-    paymentStatus: "Paid",
-    totalAmount: "$450.00",
-    paymentMethod: "Credit Card",
-  },
-  {
-    invoice: "INV005",
-    paymentStatus: "Paid",
-    totalAmount: "$550.00",
-    paymentMethod: "PayPal",
-  },
-  {
-    invoice: "INV006",
-    paymentStatus: "Pending",
-    totalAmount: "$200.00",
-    paymentMethod: "Bank Transfer",
-  },
-  {
-    invoice: "INV007",
-    paymentStatus: "Unpaid",
-    totalAmount: "$300.00",
-    paymentMethod: "Credit Card",
-  },
-];
-const { data: get_kelas } = useGetKelas();
-const { data: get_jurusan } = useGetJurusan();
-const { data: get_mapel } = useGetLesson();
+import type { PenilaianType } from "@/types/penilaian/penilaian";
+import {
+  useEditPenilaian,
+  useGetPenilaian,
+  usePostPenilaian,
+} from "@/lib/query/penilaian";
+
 const { data: get_siswa, isPending, isError, error } = useGetSiswa();
-
+const { data: get_nilai } = useGetPenilaian();
+const mutatePostPenilaian = usePostPenilaian();
+const mutateEditPenilaian = useEditPenilaian();
 const penilaian = usePenilaian();
-const listSiswa = computed(() => {
-  if (!penilaian.searchKelas || !penilaian.searchMapel || !get_siswa.value)
-    return [];
-
-  return get_siswa.value.filter(
-    (siswa: StudentType) => siswa.kelas === penilaian.searchKelas
-  );
-});
+const nilaiSiswa = ref<PenilaianType[]>([]);
 watchEffect(() => {
-  console.log(listSiswa.value, get_siswa.value);
+  if (
+    !penilaian.searchKelas ||
+    !penilaian.searchMapel ||
+    !get_siswa.value ||
+    !get_nilai.value
+  ) {
+    nilaiSiswa.value = [];
+    return;
+  }
+
+  nilaiSiswa.value = get_siswa.value
+    .filter((siswa: StudentType) => siswa.kelas === penilaian.searchKelas)
+    .map((siswa: StudentType) => {
+      // cek apakah sudah ada data sebelumnya
+      const existing = get_nilai.value.find(
+        (n: PenilaianType) =>
+          n.id_siswa === siswa.id &&
+          n.id_kelas === penilaian.searchKelas &&
+          n.id_lesson === penilaian.searchMapel
+      );
+      return (
+        existing || {
+          id: crypto.randomUUID(), // atau dari DB
+          id_siswa: siswa.id,
+          id_kelas: penilaian.searchKelas,
+          id_lesson: penilaian.searchMapel,
+          tugas: 0,
+          uts: 0,
+          uas: 0,
+          rata_rata: 0,
+        }
+      );
+    });
 });
+const getNamaSiswa = (idSiswa: string) => {
+  return (
+    get_siswa.value.find((siswa: StudentType) => siswa.id === idSiswa)?.nama ||
+    "-"
+  );
+};
+const updateRataRata = (nilai: PenilaianType) => {
+  nilai.rata_rata = (nilai.tugas + nilai.uts + nilai.uas) / 3;
+};
+const getColorRataRata = (nilai: number) => {
+  if (nilai < 50) return "bg-red-500";
+  if (nilai < 75) return "bg-yellow-500";
+  return "bg-green-500";
+};
+
+const saveData = (data: PenilaianType) => {
+  // Validasi data sebelum menyimpan
+  if (data.tugas < 0 || data.uts < 0 || data.uas < 0) {
+    alert("Nilai tidak boleh kurang dari 0");
+    return;
+  }
+  if (data.tugas > 100 || data.uts > 100 || data.uas > 100) {
+    alert("Nilai tidak boleh lebih dari 100");
+    return;
+  }
+  if (get_nilai.value.includes(data)) {
+    mutateEditPenilaian.mutate(data);
+  } else {
+    mutatePostPenilaian.mutate(data);
+  }
+};
 </script>
 
 <template>
@@ -112,7 +116,7 @@ watchEffect(() => {
 
   <!-- Empty State -->
   <section
-    v-else-if="listSiswa.length === 0"
+    v-else-if="nilaiSiswa.length === 0"
     class="w-full h-40 flex items-center justify-center"
   >
     <p class="font-mona text-lg text-gray-500">
@@ -141,34 +145,53 @@ watchEffect(() => {
       <TableBody class="w-full overflow-y-auto">
         <TableRow
           class="border-none text-center"
-          v-for="(data, index) in listSiswa as StudentType[]"
+          v-for="(data, index) in nilaiSiswa"
           :key="index"
         >
           <TableCell class="text-left" :colspan="2">
             <div class="flex items-center gap-3">
               <p>{{ Number(index) + 1 }}</p>
               <p>
-                {{ data.nama }}
+                {{ getNamaSiswa(data.id_siswa) }}
               </p>
             </div>
           </TableCell>
 
           <TableCell>
-            <Input type="number" class="w-20 py-2 px-3 bg-white border" />
+            <Input
+              type="number"
+              class="w-20 py-2 px-3 bg-white border"
+              v-model="data.tugas"
+              @input="updateRataRata(data)"
+            />
           </TableCell>
           <TableCell>
-            <Input type="number" class="w-20 py-2 px-3 bg-white border" />
+            <Input
+              type="number"
+              class="w-20 py-2 px-3 bg-white border"
+              v-model="data.uts"
+              @input="updateRataRata(data)"
+            />
           </TableCell>
           <TableCell class="">
-            <Input type="number" class="w-20 py-2 px-3 bg-white border" />
+            <Input
+              type="number"
+              class="w-20 py-2 px-3 bg-white border"
+              v-model="data.uas"
+              @input="updateRataRata(data)"
+            />
           </TableCell>
           <TableCell class="">
-            <Badge variant="default" class="bg-green-500 text-base"
-              >Active</Badge
+            <Badge
+              variant="default"
+              class="bg-green-500 text-base"
+              :class="getColorRataRata(data.rata_rata)"
+              >{{ data.rata_rata.toFixed(2) || 0 }}</Badge
             >
           </TableCell>
           <TableCell class="">
             <button
+              @click="saveData(data)"
               class="cursor-pointer p-2 text-white border rounded-lg gap-2 bg-green-500 hover:bg-green-600 flex justify-center items-center"
             >
               <Vicon name="fa-save" scale="1" />

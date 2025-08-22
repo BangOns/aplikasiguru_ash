@@ -186,6 +186,26 @@
       "uts": 90,
       "uas": 85,
       "rata_rata": 85
+    },
+    {
+      "id": "f1805cb0-1634-4363-a193-9c04d1b0d073",
+      "id_siswa": "76f5caf6-7471-469b-957e-b35593a32710",
+      "id_kelas": "b9f7ae8c-6cdb-44d8-811b-90043f35d599",
+      "id_lesson": "48e3bec3-764f-4035-83f8-1ad0b322cee9",
+      "tugas": 20,
+      "uts": 40,
+      "uas": 90,
+      "rata_rata": 50
+    },
+    {
+      "id": "b6e59ab6-7781-4fa2-84d0-8e08c6fbb2b8",
+      "id_siswa": "76f5caf6-7471-469b-957e-b35593a32710",
+      "id_kelas": "b9f7ae8c-6cdb-44d8-811b-90043f35d599",
+      "id_lesson": "48e3bec3-764f-4035-83f8-1ad0b322cee9",
+      "tugas": 20,
+      "uts": 34,
+      "uas": 50,
+      "rata_rata": 34.666666666666664
     }
   ]
 }
