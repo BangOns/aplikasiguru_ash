@@ -77,22 +77,51 @@ const invoices = [
 const { data: get_kelas } = useGetKelas();
 const { data: get_jurusan } = useGetJurusan();
 const { data: get_mapel } = useGetLesson();
-const { data: get_siswa } = useGetSiswa();
+const { data: get_siswa, isPending, isError, error } = useGetSiswa();
 
 const penilaian = usePenilaian();
 const listSiswa = computed(() => {
-  if (!penilaian.searchKelas || !penilaian.searchMapel) return [];
-  return (get_siswa.value ?? []).value.filter(
+  if (!penilaian.searchKelas || !penilaian.searchMapel || !get_siswa.value)
+    return [];
+
+  return get_siswa.value.filter(
     (siswa: StudentType) => siswa.kelas === penilaian.searchKelas
   );
 });
 watchEffect(() => {
-  console.log(get_siswa.value);
+  console.log(listSiswa.value, get_siswa.value);
 });
 </script>
 
 <template>
-  <article class="w-full mt-5">
+  <!-- Loading State -->
+  <section
+    v-if="isPending"
+    class="w-full h-40 flex items-center justify-center"
+  >
+    <p class="font-mona text-lg text-gray-500">Loading...</p>
+  </section>
+
+  <!-- Error State -->
+  <section
+    v-else-if="isError"
+    class="w-full h-40 flex items-center justify-center"
+  >
+    <p class="font-mona text-lg text-gray-500">Error: {{ error }}</p>
+  </section>
+
+  <!-- Empty State -->
+  <section
+    v-else-if="listSiswa.length === 0"
+    class="w-full h-40 flex items-center justify-center"
+  >
+    <p class="font-mona text-lg text-gray-500">
+      No data available {{ get_siswa.value }}
+      {{ get_siswa.value?.length }}
+    </p>
+  </section>
+
+  <article v-else class="w-full mt-5">
     <Table class="w-full relative font-mona">
       <TableHeader>
         <TableRow class="border-slate-300 text-center">
@@ -112,7 +141,7 @@ watchEffect(() => {
       <TableBody class="w-full overflow-y-auto">
         <TableRow
           class="border-none text-center"
-          v-for="(data, index) in get_siswa as StudentType[]"
+          v-for="(data, index) in listSiswa as StudentType[]"
           :key="index"
         >
           <TableCell class="text-left" :colspan="2">

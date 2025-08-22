@@ -66,18 +66,42 @@ export const useKelas = defineStore("kelas", () => {
       };
     }
   };
-  const deleteKelasById = async (id: string) => {
+  const deleteKelasById = async (
+    idJurusan: string,
+    idSiswa: string[] = [],
+    idLesson: string[] = []
+  ) => {
     try {
-      const response = await api.delete(`/kelas/${id}`);
+      // Hapus jurusan utama dulu
+      const kelasResponse = await api.delete(`/kelas/${idJurusan}`);
+
+      // Gabungkan semua promise delete lain
+      const deletePromises: Promise<any>[] = [];
+
+      if (idSiswa.length > 0) {
+        deletePromises.push(
+          ...idSiswa.map((id) => api.delete(`/student/${id}`))
+        );
+      }
+      if (idLesson.length > 0) {
+        deletePromises.push(
+          ...idLesson.map((id) => api.delete(`/lesson/${id}`))
+        );
+      }
+
+      // Jalankan semua delete secara paralel
+      if (deletePromises.length > 0) {
+        await Promise.all(deletePromises);
+      }
 
       return {
         status: 200,
-        data: response.data,
+        data: kelasResponse.data,
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
-        status: 500,
-        data: error,
+        status: error?.response?.status || 500,
+        data: error?.response?.data || error,
       };
     }
   };

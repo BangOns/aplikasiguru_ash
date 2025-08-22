@@ -83,7 +83,17 @@ export const useDeleteJurusan = () => {
   const jurusan = useJurusan();
 
   return useMutation({
-    mutationFn: ({ id }: { id: string }) => jurusan.deleteJurusanById(id),
+    mutationFn: ({
+      id,
+      id_kelas = [],
+      id_siswa = [],
+      id_lesson = [],
+    }: {
+      id: string;
+      id_kelas: string[];
+      id_siswa: string[];
+      id_lesson: string[];
+    }) => jurusan.deleteJurusanById(id, id_siswa, id_kelas, id_lesson),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["jurusan"] });
       handleMutationDeleteResponse(data);

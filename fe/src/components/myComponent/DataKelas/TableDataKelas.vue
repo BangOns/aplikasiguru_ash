@@ -23,11 +23,17 @@ import { useGetJurusan } from "@/lib/query/jurusan";
 import { useGetTeacher } from "@/lib/query/guru";
 import type { JurusanType } from "@/types/siswa";
 import type { GuruType } from "@/types/guru";
+import { useGetSiswa } from "@/lib/query/siswa";
+import { useGetLesson } from "@/lib/query/pelajaran";
+import type { StudentType } from "@/types/siswa/data_siswa";
+import type { LessonType } from "@/types/lesson";
 
 const kelas = useKelas();
 const query = useGetKelas();
 const { data: get_jurusan } = useGetJurusan();
 const { data: get_teacher } = useGetTeacher();
+const { data: get_siswa } = useGetSiswa();
+const { data: get_lesson } = useGetLesson();
 
 const filteredKelas = computed(() => {
   if (!query.data.value) return [];
@@ -68,7 +74,26 @@ const filteredKelas = computed(() => {
 const mutationDelete = useDeleteKelas();
 const handleDeleteKelas = (id: string) => {
   if (confirm("Apakah anda yakin ingin menghapus data ini?")) {
-    mutationDelete.mutate({ id });
+    const id_siswa = get_siswa.value.reduce(
+      (acc: string[], siswa: StudentType) => {
+        if (siswa.kelas && siswa.kelas === id) {
+          acc.push(siswa.id);
+        }
+        return acc;
+      },
+      []
+    );
+    const id_lesson = get_lesson.value.reduce(
+      (acc: string[], lesson: LessonType) => {
+        if (lesson.kelas && lesson.kelas === id) {
+          acc.push(lesson.id);
+        }
+        return acc;
+      },
+      []
+    );
+
+    mutationDelete.mutate({ id, id_siswa, id_lesson });
   }
 };
 </script>
@@ -107,7 +132,7 @@ const handleDeleteKelas = (id: string) => {
     >
       <p>No data available</p>
     </section>
-    <Table class="w-full relative font-mona">
+    <Table v-else class="w-full relative font-mona">
       <TableHeader>
         <TableRow class="border-slate-300 text-center">
           <TableHead class="text-left px-0" :colspan="2">

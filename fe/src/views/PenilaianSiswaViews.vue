@@ -15,8 +15,6 @@ const penilaian = usePenilaian();
 <template>
   <HeaderPenilaian />
   <SelectPenilaianSiswa />
-  <template v-if="penilaian.searchKelas && penilaian.searchMapel">
-    <TablePenilaian />
-    <GrafikPenilaian />
-  </template>
+  <TablePenilaian v-if="penilaian.searchKelas && penilaian.searchMapel" />
+  <GrafikPenilaian v-if="penilaian.searchKelas && penilaian.searchMapel" />
 </template>

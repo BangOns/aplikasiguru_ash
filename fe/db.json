@@ -8,8 +8,15 @@
   ],
   "teacher": [
     {
-      "id": "e08159c3-0fee-4179-a02f-a0cb8a9324f5",
+      "id": "71dca61f-a397-42b4-9675-1032b0e7e9f3",
       "nama": "roni",
+      "telp": "08123456789",
+      "email": "roni@nodewave.id",
+      "jkl": "L"
+    },
+    {
+      "id": "420f3653-abd7-49f9-90fd-069e75ecd0de",
+      "nama": "rehan",
       "telp": "08123456789",
       "email": "admin@nodewave.id",
       "jkl": "L"
@@ -17,22 +24,28 @@
   ],
   "student": [
     {
-      "id": "d27b7883-9afc-4262-8747-1b01615e4138",
-      "nama": "asssss update",
-      "kelas": "9f4d67f8-de2b-43f0-a210-4927e65b8247",
-      "jkl": "L"
-    },
-    {
-      "id": "83be8849-b3d7-4a6d-8ad1-037423b96ff5",
+      "id": "76f5caf6-7471-469b-957e-b35593a32710",
       "nama": "roni",
-      "kelas": "9f4d67f8-de2b-43f0-a210-4927e65b8247",
-      "jkl": "P"
+      "kelas": "b9f7ae8c-6cdb-44d8-811b-90043f35d599",
+      "jkl": "L"
     },
     {
-      "id": "a35150f1-d360-4879-a73b-e2f03166b23d",
-      "nama": "royhan",
-      "kelas": "9f4d67f8-de2b-43f0-a210-4927e65b8247",
+      "id": "e81ecfdd-0bd3-4484-8b93-f3706583808a",
+      "nama": "roniss",
+      "kelas": "1aa5a94e-931f-40ec-9f0a-7917ba2d7d35",
       "jkl": "L"
+    },
+    {
+      "id": "dff104dc-c6ed-445b-95d7-8b7f12f2fe15",
+      "nama": "sad",
+      "kelas": "b9f7ae8c-6cdb-44d8-811b-90043f35d599",
+      "jkl": "L"
+    },
+    {
+      "id": "b4c1c6a3-d724-4a36-ae76-402840f54b8b",
+      "nama": "roniss",
+      "kelas": "b9f7ae8c-6cdb-44d8-811b-90043f35d599",
+      "jkl": "P"
     }
   ],
   "schedule": [
@@ -57,60 +70,44 @@
   ],
   "jurusan": [
     {
-      "id": "f89cf88c-77df-42fd-b224-11695b307223",
-      "nama_jurusan": "aauuuuu"
+      "id": "f6ebb0b1-957f-44d7-916f-797b9f762dec",
+      "nama_jurusan": "Informatika"
     },
     {
-      "id": "7df47c6f-1796-4d67-ade9-6635357212c6",
-      "nama_jurusan": "asdads"
+      "id": "1e6a6d18-19bc-4bbe-9e46-6f5188c38b7f",
+      "nama_jurusan": "Bahasa Inggris"
     },
     {
-      "id": "215d3ff5-ded1-45fe-8c38-3bff8d82a6cc",
-      "nama_jurusan": "asdadwwad"
-    },
-    {
-      "id": "4796a67b-077c-46f7-a7c1-300bcf9cce3d",
-      "nama_jurusan": "asawadawd"
-    },
-    {
-      "id": "ab90f307-73ac-42a1-9735-66ad1c72c7c3",
-      "nama_jurusan": "rusak hapenya emang bener?"
-    },
-    {
-      "id": "2527f54b-397b-41dd-ae20-545e375c7b61",
-      "nama_jurusan": "asdasdasdas"
-    },
-    {
-      "id": "25129098-914c-45a8-8782-4aaf7af8550e",
-      "nama_jurusan": "asdawww"
+      "id": "c0c213a9-8646-4988-8fa2-0583ca6556f5",
+      "nama_jurusan": "DKV"
     }
   ],
   "kelas": [
     {
-      "id": "62ab9986-32d4-4ced-8602-dff8df912261",
-      "nama_kelas": "sssss",
-      "jurusan": "f89cf88c-77df-42fd-b224-11695b307223",
-      "wali_kelas": "e08159c3-0fee-4179-a02f-a0cb8a9324f5"
+      "id": "b9f7ae8c-6cdb-44d8-811b-90043f35d599",
+      "nama_kelas": "X",
+      "jurusan": "f6ebb0b1-957f-44d7-916f-797b9f762dec",
+      "wali_kelas": "71dca61f-a397-42b4-9675-1032b0e7e9f3"
     },
     {
-      "id": "9f4d67f8-de2b-43f0-a210-4927e65b8247",
-      "nama_kelas": "asdasss",
-      "jurusan": "7df47c6f-1796-4d67-ade9-6635357212c6",
-      "wali_kelas": "e08159c3-0fee-4179-a02f-a0cb8a9324f5"
+      "id": "1aa5a94e-931f-40ec-9f0a-7917ba2d7d35",
+      "nama_kelas": "XI",
+      "jurusan": "f6ebb0b1-957f-44d7-916f-797b9f762dec",
+      "wali_kelas": "71dca61f-a397-42b4-9675-1032b0e7e9f3"
     }
   ],
   "lesson": [
     {
-      "id": "22a720a7-a83a-43e4-9187-b73a2551b4bd",
-      "mapel": "asdasd",
-      "kelas": "e8da3e77-667e-4063-8334-478ab0e70259",
-      "teacher": "e08159c3-0fee-4179-a02f-a0cb8a9324f5"
+      "id": "48e3bec3-764f-4035-83f8-1ad0b322cee9",
+      "mapel": "Matematika",
+      "kelas": "b9f7ae8c-6cdb-44d8-811b-90043f35d599",
+      "teacher": "71dca61f-a397-42b4-9675-1032b0e7e9f3"
     },
     {
-      "id": "fbaedf94-9f99-4a1a-a60e-e72780b672d6",
-      "mapel": "Matematika",
-      "kelas": "e8da3e77-667e-4063-8334-478ab0e70259",
-      "teacher": "e08159c3-0fee-4179-a02f-a0cb8a9324f5"
+      "id": "d8add833-2c90-4c13-b97f-377119496aff",
+      "mapel": "Algoritma",
+      "kelas": "b9f7ae8c-6cdb-44d8-811b-90043f35d599",
+      "teacher": "71dca61f-a397-42b4-9675-1032b0e7e9f3"
     }
   ],
   "present": [

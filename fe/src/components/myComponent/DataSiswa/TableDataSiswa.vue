@@ -25,7 +25,7 @@ import type { KelasType } from "@/types/siswa/data_kelas";
 import { useGetJurusan } from "@/lib/query/jurusan";
 
 const siswa = useSiswa();
-const { data: get_siswa } = useGetSiswa();
+const { data: get_siswa, isPending, isError, error } = useGetSiswa();
 const { data: get_kelas } = useGetKelas();
 const { data: get_jurusan } = useGetJurusan();
 const filteredSiswa = computed(() => {
@@ -77,7 +77,30 @@ const handleDeleteSiswa = (id: string) => {
         <p>Tambah Data Siswa</p>
       </button>
     </section>
-    <Table class="w-full relative font-mona">
+    <!-- Loading State -->
+    <section
+      v-if="isPending"
+      class="w-full h-40 flex items-center justify-center"
+    >
+      <p>Loading...</p>
+    </section>
+
+    <!-- Error State -->
+    <section
+      v-else-if="isError"
+      class="w-full h-40 flex items-center justify-center"
+    >
+      <p>Error: {{ error }}</p>
+    </section>
+
+    <!-- Empty State -->
+    <section
+      v-else-if="!get_siswa || get_siswa.length === 0"
+      class="w-full h-40 flex items-center justify-center"
+    >
+      <p>No data available</p>
+    </section>
+    <Table v-else class="w-full relative font-mona">
       <TableHeader>
         <TableRow class="border-slate-300 text-center">
           <TableHead class="text-left px-0" :colspan="2">

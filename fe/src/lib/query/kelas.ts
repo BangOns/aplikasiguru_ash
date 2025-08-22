@@ -121,9 +121,19 @@ export const useDeleteKelas = () => {
   const kelas = useKelas();
 
   return useMutation({
-    mutationFn: ({ id }: { id: string }) => kelas.deleteKelasById(id),
+    mutationFn: ({
+      id,
+      id_siswa = [],
+      id_lesson = [],
+    }: {
+      id: string;
+      id_siswa: string[];
+      id_lesson: string[];
+    }) => kelas.deleteKelasById(id, id_siswa, id_lesson),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["kelas"] });
+      queryClient.invalidateQueries({ queryKey: ["siswa"] });
+      queryClient.invalidateQueries({ queryKey: ["lesson"] });
       handleMutationDeleteResponse(data);
     },
   });

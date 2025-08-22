@@ -83,7 +83,17 @@ export const useDeleteTeacher = () => {
   const teacher = useTeacher();
 
   return useMutation({
-    mutationFn: ({ id }: { id: string }) => teacher.deleteTeacherById(id),
+    mutationFn: ({
+      id,
+      id_kelas = [],
+      id_siswa = [],
+      id_lesson = [],
+    }: {
+      id: string;
+      id_kelas: string[];
+      id_siswa: string[];
+      id_lesson: string[];
+    }) => teacher.deleteTeacherById(id, id_siswa, id_kelas, id_lesson),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["teacher"] });
       handleMutationDeleteResponse(data);

@@ -19,8 +19,17 @@ import { useJurusan } from "@/lib/pinia/jurusan";
 import type { JurusanType } from "@/types/siswa";
 import { computed } from "vue";
 import { useDeleteJurusan, useGetJurusan } from "@/lib/query/jurusan";
+import { useGetKelas } from "@/lib/query/kelas";
+import type { KelasType } from "@/types/siswa/data_kelas";
+import { useGetSiswa } from "@/lib/query/siswa";
+import type { StudentType } from "@/types/siswa/data_siswa";
+import { useGetLesson } from "@/lib/query/pelajaran";
+import type { LessonType } from "@/types/lesson";
 const jurusan = useJurusan();
 const query = useGetJurusan();
+const { data: get_kelas } = useGetKelas();
+const { data: get_siswa } = useGetSiswa();
+const { data: get_lesson } = useGetLesson();
 const filteredJurusan = computed(() => {
   if (!query.data.value) return [];
   const searchTerm = jurusan.searchJurusan.toLowerCase();
@@ -31,7 +40,29 @@ const filteredJurusan = computed(() => {
 const mutationDelete = useDeleteJurusan();
 const handleDeleteJurusan = (id: string) => {
   if (confirm("Apakah anda yakin ingin menghapus data ini?")) {
-    mutationDelete.mutate({ id });
+    const id_kelas = get_kelas.value
+      .filter((j: KelasType) => j.jurusan === id)
+      .map((j: KelasType) => j.id);
+    const id_siswa = get_siswa.value.reduce(
+      (acc: string[], siswa: StudentType) => {
+        if (siswa.kelas && id_kelas.includes(siswa.kelas)) {
+          acc.push(siswa.id);
+        }
+        return acc;
+      },
+      []
+    );
+    const id_lesson = get_lesson.value.reduce(
+      (acc: string[], lesson: LessonType) => {
+        if (lesson.kelas && id_kelas.includes(lesson.kelas)) {
+          acc.push(lesson.id);
+        }
+        return acc;
+      },
+      []
+    );
+
+    mutationDelete.mutate({ id, id_siswa, id_kelas, id_lesson });
   }
 };
 </script>
@@ -98,7 +129,7 @@ const handleDeleteJurusan = (id: string) => {
           </TableCell>
 
           <TableCell class="">
-            <DropdownMenu>
+            <DropdownMenu v-if="!mutationDelete.isPending.value">
               <DropdownMenuTrigger class="cursor-pointer">
                 <Vicon name="bi-three-dots-vertical" scale="1.5" />
               </DropdownMenuTrigger>
@@ -123,6 +154,7 @@ const handleDeleteJurusan = (id: string) => {
                 <DropdownMenuItem as-child>
                   <button
                     @click="handleDeleteJurusan(values.id)"
+                    :disabled="mutationDelete.isPending.value"
                     class="flex w-full p-2 items-center gap-2 cursor-pointer bg-red-500 hover:bg-red-600 text-white"
                   >
                     <Vicon
@@ -130,11 +162,12 @@ const handleDeleteJurusan = (id: string) => {
                       scale="1.5"
                       class="text-white"
                     />
-                    <p class="pt-1">Hapus</p>
+                    <p class="pt-1">hapus</p>
                   </button>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            <span v-else class="text-gray-500">Loading...</span>
           </TableCell>
         </TableRow>
       </TableBody>
