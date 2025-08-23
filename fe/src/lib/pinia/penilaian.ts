@@ -6,6 +6,7 @@ import type { PenilaianType } from "@/types/penilaian/penilaian";
 export const usePenilaian = defineStore("penilaian", () => {
   const searchKelas = ref<string>("");
   const searchMapel = ref<string>("");
+  const listNilaiSiswa = ref<PenilaianType[]>([]);
   const getPenilaian = async () => {
     try {
       const response = await api.get("/nilai_siswa");
@@ -46,6 +47,7 @@ export const usePenilaian = defineStore("penilaian", () => {
   return {
     searchKelas,
     searchMapel,
+    listNilaiSiswa,
     getPenilaian,
     postPenilaian,
     editPenilaian,

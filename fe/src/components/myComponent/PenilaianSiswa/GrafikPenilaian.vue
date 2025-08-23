@@ -12,37 +12,72 @@ import Vicon from "../Vicon.vue";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "vue-chartjs";
 import * as chartConfig from "../../../lib/chartConfig";
+import { usePenilaian } from "@/lib/pinia/penilaian";
+import { reactive, watchEffect } from "vue";
+import type { PenilaianType } from "@/types/penilaian/penilaian";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 const chartdata = chartConfig;
+const penilaian = usePenilaian();
+const nilaiKelas = reactive({
+  rata_kelas: 0,
+  tertinggi: 0,
+  terendah: 0,
+  jumlah_siswa: 0,
+});
+const keys = ["tugas", "uts", "uas"];
+watchEffect(() => {
+  if (penilaian.listNilaiSiswa.length > 0) {
+    nilaiKelas.rata_kelas =
+      penilaian.listNilaiSiswa.reduce(
+        (a, b) => a + ((b.tugas ?? 0) + (b.uts ?? 0) + (b.uas ?? 0)) / 3,
+        0
+      ) / penilaian.listNilaiSiswa.length;
+    nilaiKelas.tertinggi = Math.max(
+      penilaian.listNilaiSiswa
+        .flatMap((n: PenilaianType) => [n.tugas, n.uts, n.uas])
+        .sort((a, b) => b - a)[0] ?? 0
+    );
+    nilaiKelas.terendah = Math.min(
+      penilaian.listNilaiSiswa
+        .flatMap((n: PenilaianType) => [n.tugas, n.uts, n.uas])
+        .sort((a, b) => a - b)[0] ?? 0
+    );
+  } else {
+  }
+});
 </script>
 
 <template>
   <article class="w-full mt-10">
     <section class="w-full flex max-md:flex-col gap-5">
       <article
-        class="w-full basis-1/4 p-4 text-center bg-slate-500 text-white rounded-2xl"
+        class="w-full basis-1/4 p-4 text-center bg-green-500 text-white rounded-2xl"
       >
-        <h2 class="font-mona-bold md:text-2xl">52</h2>
-        <p class="font-mona">Hadir</p>
+        <h2 class="font-mona-bold md:text-2xl">
+          {{ nilaiKelas.rata_kelas.toFixed(2) }}
+        </h2>
+        <p class="font-mona">Rata-Rata Kelas</p>
       </article>
       <article
         class="w-full basis-1/4 p-4 text-center bg-slate-500 text-white rounded-2xl"
       >
-        <h2 class="font-mona-bold md:text-2xl">52</h2>
-        <p class="font-mona">Hadir</p>
+        <h2 class="font-mona-bold md:text-2xl">{{ nilaiKelas.tertinggi }}</h2>
+        <p class="font-mona">Nilai Tertinggi</p>
       </article>
       <article
         class="w-full basis-1/4 p-4 text-center bg-slate-500 text-white rounded-2xl"
       >
-        <h2 class="font-mona-bold md:text-2xl">52</h2>
-        <p class="font-mona">Hadir</p>
+        <h2 class="font-mona-bold md:text-2xl">{{ nilaiKelas.terendah }}</h2>
+        <p class="font-mona">Nilai Terendah</p>
       </article>
       <article
         class="w-full basis-1/4 p-4 text-center bg-slate-500 text-white rounded-2xl"
       >
-        <h2 class="font-mona-bold md:text-2xl">52</h2>
-        <p class="font-mona">Hadir</p>
+        <h2 class="font-mona-bold md:text-2xl">
+          {{ penilaian.listNilaiSiswa.length }}
+        </h2>
+        <p class="font-mona">Siswa</p>
       </article>
     </section>
     <section class="flex justify-between max-lg:flex-col gap-5 mt-5">

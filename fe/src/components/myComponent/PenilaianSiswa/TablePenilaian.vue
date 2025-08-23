@@ -40,7 +40,7 @@ watchEffect(() => {
     return;
   }
 
-  nilaiSiswa.value = get_siswa.value
+  penilaian.listNilaiSiswa = get_siswa.value
     .filter((siswa: StudentType) => siswa.kelas === penilaian.searchKelas)
     .map((siswa: StudentType) => {
       // cek apakah sudah ada data sebelumnya
@@ -116,7 +116,7 @@ const saveData = (data: PenilaianType) => {
 
   <!-- Empty State -->
   <section
-    v-else-if="nilaiSiswa.length === 0"
+    v-else-if="penilaian.listNilaiSiswa.length === 0"
     class="w-full h-40 flex items-center justify-center"
   >
     <p class="font-mona text-lg text-gray-500">
@@ -145,7 +145,7 @@ const saveData = (data: PenilaianType) => {
       <TableBody class="w-full overflow-y-auto">
         <TableRow
           class="border-none text-center"
-          v-for="(data, index) in nilaiSiswa"
+          v-for="(data, index) in penilaian.listNilaiSiswa"
           :key="index"
         >
           <TableCell class="text-left" :colspan="2">
