@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import Vicon from "../Vicon.vue";
-import { computed, ref } from "vue";
+import { computed, ref, watchEffect } from "vue";
 import { getWeekDates } from "@/utils/GenerateWeeks";
-import { uesSchedule } from "@/lib/pinia/schedule";
 import moment from "moment";
 import type { ScheduleType } from "@/types/schedule";
+import { useSchedule } from "@/lib/pinia/schedule";
+import { useDeleteSchedule, useGetSchedule } from "@/lib/query/schedule";
 const ExampleSchedule: ScheduleType[] = [
   {
     id: "1",
@@ -26,15 +27,18 @@ const ExampleSchedule: ScheduleType[] = [
   },
 ];
 const weeks = ref<number>(0);
-const scheduleUse = uesSchedule();
-
+const scheduleUse = useSchedule();
+const { data: get_schedule } = useGetSchedule();
+const mutationDelete = useDeleteSchedule();
 const dates = computed(() => {
-  const date = getWeekDates(weeks.value, ExampleSchedule);
+  const date = getWeekDates(weeks.value, get_schedule.value);
   scheduleUse.datesSchedule = date;
   return date;
 });
 
-const editSchedules = () => {
+const editSchedules = (data: ScheduleType) => {
+  scheduleUse.setDatesSchedule = data;
+  scheduleUse.editSchedule = true;
   scrollToForm();
 };
 const validateSchedule = (date: string) => {
@@ -42,9 +46,13 @@ const validateSchedule = (date: string) => {
   return scheduleDate.isSameOrAfter(moment(), "day");
 };
 
-const getSchedule = (day: string) => {
+const getScheduleList = (day: string) => {
   scheduleUse.daySchedule = day;
   scrollToForm();
+};
+
+const handleDeleteSchedule = (id: string) => {
+  mutationDelete.mutate(id);
 };
 
 const scrollToForm = () => {
@@ -53,6 +61,11 @@ const scrollToForm = () => {
     block: "start",
   });
 };
+watchEffect(() => {
+  console.log(get_schedule.value);
+
+  // console.log(scheduleUse.datesSchedule);
+});
 </script>
 
 <template>
@@ -128,7 +141,7 @@ const scrollToForm = () => {
               : 'cursor-not-allowed bg-slate-200',
           ]"
           @click="
-            validateSchedule(value.fullDate) && getSchedule(value.dayName)
+            validateSchedule(value.fullDate) && getScheduleList(value.dayName)
           "
         >
           <header class="w-full">
@@ -148,12 +161,13 @@ const scrollToForm = () => {
                 class="w-full flex justify-center gap-5 mt-5"
               >
                 <button
+                  @click="handleDeleteSchedule(schedule.id)"
                   class="text-white p-2 px-3 text-sm hover:bg-red-600 cursor-pointer rounded-md bg-red-500"
                 >
                   Hapus
                 </button>
                 <button
-                  @click="editSchedules()"
+                  @click="editSchedules(schedule)"
                   class="text-white p-2 px-3 text-sm hover:bg-amber-600 cursor-pointer rounded-md bg-amber-500"
                 >
                   Edit

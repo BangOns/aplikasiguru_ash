@@ -23,11 +23,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { uesSchedule } from "@/lib/pinia/schedule";
-import { watch } from "vue";
+import { computed, watch } from "vue";
 import type { ScheduleType } from "@/types/schedule";
+import { useSchedule } from "@/lib/pinia/schedule";
+import { uesPostSchedule, useEditSchedule } from "@/lib/query/schedule";
 
-const scheduleUse = uesSchedule();
+const scheduleUse = useSchedule();
+const mutationPost = uesPostSchedule();
+const mutationEdit = useEditSchedule();
 const formSchema = toTypedSchema(
   z.object({
     day: z.string().min(2).max(50),
@@ -41,13 +44,14 @@ const form = useForm({
   validationSchema: formSchema,
   validateOnMount: false,
 });
+const isEditMode = computed(() => !!scheduleUse.setDatesSchedule);
 
 const onSubmit = form.handleSubmit((values) => {
   const getDates = scheduleUse.datesSchedule.find(
     (date) => date.dayName === values.day
   );
   const data: ScheduleType = {
-    id: uuidv4(),
+    id: isEditMode.value ? scheduleUse.setDatesSchedule!.id : uuidv4(),
     date: getDates ? String(getDates.fullDate) : "",
     start_time: values.start_time,
     end_time: values.end_time,
@@ -55,6 +59,11 @@ const onSubmit = form.handleSubmit((values) => {
     description: values.description,
     is_active: true,
   };
+  if (isEditMode.value) {
+    mutationEdit.mutate(data);
+  } else {
+    mutationPost.mutate(data);
+  }
 });
 
 watch(scheduleUse, (newVal) => {
@@ -132,7 +141,7 @@ watch(scheduleUse, (newVal) => {
         </FormField>
         <FormField v-slot="{ componentField }" name="start_time" class="w-full">
           <FormItem v-auto-animate class="w-full font-mona-bold">
-            <FormLabel>Jam Selesai</FormLabel>
+            <FormLabel>Jam Mulai</FormLabel>
             <FormControl>
               <Input
                 type="time"
@@ -165,7 +174,7 @@ watch(scheduleUse, (newVal) => {
 
         <FormField v-slot="{ componentField }" name="activity" class="w-full">
           <FormItem v-auto-animate class="w-full font-mona-bold">
-            <FormLabel>Mata Pelajaran</FormLabel>
+            <FormLabel>Nama Kegiatan</FormLabel>
             <FormControl>
               <Input
                 type="text"
@@ -182,7 +191,7 @@ watch(scheduleUse, (newVal) => {
       <!-- Row 3: Classroom -->
       <FormField v-slot="{ componentField }" name="description" class="w-full">
         <FormItem v-auto-animate class="w-full font-mona-bold">
-          <FormLabel>Ruang Kelas</FormLabel>
+          <FormLabel>Deskripsi Kegiatan</FormLabel>
           <FormControl>
             <Input
               type="text"

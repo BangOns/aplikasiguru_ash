@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useSiswa } from "@/lib/pinia/siswa";
-import { computed } from "vue";
+import { computed, watchEffect } from "vue";
 import { useDeleteSiswa, useGetSiswa } from "@/lib/query/siswa";
 import type { StudentType } from "@/types/siswa/data_siswa";
 import type { JurusanType } from "@/types/siswa";
@@ -64,6 +64,14 @@ const handleDeleteSiswa = (id: string) => {
     mutationDelete.mutate({ id });
   }
 };
+watchEffect(() => {
+  if (filteredSiswa.value.length > 0) {
+    siswa.setDataSiswa = filteredSiswa.value.map((item: any) => {
+      const { id, ...rest } = item;
+      return rest;
+    });
+  }
+});
 </script>
 
 <template>

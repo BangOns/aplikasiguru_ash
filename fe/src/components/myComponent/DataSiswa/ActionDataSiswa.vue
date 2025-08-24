@@ -16,10 +16,21 @@ import { useGetKelas } from "@/lib/query/kelas";
 import { useGetJurusan } from "@/lib/query/jurusan";
 import type { KelasType } from "@/types/siswa/data_kelas";
 import type { JurusanType } from "@/types/siswa";
-
+import * as XLSX from "xlsx";
 const siswa = useSiswa();
 const { data: get_kelas } = useGetKelas();
 const { data: get_jurusan } = useGetJurusan();
+
+const exportExcel = () => {
+  // Convert data to worksheet
+  const worksheet = XLSX.utils.json_to_sheet(siswa.setDataSiswa);
+  // Buat Workbook baru dan tambahkan worksheet
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Data Siswa");
+
+  // Simpan workbook ke file Excel
+  XLSX.writeFile(workbook, "DataSiswa.xlsx");
+};
 </script>
 
 <template>
@@ -91,12 +102,19 @@ const { data: get_jurusan } = useGetJurusan();
         </section>
       </article>
 
-      <article class="full flex items-center justify-end">
+      <article class="full flex items-center gap-5 justify-end">
         <button
           class="py-2 px-5 cursor-pointer flex items-center bg-blue-800 gap-2 hover:bg-blue-900 text-white rounded-lg font-mona-bold border"
         >
           <Vicon name="bi-search" scale="1" />
           <p>Search</p>
+        </button>
+        <button
+          @click="exportExcel"
+          class="py-2 px-5 cursor-pointer flex items-center bg-green-800 gap-2 hover:bg-green-900 text-white rounded-lg font-mona-bold border"
+        >
+          <Vicon name="bi-file-earmark-excel" scale="1" />
+          <p>Export Excel</p>
         </button>
       </article>
     </section>
