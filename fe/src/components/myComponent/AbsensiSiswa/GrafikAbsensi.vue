@@ -138,11 +138,16 @@ watchEffect(() => {
           <section
             v-for="(value, index) in StatusAbsensiHarian"
             :key="index"
-            class="flex justify-between items-center"
+            class="flex flex-col gap-2"
           >
-            <h1 class="text-lg font-mona-bold">{{ value.dayName }}</h1>
+            <div class="w-full flex justify-between">
+              <h1 class="text-lg font-mona-bold">{{ value.dayName }}</h1>
+              <h1 class="text-lg font-mona-bold">
+                {{ getPercent(value.statuses).toFixed(1) }}%
+              </h1>
+            </div>
             <section class="flex gap-2 items-center">
-              <div class="w-40 h-2 bg-slate-500 rounded-full">
+              <div class="w-full h-2 bg-slate-500 rounded-full">
                 <div
                   class="rounded-full h-full bg-green-400"
                   :style="{
@@ -150,9 +155,6 @@ watchEffect(() => {
                   }"
                 ></div>
               </div>
-              <h1 class="text-lg font-mona-bold">
-                {{ getPercent(value.statuses).toFixed(1) }}%
-              </h1>
             </section>
           </section>
         </article>

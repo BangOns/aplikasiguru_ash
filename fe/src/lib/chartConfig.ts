@@ -17,3 +17,28 @@ export const options = {
     },
   },
 };
+
+//example
+// chartGrafik.data = {
+//     ...chartGrafik.data,
+//     datasets: [
+//       {
+//         ...chartGrafik.data.datasets[0],
+//         data: [
+//           penilaian.listNilaiSiswa.filter(
+//             (n: PenilaianType) =>
+//               ((n.tugas ?? 0) + (n.uts ?? 0) + (n.uas ?? 0)) / 3 < 40
+//           ).length,
+//           penilaian.listNilaiSiswa.filter(
+//             (n: PenilaianType) =>
+//               ((n.tugas ?? 0) + (n.uts ?? 0) + (n.uas ?? 0)) / 3 >= 40 &&
+//               ((n.tugas ?? 0) + (n.uts ?? 0) + (n.uas ?? 0)) / 3 < 80
+//           ).length,
+//           penilaian.listNilaiSiswa.filter(
+//             (n: PenilaianType) =>
+//               ((n.tugas ?? 0) + (n.uts ?? 0) + (n.uas ?? 0)) / 3 >= 80
+//           ).length,
+//         ],
+//       },
+//     ],
+//   };

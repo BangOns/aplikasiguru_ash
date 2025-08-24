@@ -174,6 +174,22 @@
       "id_kelas": "9f4d67f8-de2b-43f0-a210-4927e65b8247",
       "id_lesson": "22a720a7-a83a-43e4-9187-b73a2551b4bd",
       "status": "HADIR"
+    },
+    {
+      "id": "fd533c7f-d5d0-4aa7-990a-f9f0277c417c",
+      "date": "2025-08-24",
+      "id_siswa": "e81ecfdd-0bd3-4484-8b93-f3706583808a",
+      "id_kelas": "1aa5a94e-931f-40ec-9f0a-7917ba2d7d35",
+      "id_lesson": "48e3bec3-764f-4035-83f8-1ad0b322cee9",
+      "status": "HADIR"
+    },
+    {
+      "id": "47f2dcbc-623b-43cb-8349-47d51cd74591",
+      "date": "2025-08-24",
+      "id_siswa": "76f5caf6-7471-469b-957e-b35593a32710",
+      "id_kelas": "b9f7ae8c-6cdb-44d8-811b-90043f35d599",
+      "id_lesson": "48e3bec3-764f-4035-83f8-1ad0b322cee9",
+      "status": "ALPA"
     }
   ],
   "nilai_siswa": [
@@ -206,6 +222,26 @@
       "uts": 34,
       "uas": 50,
       "rata_rata": 34.666666666666664
+    },
+    {
+      "id": "37646914-147c-4d35-8282-a89292f9fe52",
+      "id_siswa": "dff104dc-c6ed-445b-95d7-8b7f12f2fe15",
+      "id_kelas": "b9f7ae8c-6cdb-44d8-811b-90043f35d599",
+      "id_lesson": "48e3bec3-764f-4035-83f8-1ad0b322cee9",
+      "tugas": 88,
+      "uts": 88,
+      "uas": 78,
+      "rata_rata": 84.66666666666667
+    },
+    {
+      "id": "8f8479ec-793f-4af2-aacb-9d62d07e70a5",
+      "id_siswa": "b4c1c6a3-d724-4a36-ae76-402840f54b8b",
+      "id_kelas": "b9f7ae8c-6cdb-44d8-811b-90043f35d599",
+      "id_lesson": "48e3bec3-764f-4035-83f8-1ad0b322cee9",
+      "tugas": 77,
+      "uts": 66,
+      "uas": 76,
+      "rata_rata": 73
     }
   ]
 }

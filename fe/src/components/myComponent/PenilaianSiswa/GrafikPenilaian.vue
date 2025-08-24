@@ -15,6 +15,7 @@ import * as chartConfig from "../../../lib/chartConfig";
 import { usePenilaian } from "@/lib/pinia/penilaian";
 import { reactive, watchEffect } from "vue";
 import type { PenilaianType } from "@/types/penilaian/penilaian";
+import { useGetPenilaian } from "@/lib/query/penilaian";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 const chartdata = chartConfig;
@@ -25,34 +26,88 @@ const nilaiKelas = reactive({
   terendah: 0,
   jumlah_siswa: 0,
 });
-const keys = ["tugas", "uts", "uas"];
-watchEffect(() => {
-  if (penilaian.listNilaiSiswa.length > 0) {
-    nilaiKelas.rata_kelas =
-      penilaian.listNilaiSiswa.reduce(
-        (a, b) => a + ((b.tugas ?? 0) + (b.uts ?? 0) + (b.uas ?? 0)) / 3,
-        0
-      ) / penilaian.listNilaiSiswa.length;
-    nilaiKelas.tertinggi = Math.max(
-      penilaian.listNilaiSiswa
-        .flatMap((n: PenilaianType) => [n.tugas, n.uts, n.uas])
-        .sort((a, b) => b - a)[0] ?? 0
-    );
-    nilaiKelas.terendah = Math.min(
-      penilaian.listNilaiSiswa
-        .flatMap((n: PenilaianType) => [n.tugas, n.uts, n.uas])
-        .sort((a, b) => a - b)[0] ?? 0
-    );
-  } else {
-  }
+const chartGrafik = reactive({
+  data: {
+    labels: ["0-40", "40-80", "80-100"],
+    datasets: [
+      {
+        label: "Nilai",
+        data: [0, 0, 0],
+        backgroundColor: [
+          "rgba(255, 99, 132, 0.2)",
+          "rgba(54, 162, 235, 0.2)",
+          "rgba(255, 206, 86, 0.2)",
+        ],
+        borderColor: [
+          "rgba(255, 99, 132, 1)",
+          "rgba(54, 162, 235, 1)",
+          "rgba(255, 206, 86, 1)",
+        ],
+        borderWidth: 1,
+      },
+    ],
+  },
 });
+const statsSiswa = reactive({
+  sangat_baik: 0,
+  baik: 0,
+  kurang: 0,
+});
+
+const { data: get_nilai } = useGetPenilaian();
+watchEffect(() => {
+  const list = penilaian.listNilaiSiswa;
+
+  if (list.length === 0) return;
+
+  // Ambil semua nilai (tugas, uts, uas) dalam 1 array
+  const allNilai = list.flatMap((n: PenilaianType) => [n.tugas, n.uts, n.uas]);
+
+  // Hitung rata-rata kelas
+  const totalRataSiswa = list.reduce(
+    (sum, n) => sum + ((n.tugas ?? 0) + (n.uts ?? 0) + (n.uas ?? 0)) / 3,
+    0
+  );
+  nilaiKelas.rata_kelas = totalRataSiswa / list.length;
+
+  // Nilai tertinggi & terendah
+  nilaiKelas.tertinggi = Math.max(...allNilai);
+  nilaiKelas.terendah = Math.min(...allNilai);
+
+  // Data chart (kategori nilai)
+  const kurang40 = allNilai.filter((v) => v < 40).length;
+  const antara40_80 = allNilai.filter((v) => v >= 40 && v < 80).length;
+  const lebih80 = allNilai.filter((v) => v >= 80).length;
+
+  chartGrafik.data = {
+    ...chartGrafik.data,
+    datasets: [
+      {
+        ...chartGrafik.data.datasets[0],
+        data: [kurang40, antara40_80, lebih80],
+      },
+    ],
+  };
+
+  // Statistik siswa berdasarkan rata-rata
+  statsSiswa.sangat_baik = list.filter((s) => s.rata_rata >= 80).length;
+  statsSiswa.baik = list.filter(
+    (s) => s.rata_rata >= 60 && s.rata_rata < 80
+  ).length;
+  statsSiswa.kurang = list.filter((s) => s.rata_rata < 60).length;
+});
+
+const getPercent = (siswa: number | undefined) => {
+  const total = get_nilai.value?.length ?? 1;
+  return ((siswa ?? 0) / total) * 100;
+};
 </script>
 
 <template>
   <article class="w-full mt-10">
     <section class="w-full flex max-md:flex-col gap-5">
       <article
-        class="w-full basis-1/4 p-4 text-center bg-green-500 text-white rounded-2xl"
+        class="w-full basis-1/4 p-4 text-center bg-green-800 text-white rounded-2xl"
       >
         <h2 class="font-mona-bold md:text-2xl">
           {{ nilaiKelas.rata_kelas.toFixed(2) }}
@@ -60,13 +115,13 @@ watchEffect(() => {
         <p class="font-mona">Rata-Rata Kelas</p>
       </article>
       <article
-        class="w-full basis-1/4 p-4 text-center bg-slate-500 text-white rounded-2xl"
+        class="w-full basis-1/4 p-4 text-center bg-green-500 text-white rounded-2xl"
       >
         <h2 class="font-mona-bold md:text-2xl">{{ nilaiKelas.tertinggi }}</h2>
         <p class="font-mona">Nilai Tertinggi</p>
       </article>
       <article
-        class="w-full basis-1/4 p-4 text-center bg-slate-500 text-white rounded-2xl"
+        class="w-full basis-1/4 p-4 text-center bg-red-500 text-white rounded-2xl"
       >
         <h2 class="font-mona-bold md:text-2xl">{{ nilaiKelas.terendah }}</h2>
         <p class="font-mona">Nilai Terendah</p>
@@ -87,30 +142,11 @@ watchEffect(() => {
         <header class="flex gap-2 items-center justify-between">
           <section class="flex gap-2 items-center">
             <Vicon name="bi-graph-up-arrow" scale="1" />
-            <h2 class="font-mona-bold pt-1">Grafik Absensi</h2>
-          </section>
-          <section>
-            <Select>
-              <SelectTrigger class="w-full py-2 px-3 bg-slate-100 border">
-                <SelectValue placeholder="Tahun ini" class="font-mona" />
-              </SelectTrigger>
-              <SelectContent class="p-3">
-                <SelectGroup class="font-mona">
-                  <SelectLabel class="font-mona-bold">Day</SelectLabel>
-                  <SelectItem
-                    v-for="day in [12, 2, 3, 4]"
-                    :key="day"
-                    :value="day"
-                  >
-                    {{ day }}
-                  </SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <h2 class="font-mona-bold pt-1">Grafik Nilai</h2>
           </section>
         </header>
         <article>
-          <Doughnut :data="chartConfig.data" :options="chartdata.options" />
+          <Doughnut :data="chartGrafik.data" :options="chartdata.options" />
         </article>
       </section>
       <section
@@ -119,72 +155,27 @@ watchEffect(() => {
         <header class="flex gap-2 items-center">
           <Vicon name="bi-graph-up-arrow" scale="1" />
 
-          <h2 class="font-mona-bold text-xl pt-1">
-            Statistik Nilai Per kategori
-          </h2>
+          <h2 class="font-mona-bold text-xl pt-1">Statistik Nilai Siswa</h2>
         </header>
         <article class="mt-5 space-y-2 w-full">
-          <section class="flex justify-between items-center">
-            <h1 class="text-lg font-mona-bold">Senin</h1>
-            <section class="flex gap-2 items-center">
-              <div class="w-40 h-2 bg-slate-500 rounded-full">
-                <div class="w-[20%] rounded-full h-full bg-green-400"></div>
+          <section
+            class="flex flex-col gap-2"
+            v-for="([key, value], index) in Object.entries(statsSiswa)"
+            :key="index"
+          >
+            <header class="w-full flex justify-between items-center">
+              <h1 class="text-lg font-mona-bold">{{ key }}</h1>
+              <h1 class="text-lg font-mona-bold">{{ value }} Siswa</h1>
+            </header>
+            <section class="flex">
+              <div class="w-full h-2 bg-slate-500 rounded-full">
+                <div
+                  :style="{
+                    width: getPercent(value).toFixed(1) + '%',
+                  }"
+                  class="w-[20%] rounded-full h-full bg-green-400"
+                ></div>
               </div>
-              <h1 class="text-lg font-mona-bold">20%</h1>
-            </section>
-          </section>
-          <section class="flex justify-between items-center">
-            <h1 class="text-lg font-mona-bold">Senin</h1>
-            <section class="flex gap-2 items-center">
-              <div class="w-40 h-2 bg-slate-500 rounded-full">
-                <div class="w-[20%] rounded-full h-full bg-green-400"></div>
-              </div>
-              <h1 class="text-lg font-mona-bold">20%</h1>
-            </section>
-          </section>
-          <section class="flex justify-between items-center">
-            <h1 class="text-lg font-mona-bold">Senin</h1>
-            <section class="flex gap-2 items-center">
-              <div class="w-40 h-2 bg-slate-500 rounded-full">
-                <div class="w-[20%] rounded-full h-full bg-green-400"></div>
-              </div>
-              <h1 class="text-lg font-mona-bold">20%</h1>
-            </section>
-          </section>
-          <section class="flex justify-between items-center">
-            <h1 class="text-lg font-mona-bold">Senin</h1>
-            <section class="flex gap-2 items-center">
-              <div class="w-40 h-2 bg-slate-500 rounded-full">
-                <div class="w-[20%] rounded-full h-full bg-green-400"></div>
-              </div>
-              <h1 class="text-lg font-mona-bold">20%</h1>
-            </section>
-          </section>
-          <section class="flex justify-between items-center">
-            <h1 class="text-lg font-mona-bold">Senin</h1>
-            <section class="flex gap-2 items-center">
-              <div class="w-40 h-2 bg-slate-500 rounded-full">
-                <div class="w-[20%] rounded-full h-full bg-green-400"></div>
-              </div>
-              <h1 class="text-lg font-mona-bold">20%</h1>
-            </section>
-          </section>
-          <section class="flex justify-between items-center">
-            <h1 class="text-lg font-mona-bold">Senin</h1>
-            <section class="flex gap-2 items-center">
-              <div class="w-40 h-2 bg-slate-500 rounded-full">
-                <div class="w-[20%] rounded-full h-full bg-green-400"></div>
-              </div>
-              <h1 class="text-lg font-mona-bold">20%</h1>
-            </section>
-          </section>
-          <section class="flex justify-between items-center">
-            <h1 class="text-lg font-mona-bold">Senin</h1>
-            <section class="flex gap-2 items-center">
-              <div class="w-40 h-2 bg-slate-500 rounded-full">
-                <div class="w-[20%] rounded-full h-full bg-green-400"></div>
-              </div>
-              <h1 class="text-lg font-mona-bold">20%</h1>
             </section>
           </section>
         </article>
