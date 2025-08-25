@@ -11,7 +11,7 @@ import {
 import Vicon from "../Vicon.vue";
 import CardSiswa from "./CardSiswa.vue";
 import moment from "moment";
-import { computed, onMounted, onUnmounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref, watchEffect } from "vue";
 import { useGetKelas } from "@/lib/query/kelas";
 import { useGetLesson } from "@/lib/query/pelajaran";
 import { useGetJurusan } from "@/lib/query/jurusan";
@@ -21,6 +21,9 @@ import type { LessonType } from "@/types/lesson";
 import { usePresent } from "@/lib/pinia/absensi";
 import { useGetSiswa } from "@/lib/query/siswa";
 import type { StudentType } from "@/types/siswa/data_siswa";
+import { useGetAbsensi } from "@/lib/query/absensi";
+import type { AbsensiType } from "@/types/absensi";
+import * as XLSX from "xlsx";
 const date = new Date();
 const options = {
   year: "numeric",
@@ -35,6 +38,7 @@ const { data: get_siswa } = useGetSiswa();
 const { data: get_kelas } = useGetKelas();
 const { data: get_jurusan } = useGetJurusan();
 const { data: get_mapel } = useGetLesson();
+const { data: get_absensi } = useGetAbsensi();
 const labelFormKelasDanJurusan = computed(() => {
   if (!get_kelas.value || !get_jurusan.value) return [];
   return get_kelas.value.map((kelas: KelasType) => {
@@ -54,6 +58,46 @@ const listSiswa = computed(() => {
   );
 });
 
+watchEffect(() => {
+  if (!get_absensi.value) return;
+
+  absensi.listAbsensi = get_absensi.value
+    .filter(
+      (absen: AbsensiType) =>
+        absen.id_kelas === absensi.searchKelas &&
+        absen.id_lesson === absensi.searchMapel
+    )
+    .map((absen: AbsensiType) => {
+      const siswa = get_siswa.value.find(
+        (siswa: StudentType) => siswa.id === absen.id_siswa
+      );
+      const kelas = get_kelas.value.find(
+        (kelas: KelasType) => kelas.id === absen.id_kelas
+      );
+      const lesson = get_mapel.value.find(
+        (lesson: LessonType) => lesson.id === absen.id_lesson
+      );
+
+      const { id, id_kelas, id_lesson, id_siswa, ...rest } = absen;
+
+      return {
+        siswa: siswa?.nama || "",
+        kelas: kelas?.nama_kelas || "",
+        pelajaran: lesson?.mapel || "",
+        ...rest,
+      };
+    });
+});
+const exportExcel = () => {
+  // Convert data to worksheet
+  const worksheet = XLSX.utils.json_to_sheet(absensi.listAbsensi);
+  // Buat Workbook baru dan tambahkan worksheet
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Data Absensi Siswa");
+
+  // Simpan workbook ke file Excel
+  XLSX.writeFile(workbook, "DataAbsensi.xlsx");
+};
 onMounted(() => {
   const timer = setInterval(() => {
     timeNow.value = moment().format("LTS");
@@ -136,7 +180,10 @@ onMounted(() => {
   <!-- Card data -->
 
   <article class="w-full bg-white p-4 mt-10 rounded-md">
-    <header class="w-full flex items-center text-blue-500 gap-2">
+    <header
+      class="w-full flex items-center text-blue-500 gap-2"
+      v-if="absensi.searchKelas && absensi.searchMapel"
+    >
       <button
         class="cursor-pointer gap-2 bg-blue-400 hover:bg-blue-500 flex items-center p-2 text-white rounded text-sm font-mona-bold"
       >
@@ -144,6 +191,7 @@ onMounted(() => {
         Refresh Data
       </button>
       <button
+        @click="exportExcel"
         class="cursor-pointer gap-2 bg-green-400 hover:bg-green-500 flex items-center p-2 text-white rounded text-sm font-mona-bold"
       >
         <Vicon name="si-microsoftexcel" scale="1" class="p-0 font-bold" />

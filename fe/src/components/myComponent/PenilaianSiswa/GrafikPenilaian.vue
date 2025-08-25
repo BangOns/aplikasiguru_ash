@@ -1,13 +1,4 @@
 <script setup lang="ts">
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import Vicon from "../Vicon.vue";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "vue-chartjs";
@@ -16,7 +7,13 @@ import { usePenilaian } from "@/lib/pinia/penilaian";
 import { reactive, watchEffect } from "vue";
 import type { PenilaianType } from "@/types/penilaian/penilaian";
 import { useGetPenilaian } from "@/lib/query/penilaian";
-
+import type { StudentType } from "@/types/siswa/data_siswa";
+import type { KelasType } from "@/types/siswa/data_kelas";
+import type { LessonType } from "@/types/lesson";
+import { useGetSiswa } from "@/lib/query/siswa";
+import { useGetKelas } from "@/lib/query/kelas";
+import { useGetLesson } from "@/lib/query/pelajaran";
+import * as XLSX from "xlsx";
 ChartJS.register(ArcElement, Tooltip, Legend);
 const chartdata = chartConfig;
 const penilaian = usePenilaian();
@@ -55,6 +52,9 @@ const statsSiswa = reactive({
 });
 
 const { data: get_nilai } = useGetPenilaian();
+const { data: get_siswa } = useGetSiswa();
+const { data: get_kelas } = useGetKelas();
+const { data: get_mapel } = useGetLesson();
 watchEffect(() => {
   const list = penilaian.listNilaiSiswa;
 
@@ -100,6 +100,35 @@ watchEffect(() => {
 const getPercent = (siswa: number | undefined) => {
   const total = get_nilai.value?.length ?? 1;
   return ((siswa ?? 0) / total) * 100;
+};
+
+const exportExcel = () => {
+  const listSiswa = penilaian.listNilaiSiswa.map((item: PenilaianType) => {
+    const siswa = get_siswa.value.find(
+      (siswa: StudentType) => siswa.id === item.id_siswa
+    );
+    const kelas = get_kelas.value.find(
+      (kelas: KelasType) => kelas.id === item.id_kelas
+    );
+    const lesson = get_mapel.value.find(
+      (lesson: LessonType) => lesson.id === item.id_lesson
+    );
+    const { id, id_kelas, id_lesson, id_siswa, rata_rata, ...rest } = item;
+    return {
+      siswa: siswa?.nama || "",
+      kelas: kelas?.nama_kelas || "",
+      pelajaran: lesson?.mapel || "",
+      ...rest,
+      rata_rata: item.rata_rata?.toFixed(2) || 0,
+    };
+  });
+  // Convert data to worksheet
+  const worksheet = XLSX.utils.json_to_sheet(listSiswa);
+  // Buat Workbook baru dan tambahkan worksheet
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Data Nilai Siswa");
+  // Simpan file Excel
+  XLSX.writeFile(workbook, "data_nilai_siswa.xlsx");
 };
 </script>
 
@@ -182,11 +211,14 @@ const getPercent = (siswa: number | undefined) => {
       </section>
     </section>
     <article class="mt-5 w-full flex justify-center gap-5">
-      <button class="px-4 py-2 text-white rounded-md bg-green-600">
+      <!-- <button class="px-4 py-2 text-white rounded-md bg-green-600">
         <Vicon name="bi-file-earmark-pdf-fill" scale="1" />
         Download PDF
-      </button>
-      <button class="px-4 py-2 text-white rounded-md bg-green-600">
+      </button> -->
+      <button
+        @click="exportExcel"
+        class="px-4 py-2 text-white rounded-md bg-green-600 cursor-pointer"
+      >
         <Vicon name="si-microsoftexcel" scale="1" class="p-0 font-bold" />
 
         Download Excel

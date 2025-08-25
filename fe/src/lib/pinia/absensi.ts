@@ -9,7 +9,7 @@ import type { DateType } from "@/types/date";
 export const usePresent = defineStore("present", () => {
   const searchKelas = ref<string>("");
   const searchMapel = ref<string>("");
-
+  const listAbsensi = ref<AbsensiType[]>([]);
   const DateIndonesia = computed(() => {
     const date = new Date();
     const options = {
@@ -146,6 +146,7 @@ export const usePresent = defineStore("present", () => {
   };
 
   return {
+    listAbsensi,
     searchKelas,
     searchMapel,
     DateIndonesia,

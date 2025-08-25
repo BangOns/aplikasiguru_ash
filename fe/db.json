@@ -190,6 +190,30 @@
       "id_kelas": "b9f7ae8c-6cdb-44d8-811b-90043f35d599",
       "id_lesson": "48e3bec3-764f-4035-83f8-1ad0b322cee9",
       "status": "ALPA"
+    },
+    {
+      "id": "94b777fd-1aea-4ee7-bbbb-560ee591556f",
+      "date": "2025-08-25",
+      "id_siswa": "76f5caf6-7471-469b-957e-b35593a32710",
+      "id_kelas": "b9f7ae8c-6cdb-44d8-811b-90043f35d599",
+      "id_lesson": "d8add833-2c90-4c13-b97f-377119496aff",
+      "status": "HADIR"
+    },
+    {
+      "id": "d6f81b4c-1ec5-4919-98a7-5a11d1827398",
+      "date": "2025-08-25",
+      "id_siswa": "dff104dc-c6ed-445b-95d7-8b7f12f2fe15",
+      "id_kelas": "b9f7ae8c-6cdb-44d8-811b-90043f35d599",
+      "id_lesson": "d8add833-2c90-4c13-b97f-377119496aff",
+      "status": "HADIR"
+    },
+    {
+      "id": "7c8cfa04-b340-4f69-9920-2e0f4f0b6e8f",
+      "date": "2025-08-25",
+      "id_siswa": "b4c1c6a3-d724-4a36-ae76-402840f54b8b",
+      "id_kelas": "b9f7ae8c-6cdb-44d8-811b-90043f35d599",
+      "id_lesson": "d8add833-2c90-4c13-b97f-377119496aff",
+      "status": "HADIR"
     }
   ],
   "nilai_siswa": [

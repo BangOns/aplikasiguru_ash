@@ -1,5 +1,58 @@
 <script setup lang="ts">
+import { reactive, watchEffect } from "vue";
 import Vicon from "../Vicon.vue";
+import { useGetJurusan } from "@/lib/query/jurusan";
+import { useGetLesson } from "@/lib/query/pelajaran";
+import { useGetKelas } from "@/lib/query/kelas";
+import { useGetSiswa } from "@/lib/query/siswa";
+const overviewList = reactive([
+  {
+    id: 1,
+    title: "No Of Student",
+    icon: "bi-people-fill",
+    iconColor: "blue",
+    value: 0,
+  },
+  {
+    id: 2,
+    title: "No Of Class",
+    icon: "ri-door-open-fill",
+    iconColor: "green",
+    value: 0,
+  },
+  {
+    id: 3,
+    title: "No Of Lesson",
+    icon: "gi-book-pile",
+    iconColor: "orange",
+    value: 0,
+  },
+  {
+    id: 4,
+    title: "No Of Teacher",
+    icon: "bi-person-fill",
+    iconColor: "red",
+    value: 0,
+  },
+]);
+const { data: get_siswa } = useGetSiswa();
+const { data: get_kelas } = useGetKelas();
+const { data: get_lesson } = useGetLesson();
+const { data: get_jurusan } = useGetJurusan();
+
+watchEffect(() => {
+  if (
+    get_siswa.value &&
+    get_kelas.value &&
+    get_lesson.value &&
+    get_jurusan.value
+  ) {
+    overviewList[0].value = get_siswa.value.length;
+    overviewList[1].value = get_kelas.value.length;
+    overviewList[2].value = get_lesson.value.length;
+    overviewList[3].value = get_jurusan.value.length;
+  }
+});
 </script>
 
 <template>
@@ -13,24 +66,24 @@ import Vicon from "../Vicon.vue";
       class="flex basis-3/4 gap-5 max-lg:flex-col justify-between items-center"
     >
       <section
-        v-for="value in [1, 2, 3, 4]"
-        :key="value"
+        v-for="(value, index) in overviewList"
+        :key="index"
         class="p-4 bg-blue-300/40 w-full rounded-2xl"
       >
         <header class="flex gap-4 items-center">
           <Vicon
-            name="hi-solid-user-circle"
+            :name="value.icon"
             fill="blue"
             scale="2"
             class="cursor-pointer"
           />
-          <h2 class="font-mona-bold max-xl:text-sm">No Of Student</h2>
+          <h2 class="font-mona-bold max-xl:text-sm">{{ value.title }}</h2>
         </header>
         <article class="mt-3 w-full">
           <h2
             class="text-4xl font-mona-bold pb-5 w-fit border-b-4 border-blue-500"
           >
-            250
+            {{ value.value }}
           </h2>
         </article>
       </section>
