@@ -1,16 +1,11 @@
 <script setup lang="ts">
 import Calendar from "@/components/ui/calendar/Calendar.vue";
-import Vicon from "../Vicon.vue";
 import type { DateValue } from "@internationalized/date";
 import type { Ref } from "vue";
 import { getLocalTimeZone, today } from "@internationalized/date";
 import { ref } from "vue";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import { Doughnut } from "vue-chartjs";
-import * as chartConfig from "../../../lib/chartConfig";
+import ChartStudent from "./ChartStudent.vue";
 
-ChartJS.register(ArcElement, Tooltip, Legend);
-const chartdata = chartConfig;
 const value = ref(today(getLocalTimeZone())) as Ref<DateValue>;
 </script>
 
@@ -60,23 +55,7 @@ const value = ref(today(getLocalTimeZone())) as Ref<DateValue>;
       </article>
     </section>
     <!-- Statistik -->
-    <section
-      class="w-full basis-1/3 p-4 bg-slate-50 shadow-sm border rounded-lg"
-    >
-      <header class="w-full flex justify-between items-center">
-        <h2 class="font-mona-bold text-xl">Student performance</h2>
-        <RouterLink to="#">
-          <Vicon
-            name="bi-three-dots-vertical"
-            scale="1.5"
-            class="cursor-pointer"
-          />
-        </RouterLink>
-      </header>
-      <article class="w-full mt-5">
-        <Doughnut :data="chartConfig.data" :options="chartdata.options" />
-      </article>
-    </section>
+    <ChartStudent />
     <!-- Calendar -->
     <section
       class="w-full basis-1/3 bg-slate-50 shadow-sm flex justify-center rounded-lg"

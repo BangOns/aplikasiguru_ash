@@ -6,30 +6,11 @@ import moment from "moment";
 import type { ScheduleType } from "@/types/schedule";
 import { useSchedule } from "@/lib/pinia/schedule";
 import { useDeleteSchedule, useGetSchedule } from "@/lib/query/schedule";
-const ExampleSchedule: ScheduleType[] = [
-  {
-    id: "1",
-    activity: "Town Hall Meeting",
-    description: "Acara perusahaan",
-    date: "2025-08-16",
-    start_time: "15:00",
-    end_time: "17:00",
-    is_active: true,
-  },
-  {
-    id: "2",
-    activity: "Town Hall Meeting",
-    description: "Acara perusahaan",
-    date: "2025-08-14",
-    start_time: "15:00",
-    end_time: "17:00",
-    is_active: true,
-  },
-];
+
+const mutationDelete = useDeleteSchedule();
 const weeks = ref<number>(0);
 const scheduleUse = useSchedule();
 const { data: get_schedule } = useGetSchedule();
-const mutationDelete = useDeleteSchedule();
 const dates = computed(() => {
   const date = getWeekDates(weeks.value, get_schedule.value);
   scheduleUse.datesSchedule = date;
@@ -62,7 +43,7 @@ const scrollToForm = () => {
   });
 };
 watchEffect(() => {
-  console.log(get_schedule.value);
+  console.log(dates.value);
 
   // console.log(scheduleUse.datesSchedule);
 });

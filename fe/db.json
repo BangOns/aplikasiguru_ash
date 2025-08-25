@@ -66,6 +66,15 @@
       "start_time": "15:00",
       "end_time": "17:00",
       "is_active": true
+    },
+    {
+      "id": "c2cc84ff-8098-498f-a929-d59e4f9502b2",
+      "date": "2025-08-25",
+      "start_time": "14:00",
+      "end_time": "02:05",
+      "activity": "test",
+      "description": "test2",
+      "is_active": true
     }
   ],
   "jurusan": [
