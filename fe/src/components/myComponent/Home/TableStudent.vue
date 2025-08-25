@@ -128,7 +128,7 @@ watchEffect(() => {
             <TableHead class="text-black text-center">Kelas</TableHead>
             <TableHead class="text-black text-center">Jurusan</TableHead>
             <TableHead class="text-black text-center"> Jenis Kelamin</TableHead>
-            <TableHead class="text-black text-center"> </TableHead>
+            <!-- <TableHead class="text-black text-center"> </TableHead> -->
           </TableRow>
         </TableHeader>
         <TableBody class="w-full overflow-y-auto">
@@ -156,7 +156,7 @@ watchEffect(() => {
               <p>{{ data.jkl }}</p>
             </TableCell>
 
-            <TableCell class="">
+            <!-- <TableCell class="">
               <DropdownMenu>
                 <DropdownMenuTrigger class="cursor-pointer">
                   <Vicon name="bi-three-dots-vertical" scale="1.5" />
@@ -190,7 +190,7 @@ watchEffect(() => {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-            </TableCell>
+            </TableCell> -->
           </TableRow>
         </TableBody>
       </Table>
