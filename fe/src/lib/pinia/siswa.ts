@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import api from "../axios/config";
-import type { KelasType } from "@/types/siswa/data_kelas";
+// import type { KelasType } from "@/types/siswa/data_kelas";
 import type { StudentType } from "@/types/siswa/data_siswa";
 
 export const useSiswa = defineStore("siswa", () => {

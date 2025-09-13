@@ -26,7 +26,7 @@
     {
       "id": "76f5caf6-7471-469b-957e-b35593a32710",
       "nama": "roni",
-      "kelas": "b9f7ae8c-6cdb-44d8-811b-90043f35d599",
+      "kelas": "1aa5a94e-931f-40ec-9f0a-7917ba2d7d35",
       "jkl": "L"
     },
     {
@@ -221,6 +221,22 @@
       "date": "2025-08-25",
       "id_siswa": "b4c1c6a3-d724-4a36-ae76-402840f54b8b",
       "id_kelas": "b9f7ae8c-6cdb-44d8-811b-90043f35d599",
+      "id_lesson": "d8add833-2c90-4c13-b97f-377119496aff",
+      "status": "HADIR"
+    },
+    {
+      "id": "90395c95-1fd1-4de0-8c92-a39aaf34ac08",
+      "date": "2025-09-13",
+      "id_siswa": "76f5caf6-7471-469b-957e-b35593a32710",
+      "id_kelas": "1aa5a94e-931f-40ec-9f0a-7917ba2d7d35",
+      "id_lesson": "d8add833-2c90-4c13-b97f-377119496aff",
+      "status": "ALPA"
+    },
+    {
+      "id": "33d50522-95d8-4932-9acc-3c3cba5ea6d2",
+      "date": "2025-09-13",
+      "id_siswa": "e81ecfdd-0bd3-4484-8b93-f3706583808a",
+      "id_kelas": "1aa5a94e-931f-40ec-9f0a-7917ba2d7d35",
       "id_lesson": "d8add833-2c90-4c13-b97f-377119496aff",
       "status": "HADIR"
     }

@@ -30,20 +30,20 @@ const handleMutationEditResponse = (data: any) => {
     duration: 1000,
   });
 };
-const handleMutationDeleteResponse = (data: any) => {
-  const isSuccess = data?.status === 200;
-  const message = isSuccess ? "Success Delete Data" : "Gagal Delete Data";
+// const handleMutationDeleteResponse = (data: any) => {
+//   const isSuccess = data?.status === 200;
+//   const message = isSuccess ? "Success Delete Data" : "Gagal Delete Data";
 
-  toast(message, {
-    style: {
-      backgroundColor: isSuccess ? "green" : "red",
-      color: "white",
-      fontFamily: "mona",
-      alignItems: "center",
-    },
-    duration: 1000,
-  });
-};
+//   toast(message, {
+//     style: {
+//       backgroundColor: isSuccess ? "green" : "red",
+//       color: "white",
+//       fontFamily: "mona",
+//       alignItems: "center",
+//     },
+//     duration: 1000,
+//   });
+// };
 
 export const useGetAbsensi = () => {
   const absensi = usePresent();

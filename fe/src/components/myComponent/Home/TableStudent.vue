@@ -8,13 +8,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import DropdownMenu from "@/components/ui/dropdown-menu/DropdownMenu.vue";
-import DropdownMenuTrigger from "@/components/ui/dropdown-menu/DropdownMenuTrigger.vue";
-import DropdownMenuContent from "@/components/ui/dropdown-menu/DropdownMenuContent.vue";
-import DropdownMenuItem from "@/components/ui/dropdown-menu/DropdownMenuItem.vue";
+// import DropdownMenu from "@/components/ui/dropdown-menu/DropdownMenu.vue";
+// import DropdownMenuTrigger from "@/components/ui/dropdown-menu/DropdownMenuTrigger.vue";
+// import DropdownMenuContent from "@/components/ui/dropdown-menu/DropdownMenuContent.vue";
+// import DropdownMenuItem from "@/components/ui/dropdown-menu/DropdownMenuItem.vue";
 import { computed, watchEffect } from "vue";
 import { useSiswa } from "@/lib/pinia/siswa";
-import { useDeleteSiswa, useGetSiswa } from "@/lib/query/siswa";
+import { useGetSiswa } from "@/lib/query/siswa";
 import { useGetKelas } from "@/lib/query/kelas";
 import { useGetJurusan } from "@/lib/query/jurusan";
 import type { StudentType } from "@/types/siswa/data_siswa";
@@ -55,12 +55,12 @@ const filteredSiswa = computed(() => {
         (siswaMerged.jurusan || "").toLowerCase().includes(searchTermJurusan)
     );
 });
-const mutationDelete = useDeleteSiswa();
-const handleDeleteSiswa = (id: string) => {
-  if (confirm("Apakah anda yakin ingin menghapus data ini?")) {
-    mutationDelete.mutate({ id });
-  }
-};
+// const mutationDelete = useDeleteSiswa();
+// const handleDeleteSiswa = (id: string) => {
+//   if (confirm("Apakah anda yakin ingin menghapus data ini?")) {
+//     mutationDelete.mutate({ id });
+//   }
+// };
 watchEffect(() => {
   if (filteredSiswa.value.length > 0) {
     siswa.setDataSiswa = filteredSiswa.value.map((item: any) => {
