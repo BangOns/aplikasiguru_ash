@@ -15,6 +15,12 @@ import {
   getAllSiswaController,
 } from "../controller/siswa";
 import { Request, Response, Router } from "express";
+import {
+  CreateWaliKelasController,
+  DeleteWaliKelasController,
+  GetAllWaliKelasController,
+  UpdateWaliKelasController,
+} from "../controller/wali_kelas";
 
 const route = Router();
 
@@ -36,5 +42,11 @@ route.get("/jurusan", GetAllJurusanController);
 route.post("/jurusan", CreateJurusanController);
 route.put("/jurusan", UpdateJurusanController);
 route.delete("/jurusan/:id", DeleteJurusanController);
+
+// wali kelas
+route.get("/wali_kelas", GetAllWaliKelasController);
+route.post("/wali_kelas", CreateWaliKelasController);
+route.put("/wali_kelas", UpdateWaliKelasController);
+route.delete("/wali_kelas/:id", DeleteWaliKelasController);
 
 export default route;
