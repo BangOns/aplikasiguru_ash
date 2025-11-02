@@ -1,22 +1,24 @@
 import { Request, Response } from "express";
-import { prisma } from "../libs/prisma";
 import { responseData } from "../schema/response.schema";
 import { CreateSiswa, Siswa } from "../types/siswa";
 import {
   createSiswaService,
   getAllSiswaService,
 } from "../service/siswa.service";
+import { generateMessageResponse } from "../utils/generateMessageResponse";
 
 export const getAllSiswaController = async (req: Request, res: Response) => {
   try {
+    const { page: pages, limit: limits } = req.query;
+
     const { data, page, limit, total, totalPage } = await getAllSiswaService({
-      page: 1,
-      limit: 10,
+      page: pages ? Number(pages) : 1,
+      limit: limits ? Number(limits) : 10,
     });
     return responseData(
       {
         status: 200,
-        message: "success",
+        message: generateMessageResponse("siswa", "GET", 200),
         data,
         pagination: { page, limit, total, totalPage },
       },
@@ -26,7 +28,7 @@ export const getAllSiswaController = async (req: Request, res: Response) => {
     return responseData(
       {
         status: 500,
-        message: "error",
+        message: generateMessageResponse("siswa", "GET", 500),
         data: error,
       },
       res
