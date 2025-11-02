@@ -1,0 +1,104 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  // output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Siswa{
+id        String        @id @default(uuid()) @db.Char(36)
+nama      String   
+kelasId   String        @db.Char(36)
+jkl       String
+kelas     Kelas         @relation( fields: [kelasId], references: [id])
+kehadiran Kehadiran[]
+nilai_siswa   Nilai_Siswa[]
+
+
+}
+
+model Kelas {
+id            String        @id @default(uuid()) @db.Char(36)
+jurusanId     String        @db.Char(36)
+wali_kelasId  String        @db.Char(36)
+siswa         Siswa[]  
+jurusan       Jurusan       @relation(fields: [jurusanId],references: [id])
+wali_kelas    Wali_Kelas    @relation(fields: [wali_kelasId],references: [id])
+pelajaran     Pelajaran[]
+kehadiran     Kehadiran[]
+nilai_siswa   Nilai_Siswa[]
+
+}
+
+model Jurusan {
+id            String    @id @default(uuid()) @db.Char(36)
+nama_jurusan  String
+kelas         Kelas[]
+}
+
+model Wali_Kelas{
+id            String    @id @default(uuid()) @db.Char(36)
+nama          String
+telp          String
+email         String
+jkl           String
+kelas         Kelas[]
+pelajaran     Pelajaran[]
+}
+
+model Jadwal{
+id              String  @id @default(uuid()) @db.Char(36)
+activity        String  
+description     String
+date            DateTime @default(now())
+start_time      String
+end_time        String
+is_active       Boolean
+}
+
+model Pelajaran{
+    
+id              String      @id @default(uuid()) @db.Char(36)
+kelasId         String      @db.Char(36)
+wali_kelasId    String      @db.Char(36)
+kelas           Kelas       @relation(fields: [kelasId],references: [id])
+wali_kelas      Wali_Kelas  @relation(fields: [wali_kelasId],references: [id])
+kehadiran       Kehadiran[]
+nilai_siswa     Nilai_Siswa[]
+    
+}
+
+model Kehadiran{
+id              String      @id @default(uuid()) @db.Char(36)
+date            DateTime    @default(now())
+siswaId         String      @db.Char(36)
+kelasId         String      @db.Char(36)
+pelajaranId     String      @db.Char(36)
+status          String
+siswa           Siswa       @relation(fields: [siswaId],references: [id])
+kelas           Kelas       @relation(fields: [kelasId],references: [id])
+pelajaran       Pelajaran   @relation(fields: [pelajaranId],references: [id])
+}
+
+model Nilai_Siswa{
+id              String      @id @default(uuid()) @db.Char(36)
+siswaId         String      @db.Char(36)
+kelasId         String      @db.Char(36)
+pelajaranId     String      @db.Char(36)
+tugas           Int
+uts             Int
+uas             Int
+rata_rata       Int
+siswa           Siswa       @relation(fields: [siswaId],references: [id])
+kelas           Kelas       @relation(fields: [kelasId],references: [id])
+pelajaran       Pelajaran   @relation(fields: [pelajaranId],references: [id])
+}
