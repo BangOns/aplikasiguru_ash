@@ -18,7 +18,7 @@ export const getAllJadwalService = async ({
       date: "desc",
     },
   });
-  const total = await prisma.siswa.count();
+  const total = await prisma.jadwal.count();
   const totalPage = Math.ceil(total / limit);
 
   return { data: response, page, limit, total, totalPage };

@@ -28,11 +28,12 @@ nilai_siswa   Nilai_Siswa[]
 
 model Kelas {
 id            String        @id @default(uuid()) @db.Char(36)
+nama_kelas    String
 jurusanId     String        @db.Char(36)
 wali_kelasId  String        @db.Char(36)
-siswa         Siswa[]  
 jurusan       Jurusan       @relation(fields: [jurusanId],references: [id],onDelete: Cascade)
 wali_kelas    Wali_Kelas    @relation(fields: [wali_kelasId],references: [id])
+siswa         Siswa[]  
 pelajaran     Pelajaran[]
 kehadiran     Kehadiran[]
 nilai_siswa   Nilai_Siswa[]

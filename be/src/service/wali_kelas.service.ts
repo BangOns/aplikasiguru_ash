@@ -18,7 +18,7 @@ export const getAllWaliKelasService = async ({
       nama: "desc",
     },
   });
-  const total = await prisma.siswa.count();
+  const total = await prisma.wali_Kelas.count();
   const totalPage = Math.ceil(total / limit);
 
   return { data: response, page, limit, total, totalPage };

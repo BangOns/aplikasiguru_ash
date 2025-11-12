@@ -21,7 +21,7 @@ export const getAllJurusanService = async ({
       kelas: true,
     },
   });
-  const total = await prisma.siswa.count();
+  const total = await prisma.jurusan.count();
   const totalPage = Math.ceil(total / limit);
 
   return { data: response, page, limit, total, totalPage };
