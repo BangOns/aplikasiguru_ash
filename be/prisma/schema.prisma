@@ -69,13 +69,13 @@ is_active       Boolean
 model Pelajaran{
     
 id              String      @id @default(uuid()) @db.Char(36)
+nama_pelajaran  String
 kelasId         String      @db.Char(36)
 wali_kelasId    String      @db.Char(36)
 kelas           Kelas       @relation(fields: [kelasId],references: [id])
 wali_kelas      Wali_Kelas  @relation(fields: [wali_kelasId],references: [id])
 kehadiran       Kehadiran[]
-nilai_siswa     Nilai_Siswa[]
-    
+nilai_siswa     Nilai_Siswa[]   
 }
 
 model Kehadiran{

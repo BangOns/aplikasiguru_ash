@@ -1,5 +1,5 @@
 import { prisma } from "../libs/prisma";
-import { CreateSiswa, Siswa } from "../types/siswa";
+import { CreateSiswa, Siswa, UpdateSiswa } from "../types/siswa";
 
 export const getAllSiswaService = async ({
   page = 1,
@@ -28,12 +28,22 @@ export const getAllSiswaService = async ({
 
 export const createSiswaService = async (data: CreateSiswa) => {
   const siswa = await prisma.siswa.create({
-    data: {
-      nama: data.nama,
-      kelasId: data.kelasId,
-      jkl: data.jkl,
-    },
+    data,
   });
 
+  return siswa;
+};
+
+export const updateSiswaService = async (data: UpdateSiswa) => {
+  const siswa = await prisma.siswa.update({
+    where: { id: data.id },
+    data,
+  });
+  return siswa;
+};
+export const deleteSiswaService = async (id: string) => {
+  const siswa = await prisma.siswa.delete({
+    where: { id: id },
+  });
   return siswa;
 };

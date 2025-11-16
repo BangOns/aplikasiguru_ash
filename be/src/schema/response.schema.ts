@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { Pagination } from "types/pagination";
+import { Pagination } from "../types/pagination";
 
 export type ResponseType<T> = {
   status: number;

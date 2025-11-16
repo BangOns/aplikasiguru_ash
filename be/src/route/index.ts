@@ -11,8 +11,10 @@ import {
   UpdateJadwalController,
 } from "../controller/jadwal";
 import {
-  createSiswaController,
-  getAllSiswaController,
+  CreateSiswaController,
+  DeleteSiswaController,
+  GetAllSiswaController,
+  UpdateSiswaController,
 } from "../controller/siswa";
 import { Request, Response, Router } from "express";
 import {
@@ -27,6 +29,30 @@ import {
   GetAllKelasController,
   UpdateKelasController,
 } from "../controller/kelas";
+import {
+  CreatePelajaranController,
+  DeletePelajaranController,
+  GetAllPelajaranController,
+  UpdatePelajaranController,
+} from "../controller/pelajaran";
+import {
+  CreateKehadiranController,
+  DeleteKehadiranController,
+  GetAllKehadiranController,
+  UpdateKehadiranController,
+} from "../controller/kehadiran";
+import {
+  CreateNilaiController,
+  DeleteNilaiController,
+  GetAllNilaiController,
+  UpdateNilaiController,
+} from "../controller/nilai_siswa";
+import {
+  createSiswaMiddleware,
+  deleteSiswaMiddleware,
+  updateSiswaMiddleware,
+} from "../middleware/siswa.middleware";
+import { createJadwalMiddleware } from "../middleware/jadwal.middleware";
 
 const route = Router();
 
@@ -34,12 +60,14 @@ route.get("/", async (req: Request, res: Response) => {
   res.send("Hello API Working");
 });
 // siswa
-route.get("/siswa", getAllSiswaController);
-route.post("/siswa", createSiswaController);
+route.get("/siswa", GetAllSiswaController);
+route.post("/siswa", createSiswaMiddleware, CreateSiswaController);
+route.put("/siswa", updateSiswaMiddleware, UpdateSiswaController);
+route.delete("/siswa/:id", deleteSiswaMiddleware, DeleteSiswaController);
 
 //jadwal
 route.get("/jadwal", GetAllJadwalController);
-route.post("/jadwal", CreateJadwalController);
+route.post("/jadwal", createJadwalMiddleware, CreateJadwalController);
 route.put("/jadwal", UpdateJadwalController);
 route.delete("/jadwal/:id", DeleteJadwalController);
 
@@ -60,4 +88,23 @@ route.get("/kelas", GetAllKelasController);
 route.post("/kelas", CreateKelasController);
 route.put("/kelas", UpdateKelasController);
 route.delete("/kelas/:id", DeleteKelasController);
+
+// pelajaran
+route.get("/pelajaran", GetAllPelajaranController);
+route.post("/pelajaran", CreatePelajaranController);
+route.put("/pelajaran", UpdatePelajaranController);
+route.delete("/pelajaran/:id", DeletePelajaranController);
+
+// kehadiran
+route.get("/kehadiran", GetAllKehadiranController);
+route.post("/kehadiran", CreateKehadiranController);
+route.put("/kehadiran", UpdateKehadiranController);
+route.delete("/kehadiran/:id", DeleteKehadiranController);
+
+//nilai siswa
+route.get("/nilai-siswa", GetAllNilaiController);
+route.post("/nilai-siswa", CreateNilaiController);
+route.put("/nilai-siswa", UpdateNilaiController);
+route.delete("/nilai-siswa/:id", DeleteNilaiController);
+
 export default route;
