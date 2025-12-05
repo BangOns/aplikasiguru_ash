@@ -52,7 +52,11 @@ import {
   deleteSiswaMiddleware,
   updateSiswaMiddleware,
 } from "../middleware/siswa.middleware";
-import { createJadwalMiddleware } from "../middleware/jadwal.middleware";
+import {
+  createJadwalMiddleware,
+  deletejadwalMiddleware,
+  updateJadwalMiddleware,
+} from "../middleware/jadwal.middleware";
 
 const route = Router();
 
@@ -68,8 +72,8 @@ route.delete("/siswa/:id", deleteSiswaMiddleware, DeleteSiswaController);
 //jadwal
 route.get("/jadwal", GetAllJadwalController);
 route.post("/jadwal", createJadwalMiddleware, CreateJadwalController);
-route.put("/jadwal", UpdateJadwalController);
-route.delete("/jadwal/:id", DeleteJadwalController);
+route.put("/jadwal", updateJadwalMiddleware, UpdateJadwalController);
+route.delete("/jadwal/:id", deletejadwalMiddleware, DeleteJadwalController);
 
 // Jurusan
 route.get("/jurusan", GetAllJurusanController);
