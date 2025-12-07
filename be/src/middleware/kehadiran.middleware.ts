@@ -2,32 +2,38 @@ import { NextFunction, Request, Response } from "express";
 import { prisma } from "../libs/prisma";
 import { CreateSiswa, UpdateSiswa } from "../types/siswa";
 import { responseData } from "../schema/response.schema";
-import { validatePayloadXSS } from "../utils/validatePayload";
+import { validateDateType, validatePayloadXSS } from "../utils/validatePayload";
 import xss from "xss";
+import { CreateKehadiran, UpdateKehadiran } from "../types/kehadiran";
 
-export const createSiswaMiddleware = async (
+export const createKehadiranMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const { kelasId, jkl, nama } = req.body as CreateSiswa;
-    const validateData = validatePayloadXSS({ nama, kelasId, jkl });
-    if (validateData) {
+    const { kelasId, date, pelajaranId, siswaId, status } =
+      req.body as CreateKehadiran;
+    const validateData = validatePayloadXSS({
+      pelajaranId,
+      kelasId,
+      siswaId,
+      status,
+    });
+    const validateDate = validateDateType(date);
+    if (validateData && validateDate) {
       throw new Error(validateData);
     }
-    const getFindKelas = await prisma.kelas.findUnique({
+
+    const getFindKehadiran = await prisma.kehadiran.findUnique({
       where: {
         id: kelasId,
       },
     });
-    if (!getFindKelas) {
+    if (!getFindKehadiran) {
       throw new Error("Kelas tidak ditemukan");
     }
 
-    if (jkl !== "L" && jkl !== "P") {
-      throw new Error("Jenis Kelamin tidak sesuai");
-    }
     next();
   } catch (error: any) {
     responseData(
@@ -37,14 +43,21 @@ export const createSiswaMiddleware = async (
   }
 };
 
-export const updateSiswaMiddleware = async (
+export const updateKehadiranMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const { kelasId, jkl, id, nama } = req.body as UpdateSiswa;
-    const validateData = validatePayloadXSS({ nama, kelasId, jkl, id });
+    const { pelajaranId, kelasId, siswaId, status, id } =
+      req.body as UpdateKehadiran;
+    const validateData = validatePayloadXSS({
+      pelajaranId,
+      kelasId,
+      siswaId,
+      status,
+      id,
+    });
     if (validateData) {
       throw new Error(validateData);
     }
@@ -58,15 +71,19 @@ export const updateSiswaMiddleware = async (
         id: kelasId,
       },
     });
+    const getFindKehadiran = await prisma.kehadiran.findUnique({
+      where: {
+        id: kelasId,
+      },
+    });
     if (!getFindSiswa) {
       throw new Error("Siswa tidak ditemukan");
     }
     if (!getFindKelas) {
       throw new Error("Kelas tidak ditemukan");
     }
-
-    if (jkl !== "L" && jkl !== "P") {
-      throw new Error("Jenis Kelamin tidak sesuai");
+    if (!getFindKehadiran) {
+      throw new Error("Kehadiran tidak ditemukan");
     }
     next();
   } catch (error: any) {
@@ -77,20 +94,20 @@ export const updateSiswaMiddleware = async (
     next();
   }
 };
-export const deleteSiswaMiddleware = async (
+export const deleteKehadiranMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
     const id = xss(req.params.id as string);
-    const getFindSiswa = await prisma.siswa.findUnique({
+    const getFindKehadiran = await prisma.kehadiran.findUnique({
       where: {
         id: id,
       },
     });
-    if (!getFindSiswa) {
-      throw new Error("Siswa tidak ditemukan");
+    if (!getFindKehadiran) {
+      throw new Error("kehadiran tidak ditemukan");
     }
     next();
   } catch (error: any) {

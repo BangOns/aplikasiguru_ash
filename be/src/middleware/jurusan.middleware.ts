@@ -1,24 +1,19 @@
 import { prisma } from "../libs/prisma";
 import { responseData } from "../schema/response.schema";
 import { NextFunction, Request, Response } from "express";
-import { CreateJadwal, UpdateJadwal } from "../types/jadwal";
-import { validateDateType, validatePayloadXSS } from "../utils/validatePayload";
-export const createJadwalMiddleware = async (
+import { validatePayloadXSS } from "../utils/validatePayload";
+import { CreateJurusan, UpdateJurusan } from "../types/jurusan.type";
+export const createJurusanMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const { activity, date, end_time, start_time, description } =
-      req.body as CreateJadwal;
+    const { nama_jurusan } = req.body as CreateJurusan;
     const validateData = validatePayloadXSS({
-      activity,
-      end_time,
-      start_time,
-      description,
+      nama_jurusan,
     });
-    const validateDate = validateDateType(date);
-    if (validateData && validateDate) {
+    if (validateData) {
       throw new Error(validateData);
     }
 
@@ -30,28 +25,23 @@ export const createJadwalMiddleware = async (
     );
   }
 };
-export const updateJadwalMiddleware = async (
+export const updateJurusanMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const { id, activity, date, end_time, start_time, description } =
-      req.body as UpdateJadwal;
+    const { id, nama_jurusan } = req.body as UpdateJurusan;
 
     const validateData = validatePayloadXSS({
-      activity,
-      end_time,
-      start_time,
-      description,
+      nama_jurusan,
       id,
     });
-    const validateDate = validateDateType(date);
-    if (validateData && validateDate) {
+    if (validateData) {
       throw new Error(validateData);
     }
 
-    const getFindJadwal = await prisma.jadwal.findUnique({
+    const getFindJadwal = await prisma.jurusan.findUnique({
       where: {
         id: id,
       },
@@ -69,19 +59,19 @@ export const updateJadwalMiddleware = async (
   }
 };
 
-export const deletejadwalMiddleware = async (
+export const deletejurusanMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
     const id = req.params.id as string;
-    const getFindJadwal = await prisma.jadwal.findUnique({
+    const getFindSiswa = await prisma.jurusan.findUnique({
       where: {
         id: id,
       },
     });
-    if (!getFindJadwal) {
+    if (!getFindSiswa) {
       throw new Error("Jadwal tidak ditemukan");
     }
     next();

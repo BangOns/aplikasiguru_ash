@@ -1,24 +1,24 @@
 import { prisma } from "../libs/prisma";
 import { responseData } from "../schema/response.schema";
 import { NextFunction, Request, Response } from "express";
-import { CreateJadwal, UpdateJadwal } from "../types/jadwal";
-import { validateDateType, validatePayloadXSS } from "../utils/validatePayload";
-export const createJadwalMiddleware = async (
+import { validatePayloadXSS } from "../utils/validatePayload";
+import { CreateKelas, UpdateKelas } from "../types/kelas";
+import { CreatePelajaran, UpdatePelajaran } from "../types/pelajaran";
+import xss from "xss";
+export const createPelajaranMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const { activity, date, end_time, start_time, description } =
-      req.body as CreateJadwal;
+    const { kelasId, nama_pelajaran, wali_kelasId } =
+      req.body as CreatePelajaran;
     const validateData = validatePayloadXSS({
-      activity,
-      end_time,
-      start_time,
-      description,
+      kelasId,
+      nama_pelajaran,
+      wali_kelasId,
     });
-    const validateDate = validateDateType(date);
-    if (validateData && validateDate) {
+    if (validateData) {
       throw new Error(validateData);
     }
 
@@ -30,34 +30,32 @@ export const createJadwalMiddleware = async (
     );
   }
 };
-export const updateJadwalMiddleware = async (
+export const updatePelajaranMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const { id, activity, date, end_time, start_time, description } =
-      req.body as UpdateJadwal;
+    const { id, kelasId, nama_pelajaran, wali_kelasId } =
+      req.body as UpdatePelajaran;
 
     const validateData = validatePayloadXSS({
-      activity,
-      end_time,
-      start_time,
-      description,
+      kelasId,
+      nama_pelajaran,
+      wali_kelasId,
       id,
     });
-    const validateDate = validateDateType(date);
-    if (validateData && validateDate) {
+    if (validateData) {
       throw new Error(validateData);
     }
 
-    const getFindJadwal = await prisma.jadwal.findUnique({
+    const getPelajaran = await prisma.pelajaran.findUnique({
       where: {
         id: id,
       },
     });
-    if (!getFindJadwal) {
-      throw new Error("Jadwal tidak ditemukan");
+    if (!getPelajaran) {
+      throw new Error("Pelajaran tidak ditemukan");
     }
 
     next();
@@ -69,20 +67,20 @@ export const updateJadwalMiddleware = async (
   }
 };
 
-export const deletejadwalMiddleware = async (
+export const deletePelajaranMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const id = req.params.id as string;
-    const getFindJadwal = await prisma.jadwal.findUnique({
+    const id = xss(req.params.id as string);
+    const getPelajaran = await prisma.pelajaran.findUnique({
       where: {
         id: id,
       },
     });
-    if (!getFindJadwal) {
-      throw new Error("Jadwal tidak ditemukan");
+    if (!getPelajaran) {
+      throw new Error("Kelas tidak ditemukan");
     }
     next();
   } catch (error: any) {

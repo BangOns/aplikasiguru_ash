@@ -1,24 +1,21 @@
 import { prisma } from "../libs/prisma";
 import { responseData } from "../schema/response.schema";
 import { NextFunction, Request, Response } from "express";
-import { CreateJadwal, UpdateJadwal } from "../types/jadwal";
-import { validateDateType, validatePayloadXSS } from "../utils/validatePayload";
-export const createJadwalMiddleware = async (
+import { validatePayloadXSS } from "../utils/validatePayload";
+import { CreateKelas, UpdateKelas } from "../types/kelas";
+export const createKelasMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const { activity, date, end_time, start_time, description } =
-      req.body as CreateJadwal;
+    const { jurusanId, nama_kelas, wali_kelasId } = req.body as CreateKelas;
     const validateData = validatePayloadXSS({
-      activity,
-      end_time,
-      start_time,
-      description,
+      jurusanId,
+      nama_kelas,
+      wali_kelasId,
     });
-    const validateDate = validateDateType(date);
-    if (validateData && validateDate) {
+    if (validateData) {
       throw new Error(validateData);
     }
 
@@ -30,34 +27,31 @@ export const createJadwalMiddleware = async (
     );
   }
 };
-export const updateJadwalMiddleware = async (
+export const updateKelasMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const { id, activity, date, end_time, start_time, description } =
-      req.body as UpdateJadwal;
+    const { id, jurusanId, nama_kelas, wali_kelasId } = req.body as UpdateKelas;
 
     const validateData = validatePayloadXSS({
-      activity,
-      end_time,
-      start_time,
-      description,
+      jurusanId,
+      nama_kelas,
+      wali_kelasId,
       id,
     });
-    const validateDate = validateDateType(date);
-    if (validateData && validateDate) {
+    if (validateData) {
       throw new Error(validateData);
     }
 
-    const getFindJadwal = await prisma.jadwal.findUnique({
+    const getKelas = await prisma.kelas.findUnique({
       where: {
         id: id,
       },
     });
-    if (!getFindJadwal) {
-      throw new Error("Jadwal tidak ditemukan");
+    if (!getKelas) {
+      throw new Error("Kelas tidak ditemukan");
     }
 
     next();
@@ -69,20 +63,20 @@ export const updateJadwalMiddleware = async (
   }
 };
 
-export const deletejadwalMiddleware = async (
+export const deleteKelasMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
     const id = req.params.id as string;
-    const getFindJadwal = await prisma.jadwal.findUnique({
+    const getKelas = await prisma.kelas.findUnique({
       where: {
         id: id,
       },
     });
-    if (!getFindJadwal) {
-      throw new Error("Jadwal tidak ditemukan");
+    if (!getKelas) {
+      throw new Error("Kelas tidak ditemukan");
     }
     next();
   } catch (error: any) {

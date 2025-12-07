@@ -9,3 +9,4 @@ export interface CreateKelas {
   jurusanId: string;
   wali_kelasId: string;
 }
+export interface UpdateKelas extends Kelas {}

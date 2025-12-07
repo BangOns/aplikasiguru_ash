@@ -1,24 +1,28 @@
 import { prisma } from "../libs/prisma";
 import { responseData } from "../schema/response.schema";
 import { NextFunction, Request, Response } from "express";
-import { CreateJadwal, UpdateJadwal } from "../types/jadwal";
-import { validateDateType, validatePayloadXSS } from "../utils/validatePayload";
-export const createJadwalMiddleware = async (
+import { validatePayloadXSS } from "../utils/validatePayload";
+import { CreatePelajaran, UpdatePelajaran } from "../types/pelajaran";
+import xss from "xss";
+import { CreateNilai, UpdateNilai } from "../types/nilai_siswa";
+export const createNilaiMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const { activity, date, end_time, start_time, description } =
-      req.body as CreateJadwal;
+    const { kelasId, pelajaranId, rata_rata, siswaId, tugas, uas, uts } =
+      req.body as CreateNilai;
     const validateData = validatePayloadXSS({
-      activity,
-      end_time,
-      start_time,
-      description,
+      kelasId,
+      pelajaranId,
+      rata_rata,
+      siswaId,
+      tugas,
+      uas,
+      uts,
     });
-    const validateDate = validateDateType(date);
-    if (validateData && validateDate) {
+    if (validateData) {
       throw new Error(validateData);
     }
 
@@ -30,34 +34,32 @@ export const createJadwalMiddleware = async (
     );
   }
 };
-export const updateJadwalMiddleware = async (
+export const updateNilaiMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const { id, activity, date, end_time, start_time, description } =
-      req.body as UpdateJadwal;
+    const { id, rata_rata, tugas, uas, uts } = req.body as UpdateNilai;
 
     const validateData = validatePayloadXSS({
-      activity,
-      end_time,
-      start_time,
-      description,
+      rata_rata,
+      tugas,
+      uas,
+      uts,
       id,
     });
-    const validateDate = validateDateType(date);
-    if (validateData && validateDate) {
+    if (validateData) {
       throw new Error(validateData);
     }
 
-    const getFindJadwal = await prisma.jadwal.findUnique({
+    const getNilai = await prisma.nilai_Siswa.findUnique({
       where: {
         id: id,
       },
     });
-    if (!getFindJadwal) {
-      throw new Error("Jadwal tidak ditemukan");
+    if (!getNilai) {
+      throw new Error("Nilai tidak ditemukan");
     }
 
     next();
@@ -69,20 +71,20 @@ export const updateJadwalMiddleware = async (
   }
 };
 
-export const deletejadwalMiddleware = async (
+export const deleteNilaiMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const id = req.params.id as string;
-    const getFindJadwal = await prisma.jadwal.findUnique({
+    const id = xss(req.params.id as string);
+    const getNilai = await prisma.nilai_Siswa.findUnique({
       where: {
         id: id,
       },
     });
-    if (!getFindJadwal) {
-      throw new Error("Jadwal tidak ditemukan");
+    if (!getNilai) {
+      throw new Error("Nilai tidak ditemukan");
     }
     next();
   } catch (error: any) {

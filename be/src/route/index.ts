@@ -57,6 +57,36 @@ import {
   deletejadwalMiddleware,
   updateJadwalMiddleware,
 } from "../middleware/jadwal.middleware";
+import {
+  createJurusanMiddleware,
+  deletejurusanMiddleware,
+  updateJurusanMiddleware,
+} from "../middleware/jurusan.middleware";
+import {
+  createWaliKelasMiddleware,
+  deleteWaliKelasMiddleware,
+  updateWaliKelasMiddleware,
+} from "../middleware/wali_kelas.middleware";
+import {
+  createKelasMiddleware,
+  deleteKelasMiddleware,
+  updateKelasMiddleware,
+} from "../middleware/kelas.middleware";
+import {
+  createPelajaranMiddleware,
+  deletePelajaranMiddleware,
+  updatePelajaranMiddleware,
+} from "../middleware/pelajaran.middleware";
+import {
+  createKehadiranMiddleware,
+  deleteKehadiranMiddleware,
+  updateKehadiranMiddleware,
+} from "../middleware/kehadiran.middleware";
+import {
+  createNilaiMiddleware,
+  deleteNilaiMiddleware,
+  updateNilaiMiddleware,
+} from "../middleware/nilai.middleware";
 
 const route = Router();
 
@@ -77,38 +107,50 @@ route.delete("/jadwal/:id", deletejadwalMiddleware, DeleteJadwalController);
 
 // Jurusan
 route.get("/jurusan", GetAllJurusanController);
-route.post("/jurusan", CreateJurusanController);
-route.put("/jurusan", UpdateJurusanController);
-route.delete("/jurusan/:id", DeleteJurusanController);
+route.post("/jurusan", createJurusanMiddleware, CreateJurusanController);
+route.put("/jurusan", updateJurusanMiddleware, UpdateJurusanController);
+route.delete("/jurusan/:id", deletejurusanMiddleware, DeleteJurusanController);
 
 // wali kelas
 route.get("/wali_kelas", GetAllWaliKelasController);
-route.post("/wali_kelas", CreateWaliKelasController);
-route.put("/wali_kelas", UpdateWaliKelasController);
-route.delete("/wali_kelas/:id", DeleteWaliKelasController);
+route.post("/wali_kelas", createWaliKelasMiddleware, CreateWaliKelasController);
+route.put("/wali_kelas", updateWaliKelasMiddleware, UpdateWaliKelasController);
+route.delete(
+  "/wali_kelas/:id",
+  deleteWaliKelasMiddleware,
+  DeleteWaliKelasController
+);
 
 // kelas
 route.get("/kelas", GetAllKelasController);
-route.post("/kelas", CreateKelasController);
-route.put("/kelas", UpdateKelasController);
-route.delete("/kelas/:id", DeleteKelasController);
+route.post("/kelas", createKelasMiddleware, CreateKelasController);
+route.put("/kelas", updateKelasMiddleware, UpdateKelasController);
+route.delete("/kelas/:id", deleteKelasMiddleware, DeleteKelasController);
 
 // pelajaran
 route.get("/pelajaran", GetAllPelajaranController);
-route.post("/pelajaran", CreatePelajaranController);
-route.put("/pelajaran", UpdatePelajaranController);
-route.delete("/pelajaran/:id", DeletePelajaranController);
+route.post("/pelajaran", createPelajaranMiddleware, CreatePelajaranController);
+route.put("/pelajaran", updatePelajaranMiddleware, UpdatePelajaranController);
+route.delete(
+  "/pelajaran/:id",
+  deletePelajaranMiddleware,
+  DeletePelajaranController
+);
 
 // kehadiran
 route.get("/kehadiran", GetAllKehadiranController);
-route.post("/kehadiran", CreateKehadiranController);
-route.put("/kehadiran", UpdateKehadiranController);
-route.delete("/kehadiran/:id", DeleteKehadiranController);
+route.post("/kehadiran", createKehadiranMiddleware, CreateKehadiranController);
+route.put("/kehadiran", updateKehadiranMiddleware, UpdateKehadiranController);
+route.delete(
+  "/kehadiran/:id",
+  deleteKehadiranMiddleware,
+  DeleteKehadiranController
+);
 
 //nilai siswa
 route.get("/nilai-siswa", GetAllNilaiController);
-route.post("/nilai-siswa", CreateNilaiController);
-route.put("/nilai-siswa", UpdateNilaiController);
-route.delete("/nilai-siswa/:id", DeleteNilaiController);
+route.post("/nilai-siswa", createNilaiMiddleware, CreateNilaiController);
+route.put("/nilai-siswa", updateNilaiMiddleware, UpdateNilaiController);
+route.delete("/nilai-siswa/:id", deleteNilaiMiddleware, DeleteNilaiController);
 
 export default route;
