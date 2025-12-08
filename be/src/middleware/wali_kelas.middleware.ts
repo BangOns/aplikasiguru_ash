@@ -19,7 +19,9 @@ export const createWaliKelasMiddleware = async (
     if (validateData) {
       throw new Error(validateData);
     }
-
+    if (jkl !== "L" && jkl !== "P") {
+      throw new Error("Jenis Kelamin tidak sesuai");
+    }
     next();
   } catch (error: any) {
     responseData(
@@ -55,7 +57,9 @@ export const updateWaliKelasMiddleware = async (
     if (!getFindWaliKelas) {
       throw new Error("Wali Kelas tidak ditemukan");
     }
-
+    if (jkl !== "L" && jkl !== "P") {
+      throw new Error("Jenis Kelamin tidak sesuai");
+    }
     next();
   } catch (error: any) {
     responseData(

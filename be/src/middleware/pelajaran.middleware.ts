@@ -54,10 +54,26 @@ export const updatePelajaranMiddleware = async (
         id: id,
       },
     });
+
+    const getKelas = await prisma.kelas.findUnique({
+      where: {
+        id: kelasId,
+      },
+    });
+    const getWaliKelas = await prisma.wali_Kelas.findUnique({
+      where: {
+        id: wali_kelasId,
+      },
+    });
     if (!getPelajaran) {
       throw new Error("Pelajaran tidak ditemukan");
     }
-
+    if (!getKelas) {
+      throw new Error("Kelas tidak ditemukan");
+    }
+    if (!getWaliKelas) {
+      throw new Error("Wali Kelas tidak ditemukan");
+    }
     next();
   } catch (error: any) {
     responseData(

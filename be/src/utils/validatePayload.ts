@@ -25,5 +25,7 @@ export const validatePayloadXSS = (payload: Payload) => {
 };
 
 export const validateDateType = (date: Date) => {
-  return !isNaN(date.getTime());
+  const dates = new Date(date);
+
+  return !isNaN(dates.getTime());
 };

@@ -14,6 +14,8 @@ export const createKehadiranMiddleware = async (
   try {
     const { kelasId, date, pelajaranId, siswaId, status } =
       req.body as CreateKehadiran;
+    console.log(kelasId);
+
     const validateData = validatePayloadXSS({
       pelajaranId,
       kelasId,
@@ -25,15 +27,30 @@ export const createKehadiranMiddleware = async (
       throw new Error(validateData);
     }
 
-    const getFindKehadiran = await prisma.kehadiran.findUnique({
+    const getFindKelas = await prisma.kelas.findUnique({
       where: {
         id: kelasId,
       },
     });
-    if (!getFindKehadiran) {
+    if (!getFindKelas) {
       throw new Error("Kelas tidak ditemukan");
     }
-
+    const getFindPelajaran = await prisma.pelajaran.findUnique({
+      where: {
+        id: pelajaranId,
+      },
+    });
+    if (!getFindPelajaran) {
+      throw new Error("Pelajaran Kelas tidak ditemukan");
+    }
+    const getFindSiswa = await prisma.siswa.findUnique({
+      where: {
+        id: siswaId,
+      },
+    });
+    if (!getFindSiswa) {
+      throw new Error("Siswa tidak ditemukan");
+    }
     next();
   } catch (error: any) {
     responseData(
@@ -61,9 +78,14 @@ export const updateKehadiranMiddleware = async (
     if (validateData) {
       throw new Error(validateData);
     }
-    const getFindSiswa = await prisma.siswa.findUnique({
+    const getFindKehadiran = await prisma.kehadiran.findUnique({
       where: {
         id: id,
+      },
+    });
+    const getFindSiswa = await prisma.siswa.findUnique({
+      where: {
+        id: siswaId,
       },
     });
     const getFindKelas = await prisma.kelas.findUnique({
@@ -71,11 +93,7 @@ export const updateKehadiranMiddleware = async (
         id: kelasId,
       },
     });
-    const getFindKehadiran = await prisma.kehadiran.findUnique({
-      where: {
-        id: kelasId,
-      },
-    });
+
     if (!getFindSiswa) {
       throw new Error("Siswa tidak ditemukan");
     }

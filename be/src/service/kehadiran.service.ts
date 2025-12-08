@@ -36,7 +36,7 @@ export const createKehadiranService = async (data: CreateKehadiran) => {
   return kehadiran;
 };
 export const updateKehadiranService = async (data: UpdateKehadiran) => {
-  const kehadiran = await prisma.pelajaran.update({
+  const kehadiran = await prisma.kehadiran.update({
     where: { id: data.id },
     data,
   });
