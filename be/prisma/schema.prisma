@@ -1,105 +1,110 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client-js"
-  // output   = "../src/generated/prisma"
+  provider = "prisma-client"
+  output   = "./generated/prisma"
 }
 
 datasource db {
   provider = "mysql"
-  url      = env("DATABASE_URL")
 }
 
-model Siswa{
-id        String        @id @default(uuid()) @db.Char(36)
-nama      String   
-kelasId   String        @db.Char(36)
-jkl       String
-kelas     Kelas         @relation( fields: [kelasId], references: [id])
-kehadiran Kehadiran[]
-nilai_siswa   Nilai_Siswa[]
-
-
+model jadwal {
+   id         String  @id @default(uuid()) @db.Char(36)
+  activity    String
+  description String
+  date        DateTime @default(now())
+  start_time  String
+  end_time    String
+  is_active   Boolean
 }
 
-model Kelas {
-id            String        @id @default(uuid()) @db.Char(36)
-nama_kelas    String
-jurusanId     String        @db.Char(36)
-wali_kelasId  String        @db.Char(36)
-jurusan       Jurusan       @relation(fields: [jurusanId],references: [id],onDelete: Cascade)
-wali_kelas    Wali_Kelas    @relation(fields: [wali_kelasId],references: [id])
-siswa         Siswa[]  
-pelajaran     Pelajaran[]
-kehadiran     Kehadiran[]
-nilai_siswa   Nilai_Siswa[]
-
+model jurusan {
+  id           String  @id @default(uuid()) @db.Char(36)
+  nama_jurusan String
+  kelas        kelas[]
 }
 
-model Jurusan {
-id            String    @id @default(uuid()) @db.Char(36)
-nama_jurusan  String
-kelas         Kelas[]
+model kehadiran {
+  id          String  @id @default(uuid()) @db.Char(36)
+  date        DateTime  @default(now())
+  siswaId     String    @db.Char(36)
+  kelasId     String    @db.Char(36)
+  pelajaranId String    @db.Char(36)
+  status      String
+  kelas       kelas     @relation(fields: [kelasId], references: [id], map: "Kehadiran_kelasId_fkey")
+  pelajaran   pelajaran @relation(fields: [pelajaranId], references: [id], map: "Kehadiran_pelajaranId_fkey")
+  siswa       siswa     @relation(fields: [siswaId], references: [id], map: "Kehadiran_siswaId_fkey")
+
+  @@index([kelasId], map: "Kehadiran_kelasId_fkey")
+  @@index([pelajaranId], map: "Kehadiran_pelajaranId_fkey")
+  @@index([siswaId], map: "Kehadiran_siswaId_fkey")
 }
 
-model Wali_Kelas{
-id            String    @id @default(uuid()) @db.Char(36)
-nama          String
-telp          String
-email         String
-jkl           String
-kelas         Kelas[]
-pelajaran     Pelajaran[]
+model kelas {
+   id          String  @id @default(uuid()) @db.Char(36)
+  jurusanId    String        @db.Char(36)
+  wali_kelasId String        @db.Char(36)
+  nama_kelas   String
+  kehadiran    kehadiran[]
+  jurusan      jurusan       @relation(fields: [jurusanId], references: [id], onDelete: Cascade, map: "Kelas_jurusanId_fkey")
+  wali_kelas   wali_kelas    @relation(fields: [wali_kelasId], references: [id], map: "Kelas_wali_kelasId_fkey")
+  nilai_siswa  nilai_siswa[]
+  pelajaran    pelajaran[]
+  siswa        siswa[]
+
+  @@index([jurusanId], map: "Kelas_jurusanId_fkey")
+  @@index([wali_kelasId], map: "Kelas_wali_kelasId_fkey")
 }
 
-model Jadwal{
-id              String  @id @default(uuid()) @db.Char(36)
-activity        String  
-description     String
-date            DateTime @default(now())
-start_time      String
-end_time        String
-is_active       Boolean
+model nilai_siswa {
+   id         String  @id @default(uuid()) @db.Char(36)
+  siswaId     String    @db.Char(36)
+  kelasId     String    @db.Char(36)
+  pelajaranId String    @db.Char(36)
+  tugas       Int
+  uts         Int
+  uas         Int
+  rata_rata   Int
+  kelas       kelas     @relation(fields: [kelasId], references: [id], map: "Nilai_Siswa_kelasId_fkey")
+  pelajaran   pelajaran @relation(fields: [pelajaranId], references: [id], map: "Nilai_Siswa_pelajaranId_fkey")
+  siswa       siswa     @relation(fields: [siswaId], references: [id], map: "Nilai_Siswa_siswaId_fkey")
+
+  @@index([kelasId], map: "Nilai_Siswa_kelasId_fkey")
+  @@index([pelajaranId], map: "Nilai_Siswa_pelajaranId_fkey")
+  @@index([siswaId], map: "Nilai_Siswa_siswaId_fkey")
 }
 
-model Pelajaran{
-    
-id              String      @id @default(uuid()) @db.Char(36)
-nama_pelajaran  String
-kelasId         String      @db.Char(36)
-wali_kelasId    String      @db.Char(36)
-kelas           Kelas       @relation(fields: [kelasId],references: [id])
-wali_kelas      Wali_Kelas  @relation(fields: [wali_kelasId],references: [id])
-kehadiran       Kehadiran[]
-nilai_siswa     Nilai_Siswa[]   
+model pelajaran {
+  id             String  @id @default(uuid()) @db.Char(36)
+  kelasId        String        @db.Char(36)
+  wali_kelasId   String        @db.Char(36)
+  nama_pelajaran String
+  kehadiran      kehadiran[]
+  nilai_siswa    nilai_siswa[]
+  kelas          kelas         @relation(fields: [kelasId], references: [id], map: "Pelajaran_kelasId_fkey")
+  wali_kelas     wali_kelas    @relation(fields: [wali_kelasId], references: [id], map: "Pelajaran_wali_kelasId_fkey")
+
+  @@index([kelasId], map: "Pelajaran_kelasId_fkey")
+  @@index([wali_kelasId], map: "Pelajaran_wali_kelasId_fkey")
 }
 
-model Kehadiran{
-id              String      @id @default(uuid()) @db.Char(36)
-date            DateTime    @default(now())
-siswaId         String      @db.Char(36)
-kelasId         String      @db.Char(36)
-pelajaranId     String      @db.Char(36)
-status          String
-siswa           Siswa       @relation(fields: [siswaId],references: [id])
-kelas           Kelas       @relation(fields: [kelasId],references: [id])
-pelajaran       Pelajaran   @relation(fields: [pelajaranId],references: [id])
+model siswa {
+  id          String  @id @default(uuid()) @db.Char(36)
+  nama        String
+  kelasId     String        @db.Char(36)
+  jkl         String
+  kehadiran   kehadiran[]
+  nilai_siswa nilai_siswa[]
+  kelas       kelas         @relation(fields: [kelasId], references: [id], map: "Siswa_kelasId_fkey")
+
+  @@index([kelasId], map: "Siswa_kelasId_fkey")
 }
 
-model Nilai_Siswa{
-id              String      @id @default(uuid()) @db.Char(36)
-siswaId         String      @db.Char(36)
-kelasId         String      @db.Char(36)
-pelajaranId     String      @db.Char(36)
-tugas           Int
-uts             Int
-uas             Int
-rata_rata       Int
-siswa           Siswa       @relation(fields: [siswaId],references: [id])
-kelas           Kelas       @relation(fields: [kelasId],references: [id])
-pelajaran       Pelajaran   @relation(fields: [pelajaranId],references: [id])
+model wali_kelas {
+  id        String  @id @default(uuid()) @db.Char(36)
+  nama      String
+  telp      String
+  email     String
+  jkl       String
+  kelas     kelas[]
+  pelajaran pelajaran[]
 }

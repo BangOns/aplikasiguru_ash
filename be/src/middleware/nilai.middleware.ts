@@ -53,7 +53,7 @@ export const updateNilaiMiddleware = async (
       throw new Error(validateData);
     }
 
-    const getNilai = await prisma.nilai_Siswa.findUnique({
+    const getNilai = await prisma.nilai_siswa.findUnique({
       where: {
         id: id,
       },
@@ -78,7 +78,7 @@ export const deleteNilaiMiddleware = async (
 ) => {
   try {
     const id = xss(req.params.id as string);
-    const getNilai = await prisma.nilai_Siswa.findUnique({
+    const getNilai = await prisma.nilai_siswa.findUnique({
       where: {
         id: id,
       },

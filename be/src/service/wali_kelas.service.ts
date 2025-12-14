@@ -11,33 +11,35 @@ export const getAllWaliKelasService = async ({
   const pages = page;
   const limits = limit;
   const skip = (pages - 1) * limits;
-  const response: WaliKelas[] = await prisma.wali_Kelas.findMany({
+  const response: WaliKelas[] = await prisma.wali_kelas.findMany({
     skip,
     take: limit,
     orderBy: {
       nama: "desc",
     },
   });
-  const total = await prisma.wali_Kelas.count();
+  const total = await prisma.wali_kelas.count();
   const totalPage = Math.ceil(total / limit);
 
   return { data: response, page, limit, total, totalPage };
 };
 
 export const createWaliKelasService = async (data: CreateWaliKelas) => {
-  const wali_kelas = await prisma.wali_Kelas.create({ data: data });
-  return wali_kelas;
+  const wali_kelaswali_kelas = await prisma.wali_kelas.create({ data: data });
+  return wali_kelaswali_kelas;
 };
 
 export const updateWaliKelasService = async (data: WaliKelas) => {
-  const wali_kelas = await prisma.wali_Kelas.update({
+  const wali_kelaswali_kelas = await prisma.wali_kelas.update({
     where: { id: data.id },
     data: data,
   });
-  return wali_kelas;
+  return wali_kelaswali_kelas;
 };
 
 export const deleteWaliKelasService = async (id: string) => {
-  const wali_kelas = await prisma.wali_Kelas.delete({ where: { id: id } });
-  return wali_kelas;
+  const wali_kelaswali_kelas = await prisma.wali_kelas.delete({
+    where: { id: id },
+  });
+  return wali_kelaswali_kelas;
 };

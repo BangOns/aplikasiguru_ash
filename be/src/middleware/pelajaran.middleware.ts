@@ -60,7 +60,7 @@ export const updatePelajaranMiddleware = async (
         id: kelasId,
       },
     });
-    const getWaliKelas = await prisma.wali_Kelas.findUnique({
+    const getWaliKelas = await prisma.wali_kelas.findUnique({
       where: {
         id: wali_kelasId,
       },

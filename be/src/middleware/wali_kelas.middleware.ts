@@ -49,7 +49,7 @@ export const updateWaliKelasMiddleware = async (
       throw new Error(validateData);
     }
 
-    const getFindWaliKelas = await prisma.wali_Kelas.findUnique({
+    const getFindWaliKelas = await prisma.wali_kelas.findUnique({
       where: {
         id: id,
       },
@@ -76,7 +76,7 @@ export const deleteWaliKelasMiddleware = async (
 ) => {
   try {
     const id = req.params.id as string;
-    const getFindWaliKelas = await prisma.wali_Kelas.findUnique({
+    const getFindWaliKelas = await prisma.wali_kelas.findUnique({
       where: {
         id: id,
       },
