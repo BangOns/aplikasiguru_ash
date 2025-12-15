@@ -2,7 +2,11 @@ import { prisma } from "../libs/prisma";
 import { responseData } from "../schema/response.schema";
 import { NextFunction, Request, Response } from "express";
 import { CreateJadwal, UpdateJadwal } from "../types/jadwal";
-import { validateDateType, validatePayloadXSS } from "../utils/validatePayload";
+import {
+  validateDateType,
+  validatePayloadXSS,
+  validateUpdatePayloadXSS,
+} from "../utils/validatePayload";
 export const createJadwalMiddleware = async (
   req: Request,
   res: Response,
@@ -39,7 +43,7 @@ export const updateJadwalMiddleware = async (
     const { id, activity, date, end_time, start_time, description } =
       req.body as UpdateJadwal;
 
-    const validateData = validatePayloadXSS({
+    const validateData = validateUpdatePayloadXSS({
       activity,
       end_time,
       start_time,

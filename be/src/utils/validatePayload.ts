@@ -23,6 +23,18 @@ export const validatePayloadXSS = (payload: Payload) => {
 
   return null; // semua valid
 };
+export const validateUpdatePayloadXSS = (payload: Payload) => {
+  for (const [key, value] of Object.entries(payload)) {
+    // validasi kosong: hanya untuk string
+
+    // sanitasi XSS hanya untuk string
+    if (typeof value === "string") {
+      payload[key] = xss(value);
+    }
+  }
+
+  return null; // semua valid
+};
 
 export const validateDateType = (date: Date) => {
   const dates = new Date(date);

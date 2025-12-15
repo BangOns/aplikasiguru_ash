@@ -8,7 +8,7 @@ datasource db {
 }
 
 model jadwal {
-   id         String  @id @default(uuid()) @db.Char(36)
+  id          String   @id @default(uuid()) @db.Char(36)
   activity    String
   description String
   date        DateTime @default(now())
@@ -24,7 +24,7 @@ model jurusan {
 }
 
 model kehadiran {
-  id          String  @id @default(uuid()) @db.Char(36)
+  id          String    @id @default(uuid()) @db.Char(36)
   date        DateTime  @default(now())
   siswaId     String    @db.Char(36)
   kelasId     String    @db.Char(36)
@@ -40,7 +40,7 @@ model kehadiran {
 }
 
 model kelas {
-   id          String  @id @default(uuid()) @db.Char(36)
+  id           String        @id @default(uuid()) @db.Char(36)
   jurusanId    String        @db.Char(36)
   wali_kelasId String        @db.Char(36)
   nama_kelas   String
@@ -56,7 +56,7 @@ model kelas {
 }
 
 model nilai_siswa {
-   id         String  @id @default(uuid()) @db.Char(36)
+  id          String    @id @default(uuid()) @db.Char(36)
   siswaId     String    @db.Char(36)
   kelasId     String    @db.Char(36)
   pelajaranId String    @db.Char(36)
@@ -74,7 +74,7 @@ model nilai_siswa {
 }
 
 model pelajaran {
-  id             String  @id @default(uuid()) @db.Char(36)
+  id             String        @id @default(uuid()) @db.Char(36)
   kelasId        String        @db.Char(36)
   wali_kelasId   String        @db.Char(36)
   nama_pelajaran String
@@ -88,7 +88,7 @@ model pelajaran {
 }
 
 model siswa {
-  id          String  @id @default(uuid()) @db.Char(36)
+  id          String        @id @default(uuid()) @db.Char(36)
   nama        String
   kelasId     String        @db.Char(36)
   jkl         String
@@ -100,7 +100,7 @@ model siswa {
 }
 
 model wali_kelas {
-  id        String  @id @default(uuid()) @db.Char(36)
+  id        String      @id @default(uuid()) @db.Char(36)
   nama      String
   telp      String
   email     String

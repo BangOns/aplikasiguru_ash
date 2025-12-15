@@ -1,7 +1,10 @@
 import { prisma } from "../libs/prisma";
 import { responseData } from "../schema/response.schema";
 import { NextFunction, Request, Response } from "express";
-import { validatePayloadXSS } from "../utils/validatePayload";
+import {
+  validatePayloadXSS,
+  validateUpdatePayloadXSS,
+} from "../utils/validatePayload";
 import { CreateKelas, UpdateKelas } from "../types/kelas";
 import { CreatePelajaran, UpdatePelajaran } from "../types/pelajaran";
 import xss from "xss";
@@ -39,7 +42,7 @@ export const updatePelajaranMiddleware = async (
     const { id, kelasId, nama_pelajaran, wali_kelasId } =
       req.body as UpdatePelajaran;
 
-    const validateData = validatePayloadXSS({
+    const validateData = validateUpdatePayloadXSS({
       kelasId,
       nama_pelajaran,
       wali_kelasId,

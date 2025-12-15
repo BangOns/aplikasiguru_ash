@@ -1,8 +1,10 @@
 import { prisma } from "../libs/prisma";
 import { responseData } from "../schema/response.schema";
 import { NextFunction, Request, Response } from "express";
-import { validatePayloadXSS } from "../utils/validatePayload";
-import { CreatePelajaran, UpdatePelajaran } from "../types/pelajaran";
+import {
+  validatePayloadXSS,
+  validateUpdatePayloadXSS,
+} from "../utils/validatePayload";
 import xss from "xss";
 import { CreateNilai, UpdateNilai } from "../types/nilai_siswa";
 export const createNilaiMiddleware = async (
@@ -16,14 +18,17 @@ export const createNilaiMiddleware = async (
     const validateData = validatePayloadXSS({
       kelasId,
       pelajaranId,
-      rata_rata,
       siswaId,
       tugas,
       uas,
       uts,
     });
-    if (validateData) {
-      throw new Error(validateData);
+
+    if (validateData || rata_rata) {
+      const rata_rataToString = String(rata_rata);
+      const sanitizedRataRata = xss(rata_rataToString);
+      const message = validateData ? validateData : ` ${sanitizedRataRata}`;
+      throw new Error(`${message}`);
     }
 
     next();
@@ -42,15 +47,18 @@ export const updateNilaiMiddleware = async (
   try {
     const { id, rata_rata, tugas, uas, uts } = req.body as UpdateNilai;
 
-    const validateData = validatePayloadXSS({
-      rata_rata,
+    const validateData = validateUpdatePayloadXSS({
       tugas,
       uas,
       uts,
       id,
     });
-    if (validateData) {
-      throw new Error(validateData);
+
+    if (validateData || rata_rata) {
+      const rata_rataToString = String(rata_rata);
+      const sanitizedRataRata = xss(rata_rataToString || "");
+      const message = validateData ? validateData : `${sanitizedRataRata}`;
+      throw new Error(`${message}`);
     }
 
     const getNilai = await prisma.nilai_siswa.findUnique({

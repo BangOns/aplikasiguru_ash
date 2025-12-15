@@ -29,13 +29,27 @@ export const getAllNilaiService = async ({
   return { data: response, page, limit, total, totalPage };
 };
 export const createNilaiService = async (data: CreateNilai) => {
-  const nilai = await prisma.nilai_siswa.create({ data });
+  const { tugas, uts, uas } = data;
+
+  const rata_rata = Math.round((tugas + uts + uas) / 3);
+  const nilai = await prisma.nilai_siswa.create({
+    data: {
+      ...data,
+      rata_rata,
+    },
+  });
   return nilai;
 };
 export const updateNilaiService = async (data: UpdateNilai) => {
+  const { tugas, uts, uas } = data;
+
+  const rata_rata = Math.round((tugas + uts + uas) / 3);
   const nilai = await prisma.nilai_siswa.update({
     where: { id: data.id },
-    data,
+    data: {
+      ...data,
+      rata_rata,
+    },
   });
   return nilai;
 };

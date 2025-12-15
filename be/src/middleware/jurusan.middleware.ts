@@ -1,7 +1,10 @@
 import { prisma } from "../libs/prisma";
 import { responseData } from "../schema/response.schema";
 import { NextFunction, Request, Response } from "express";
-import { validatePayloadXSS } from "../utils/validatePayload";
+import {
+  validatePayloadXSS,
+  validateUpdatePayloadXSS,
+} from "../utils/validatePayload";
 import { CreateJurusan, UpdateJurusan } from "../types/jurusan.type";
 export const createJurusanMiddleware = async (
   req: Request,
@@ -33,7 +36,7 @@ export const updateJurusanMiddleware = async (
   try {
     const { id, nama_jurusan } = req.body as UpdateJurusan;
 
-    const validateData = validatePayloadXSS({
+    const validateData = validateUpdatePayloadXSS({
       nama_jurusan,
       id,
     });
