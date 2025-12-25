@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import { toast } from "vue-sonner";
 
 import { useSiswa } from "../pinia/siswa";
-import type { StudentType } from "@/types/siswa/data_siswa";
+import type { StudentType, StudentTypeEdit } from "@/types/siswa/data_siswa";
 import { computed } from "vue";
 import type { KelasType } from "@/types/siswa/data_kelas";
 const handleMutationResponse = (data: any) => {
@@ -69,7 +69,7 @@ export const useGetSiswaById = (get_kelas: KelasType[], idSiswa: string) => {
     enabled: !!idSiswa,
     select: (data) => ({
       ...data,
-      kelas: kelasLookup.value[data.kelas],
+      // kelas: kelasLookup.value[data.kelas],
     }),
   });
 };
@@ -101,7 +101,7 @@ export const useEditSiswa = () => {
   const siswa = useSiswa();
 
   return useMutation({
-    mutationFn: ({ data }: { data: StudentType }) =>
+    mutationFn: ({ data }: { data: StudentTypeEdit }) =>
       siswa.editSiswaById(data.id, data),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["siswa"] });

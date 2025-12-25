@@ -34,29 +34,29 @@ const filteredSiswa = computed(() => {
   const searchTerm = siswa.searchSiswa?.toLowerCase() || "";
   const searchTermKelas = siswa.searchKelas?.toLowerCase() || "";
   const searchTermJurusan = siswa.searchJurusan?.toLowerCase() || "";
+  return get_siswa.value;
+  // return get_siswa.value
+  //   .map((siswaItem: StudentType) => {
+  //     const kelas = get_kelas.value?.find(
+  //       (item: KelasType) => item.id === siswaItem.kelas.id
+  //     );
+  //     const jurusan = get_jurusan.value?.find(
+  //       (item: JurusanType) => item.id === kelas?.jurusan
+  //     );
 
-  return get_siswa.value
-    .map((siswaItem: StudentType) => {
-      const kelas = get_kelas.value?.find(
-        (item: KelasType) => item.id === siswaItem.kelas
-      );
-      const jurusan = get_jurusan.value?.find(
-        (item: JurusanType) => item.id === kelas?.jurusan
-      );
-
-      return {
-        ...siswaItem,
-        nama: siswaItem.nama || "",
-        kelas: kelas?.nama_kelas || "",
-        jurusan: jurusan?.nama_jurusan || "",
-      };
-    })
-    .filter(
-      (siswaMerged: any) =>
-        (siswaMerged.kelas || "").toLowerCase().includes(searchTermKelas) &&
-        (siswaMerged.nama || "").toLowerCase().includes(searchTerm) &&
-        (siswaMerged.jurusan || "").toLowerCase().includes(searchTermJurusan)
-    );
+  //     return {
+  //       ...siswaItem,
+  //       nama: siswaItem.nama || "",
+  //       kelas: kelas?.nama_kelas || "",
+  //       jurusan: jurusan?.nama_jurusan || "",
+  //     };
+  //   })
+  //   .filter(
+  //     (siswaMerged: any) =>
+  //       (siswaMerged.kelas || "").toLowerCase().includes(searchTermKelas) &&
+  //       (siswaMerged.nama || "").toLowerCase().includes(searchTerm) &&
+  //       (siswaMerged.jurusan || "").toLowerCase().includes(searchTermJurusan)
+  //   );
 });
 const mutationDelete = useDeleteSiswa();
 const handleDeleteSiswa = (id: string) => {
@@ -139,10 +139,10 @@ watchEffect(() => {
           </TableCell>
 
           <TableCell>
-            <p>{{ data.kelas }}</p>
+            <p>{{ data.kelas?.nama_kelas || "-" }}</p>
           </TableCell>
           <TableCell>
-            <p>{{ data.jurusan }}</p>
+            <p>{{ data.jurusan?.nama_jurusan || "-" }}</p>
           </TableCell>
           <TableCell class="font-mona-bold">
             <p>{{ data.jkl }}</p>

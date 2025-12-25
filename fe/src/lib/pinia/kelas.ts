@@ -24,14 +24,14 @@ export const useKelas = defineStore("kelas", () => {
   const getKelas = async () => {
     try {
       const response = await api.get("/kelas");
-      return response.data;
+      return response.data?.data;
     } catch (error) {
       throw error;
     }
   };
   const getKelasById = async (id: string): Promise<KelasType> => {
     try {
-      const response = await api.get(`/kelas/${id}`);
+      const response = await api.get(`/kelas?id=${id}`);
       return response.data;
     } catch (error) {
       throw error;
@@ -39,7 +39,7 @@ export const useKelas = defineStore("kelas", () => {
   };
   const postKelas = async (data: KelasType) => {
     try {
-      const response = await api.post("/kelas", data);
+      const response = await api.post("/kelas/create", data);
       return {
         status: 200,
         data: response.data,

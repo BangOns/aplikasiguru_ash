@@ -33,11 +33,11 @@ export const useJurusan = defineStore("jurusan", () => {
       };
     }
   };
-  const getJurusan = async () => {
+  const getJurusan = async (): Promise<JurusanType[]> => {
     try {
       const response = await api.get("/jurusan");
 
-      return response.data;
+      return response.data?.data ?? [];
     } catch (error) {
       return [];
     }
@@ -102,8 +102,8 @@ export const useJurusan = defineStore("jurusan", () => {
 
   const getJurusanById = async (id: string): Promise<JurusanType> => {
     try {
-      const response = await api.get(`/jurusan/${id}`);
-      return response.data;
+      const response = await api.get(`/jurusan?id=${id}`);
+      return response.data?.data;
     } catch (error) {
       throw error;
     }

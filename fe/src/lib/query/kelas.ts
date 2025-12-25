@@ -75,8 +75,8 @@ export const useGetKelasById = (
     enabled: !!idKelas,
     select: (data) => ({
       ...data,
-      jurusan: jurusanLookup.value[data.jurusan],
-      teacher: teacherLookup.value[data.wali_kelas],
+      // jurusan: jurusanLookup.value[data.jurusan],
+      // teacher: teacherLookup.value[data.wali_kelas],
     }),
   });
 };

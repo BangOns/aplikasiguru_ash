@@ -2,7 +2,11 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import api from "../axios/config";
 import type { KelasType } from "@/types/siswa/data_kelas";
-import type { StudentType } from "@/types/siswa/data_siswa";
+import type {
+  StudentType,
+  StudentTypeAdd,
+  StudentTypeEdit,
+} from "@/types/siswa/data_siswa";
 
 export const useSiswa = defineStore("siswa", () => {
   const openModalSiswa = ref<boolean>(false);
@@ -25,9 +29,9 @@ export const useSiswa = defineStore("siswa", () => {
   };
   const getSiswa = async () => {
     try {
-      const response = await api.get("/student");
+      const response = await api.get("/siswa");
 
-      return response.data;
+      return response.data?.data;
     } catch (error) {
       throw error;
     }
@@ -35,12 +39,12 @@ export const useSiswa = defineStore("siswa", () => {
   const getSiswaById = async (id: string): Promise<StudentType> => {
     try {
       const response = await api.get(`/student/${id}`);
-      return response.data;
+      return response.data?.data;
     } catch (error) {
       throw error;
     }
   };
-  const postSiswa = async (data: StudentType) => {
+  const postSiswa = async (data: StudentTypeAdd) => {
     try {
       const response = await api.post("/student", data);
       return {
@@ -54,7 +58,7 @@ export const useSiswa = defineStore("siswa", () => {
       };
     }
   };
-  const editSiswaById = async (id: string, data: StudentType) => {
+  const editSiswaById = async (id: string, data: StudentTypeEdit) => {
     try {
       const response = await api.put(`/student/${id}`, data);
 

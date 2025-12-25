@@ -28,7 +28,7 @@ import { useGetJurusan } from "@/lib/query/jurusan";
 import { useGetKelas } from "@/lib/query/kelas";
 import type { JurusanType } from "@/types/siswa";
 import type { KelasType } from "@/types/siswa/data_kelas";
-import type { StudentType } from "@/types/siswa/data_siswa";
+import type { StudentType, StudentTypeAdd } from "@/types/siswa/data_siswa";
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
 import { computed, watchEffect } from "vue";
@@ -69,7 +69,7 @@ const labelFormKelasDanJurusan = computed(() => {
   if (!get_kelas.value || !get_jurusan.value) return [];
   return get_kelas.value.map((kelas: KelasType) => {
     const nameJurusan = get_jurusan.value.find(
-      (jurusan: JurusanType) => jurusan.id === kelas.jurusan
+      (jurusan: JurusanType) => jurusan.id === kelas.jurusan.id
     );
     return {
       ...kelas,
@@ -84,16 +84,15 @@ const { data: dataEditSiswa, isSuccess } = useGetSiswaById(
 );
 
 const onSubmit = handleSubmit((values) => {
-  const payload: StudentType = {
-    id: isEditMode.value ? siswa.idSiswa : uuidv4(),
+  const payload: StudentTypeAdd = {
     ...values,
   };
 
-  if (isEditMode.value) {
-    mutationEdit.mutate({ data: payload });
-  } else {
-    mutation.mutate(payload);
-  }
+  // if (isEditMode.value) {
+  //   mutationEdit.mutate({ data: payload });
+  // } else {
+  // }
+  mutation.mutate(payload);
   siswa.openModalSiswa = false;
 });
 
