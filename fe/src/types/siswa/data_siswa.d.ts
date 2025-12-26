@@ -7,12 +7,14 @@ export type StudentType = {
 };
 export type StudentTypeAdd = {
   nama: string;
-  kelas: string;
+  kelasId: string;
+  jurusanId: string;
   jkl: string;
 };
 export type StudentTypeEdit = {
   id: string;
   nama: string;
-  kelas: string;
+  kelasId: string;
+  jurusanId: string;
   jkl: string;
 };

@@ -2,8 +2,9 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import { toast } from "vue-sonner";
 import { useTeacher } from "../pinia/guru";
 import type { GuruType } from "@/types/guru";
+import type { GuruTypeEdit } from "@/types/guru/data_guru";
 const handleMutationResponse = (data: any) => {
-  const isSuccess = data?.status === 200;
+  const isSuccess = data?.status === true;
   const message = isSuccess ? "Success Post Data" : "Gagal Post Data";
 
   toast(message, {
@@ -17,7 +18,7 @@ const handleMutationResponse = (data: any) => {
   });
 };
 const handleMutationEditResponse = (data: any) => {
-  const isSuccess = data?.status === 200;
+  const isSuccess = data?.status === true;
   const message = isSuccess ? "Success Edit Data" : "Gagal Edit Data";
 
   toast(message, {
@@ -31,7 +32,7 @@ const handleMutationEditResponse = (data: any) => {
   });
 };
 const handleMutationDeleteResponse = (data: any) => {
-  const isSuccess = data?.status === 200;
+  const isSuccess = data?.status === true;
   const message = isSuccess ? "Success Delete Data" : "Gagal Delete Data";
 
   toast(message, {
@@ -70,8 +71,8 @@ export const useEditTeacher = () => {
   const teacher = useTeacher();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: GuruType }) =>
-      teacher.editTeacherById(id, data),
+    mutationFn: ({ data }: { data: GuruTypeEdit }) =>
+      teacher.editTeacherById(data),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["teacher"] });
       handleMutationEditResponse(data);
@@ -83,17 +84,7 @@ export const useDeleteTeacher = () => {
   const teacher = useTeacher();
 
   return useMutation({
-    mutationFn: ({
-      id,
-      id_kelas = [],
-      id_siswa = [],
-      id_lesson = [],
-    }: {
-      id: string;
-      id_kelas: string[];
-      id_siswa: string[];
-      id_lesson: string[];
-    }) => teacher.deleteTeacherById(id, id_siswa, id_kelas, id_lesson),
+    mutationFn: ({ id }: { id: string }) => teacher.deleteTeacherById(id),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["teacher"] });
       handleMutationDeleteResponse(data);

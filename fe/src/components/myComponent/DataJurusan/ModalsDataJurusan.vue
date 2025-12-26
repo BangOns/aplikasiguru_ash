@@ -45,7 +45,7 @@ const onSubmit = handleSubmit((values) => {
   };
 
   if (isEditMode.value) {
-    mutationEdit.mutate({ id: payload.id, data: payload });
+    mutationEdit.mutate({ data: payload });
   } else {
     mutation.mutate(payload);
   }

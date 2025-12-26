@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import api from "../axios/config";
-import type { KelasType } from "@/types/siswa/data_kelas";
+import type { KelasAdd, KelasEdit, KelasType } from "@/types/siswa/data_kelas";
 
 export const useKelas = defineStore("kelas", () => {
   const openModalKelas = ref<boolean>(false);
@@ -32,77 +32,40 @@ export const useKelas = defineStore("kelas", () => {
   const getKelasById = async (id: string): Promise<KelasType> => {
     try {
       const response = await api.get(`/kelas?id=${id}`);
+      return response.data?.data;
+    } catch (error) {
+      throw error;
+    }
+  };
+  const postKelas = async (data: KelasAdd) => {
+    try {
+      const response = await api.post("/kelas/create", data);
       return response.data;
     } catch (error) {
       throw error;
     }
   };
-  const postKelas = async (data: KelasType) => {
+  const editKelasById = async (data: KelasEdit) => {
     try {
-      const response = await api.post("/kelas/create", data);
-      return {
-        status: 200,
-        data: response.data,
-      };
-    } catch (error) {
-      return {
-        status: 500,
-        data: error,
-      };
-    }
-  };
-  const editKelasById = async (id: string, data: KelasType) => {
-    try {
-      const response = await api.put(`/kelas/${id}`, data);
+      const response = await api.put(`/kelas/edit`, data);
 
-      return {
-        status: 200,
-        data: response.data,
-      };
+      return response.data;
     } catch (error) {
-      return {
-        status: 500,
-        data: error,
-      };
+      throw error;
     }
   };
-  const deleteKelasById = async (
-    idJurusan: string,
-    idSiswa: string[] = [],
-    idLesson: string[] = []
-  ) => {
+  const deleteKelasById = async (id: string) => {
     try {
       // Hapus jurusan utama dulu
-      const kelasResponse = await api.delete(`/kelas/${idJurusan}`);
+      const kelasResponse = await api.delete(`/kelas/delete`, {
+        data: { id },
+      });
 
       // Gabungkan semua promise delete lain
-      const deletePromises: Promise<any>[] = [];
 
-      if (idSiswa.length > 0) {
-        deletePromises.push(
-          ...idSiswa.map((id) => api.delete(`/student/${id}`))
-        );
-      }
-      if (idLesson.length > 0) {
-        deletePromises.push(
-          ...idLesson.map((id) => api.delete(`/lesson/${id}`))
-        );
-      }
-
-      // Jalankan semua delete secara paralel
-      if (deletePromises.length > 0) {
-        await Promise.all(deletePromises);
-      }
-
-      return {
-        status: 200,
-        data: kelasResponse.data,
-      };
+      return kelasResponse.data;
     } catch (error: any) {
-      return {
-        status: error?.response?.status || 500,
-        data: error?.response?.data || error,
-      };
+      throw error;
     }
   };
 

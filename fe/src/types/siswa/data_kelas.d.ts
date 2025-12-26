@@ -10,3 +10,14 @@ export type KelasType = {
     nama_guru: string;
   };
 };
+export type KelasAdd = {
+  nama_kelas: string;
+  jurusanId: string;
+  wali_kelasId: string;
+};
+export type KelasEdit = {
+  id: string;
+  nama_kelas: string;
+  jurusanId: string;
+  wali_kelasId: string;
+};

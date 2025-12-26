@@ -28,12 +28,11 @@ import { useGetJurusan } from "@/lib/query/jurusan";
 import { useGetKelas } from "@/lib/query/kelas";
 import type { JurusanType } from "@/types/siswa";
 import type { KelasType } from "@/types/siswa/data_kelas";
-import type { StudentType, StudentTypeAdd } from "@/types/siswa/data_siswa";
+import type { StudentTypeAdd, StudentTypeEdit } from "@/types/siswa/data_siswa";
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
-import { computed, watchEffect } from "vue";
+import { computed, ref, watchEffect } from "vue";
 import z from "zod";
-import { v4 as uuidv4 } from "uuid";
 import { useEditSiswa, useGetSiswaById, usePostSiswa } from "@/lib/query/siswa";
 
 const formSchema = toTypedSchema(
@@ -58,6 +57,7 @@ const genderOption: { value: string; label: string }[] = [
     label: "Perempuan",
   },
 ];
+const jurusan = ref<string>("");
 const siswa = useSiswa();
 const { data: get_kelas } = useGetKelas();
 const { data: get_jurusan } = useGetJurusan();
@@ -68,12 +68,12 @@ const isEditMode = computed(() => !!siswa.idSiswa);
 const labelFormKelasDanJurusan = computed(() => {
   if (!get_kelas.value || !get_jurusan.value) return [];
   return get_kelas.value.map((kelas: KelasType) => {
-    const nameJurusan = get_jurusan.value.find(
+    const dataJurusan = get_jurusan.value.find(
       (jurusan: JurusanType) => jurusan.id === kelas.jurusan.id
     );
     return {
       ...kelas,
-      jurusan: nameJurusan?.nama_jurusan,
+      jurusan: dataJurusan,
     };
   });
 });
@@ -85,14 +85,25 @@ const { data: dataEditSiswa, isSuccess } = useGetSiswaById(
 
 const onSubmit = handleSubmit((values) => {
   const payload: StudentTypeAdd = {
-    ...values,
+    kelasId: values.kelas,
+    nama: values.nama,
+    jkl: values.jkl,
+    jurusanId: jurusan.value,
+  };
+  const payloadEdit: StudentTypeEdit = {
+    nama: values.nama,
+    id: siswa.idSiswa,
+    kelasId: values.kelas,
+    jurusanId: jurusan.value,
+    jkl: values.jkl,
   };
 
-  // if (isEditMode.value) {
-  //   mutationEdit.mutate({ data: payload });
-  // } else {
-  // }
-  mutation.mutate(payload);
+  if (isEditMode.value) {
+    mutationEdit.mutate({ data: payloadEdit });
+  } else {
+    mutation.mutate(payload);
+  }
+  siswa.openModalsWithEdit("");
   siswa.openModalSiswa = false;
 });
 
@@ -100,11 +111,13 @@ watchEffect(() => {
   if (siswa.idSiswa && isSuccess.value && dataEditSiswa.value?.id) {
     setFieldValue("nama", dataEditSiswa.value.nama);
     setFieldValue("kelas", dataEditSiswa.value.kelas.id);
+    jurusan.value = dataEditSiswa.value.jurusan?.id || "";
     setFieldValue("jkl", dataEditSiswa.value.jkl);
   } else {
     setFieldValue("nama", "", false);
     setFieldValue("kelas", "", false);
     setFieldValue("jkl", "", false);
+    jurusan.value = "";
   }
 });
 </script>
@@ -152,8 +165,10 @@ watchEffect(() => {
                       v-for="(data, index) in labelFormKelasDanJurusan as KelasType[]"
                       :key="index"
                       :value="data.id"
+                      @click="jurusan = data?.jurusan?.id"
                     >
-                      {{ data.nama_kelas }}-{{ data.jurusan }}
+                      {{ data?.nama_kelas || "-" }} |
+                      {{ data?.jurusan.nama_jurusan || "-" }}
                     </SelectItem>
                   </SelectGroup>
                 </SelectContent>

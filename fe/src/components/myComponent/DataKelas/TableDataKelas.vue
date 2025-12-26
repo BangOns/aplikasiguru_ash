@@ -41,59 +41,59 @@ const filteredKelas = computed(() => {
   const searchTerm = kelas.searchKelas.toLowerCase();
   const searchTermJurusan = kelas.searchJurusan.toLowerCase();
   const searchTermWaliKelas = kelas.searchWaliKelas.toLowerCase();
+  return query.data.value;
+  // return query.data.value
+  //   .map((kelasItem: KelasType) => {
+  //     const jurusan = get_jurusan.value?.find(
+  //       (item: JurusanType) => item.id === kelasItem.jurusan
+  //     );
+  //     const wali_kelas = get_teacher.value?.find(
+  //       (item: GuruType) => item.id === kelasItem.wali_kelas
+  //     );
 
-  return query.data.value
-    .map((kelasItem: KelasType) => {
-      const jurusan = get_jurusan.value?.find(
-        (item: JurusanType) => item.id === kelasItem.jurusan
-      );
-      const wali_kelas = get_teacher.value?.find(
-        (item: GuruType) => item.id === kelasItem.wali_kelas
-      );
-
-      return {
-        ...kelasItem,
-        jurusan,
-        wali_kelas,
-        jurusanNama: jurusan?.nama_jurusan,
-        wali_kelasNama: wali_kelas?.nama,
-      };
-    })
-    .filter(
-      (kelasMerged: any) =>
-        (kelasMerged.nama_kelas || "").toLowerCase().includes(searchTerm) &&
-        (kelasMerged.jurusanNama || "")
-          .toLowerCase()
-          .includes(searchTermJurusan) &&
-        (kelasMerged.wali_kelasNama || "")
-          .toLowerCase()
-          .includes(searchTermWaliKelas)
-    );
+  //     return {
+  //       ...kelasItem,
+  //       jurusan,
+  //       wali_kelas,
+  //       jurusanNama: jurusan?.nama_jurusan,
+  //       wali_kelasNama: wali_kelas?.nama,
+  //     };
+  //   })
+  //   .filter(
+  //     (kelasMerged: any) =>
+  //       (kelasMerged.nama_kelas || "").toLowerCase().includes(searchTerm) &&
+  //       (kelasMerged.jurusanNama || "")
+  //         .toLowerCase()
+  //         .includes(searchTermJurusan) &&
+  //       (kelasMerged.wali_kelasNama || "")
+  //         .toLowerCase()
+  //         .includes(searchTermWaliKelas)
+  //   );
 });
 
 const mutationDelete = useDeleteKelas();
 const handleDeleteKelas = (id: string) => {
   if (confirm("Apakah anda yakin ingin menghapus data ini?")) {
-    const id_siswa = get_siswa.value.reduce(
-      (acc: string[], siswa: StudentType) => {
-        if (siswa.kelas && siswa.kelas === id) {
-          acc.push(siswa.id);
-        }
-        return acc;
-      },
-      []
-    );
-    const id_lesson = get_lesson.value.reduce(
-      (acc: string[], lesson: LessonType) => {
-        if (lesson.kelas && lesson.kelas === id) {
-          acc.push(lesson.id);
-        }
-        return acc;
-      },
-      []
-    );
+    // const id_siswa = get_siswa.value.reduce(
+    //   (acc: string[], siswa: StudentType) => {
+    //     if (siswa.kelas && siswa.kelas === id) {
+    //       acc.push(siswa.id);
+    //     }
+    //     return acc;
+    //   },
+    //   []
+    // );
+    // const id_lesson = get_lesson.value.reduce(
+    //   (acc: string[], lesson: LessonType) => {
+    //     if (lesson.kelas && lesson.kelas === id) {
+    //       acc.push(lesson.id);
+    //     }
+    //     return acc;
+    //   },
+    //   []
+    // );
 
-    mutationDelete.mutate({ id, id_siswa, id_lesson });
+    mutationDelete.mutate({ id });
   }
 };
 </script>
@@ -156,16 +156,16 @@ const handleDeleteKelas = (id: string) => {
             <div class="flex items-center gap-3">
               <p>{{ Number(index) + 1 }}</p>
               <p>
-                {{ data?.nama_kelas }}
+                {{ data?.nama_kelas || "-" }}
               </p>
             </div>
           </TableCell>
 
           <TableCell>
-            <p>{{ data.wali_kelas?.nama }}</p>
+            <p>{{ data.wali_kelas?.nama || "-" }}</p>
           </TableCell>
           <TableCell>
-            <p>{{ data.jurusan?.nama_jurusan }}</p>
+            <p>{{ data.jurusan?.nama_jurusan || "-" }}</p>
           </TableCell>
 
           <TableCell class="">

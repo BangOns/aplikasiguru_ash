@@ -1,7 +1,6 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import api from "../axios/config";
-import type { KelasType } from "@/types/siswa/data_kelas";
 import type {
   StudentType,
   StudentTypeAdd,
@@ -38,7 +37,9 @@ export const useSiswa = defineStore("siswa", () => {
   };
   const getSiswaById = async (id: string): Promise<StudentType> => {
     try {
-      const response = await api.get(`/student/${id}`);
+      const response = await api.get(`/siswa?id=${id}`);
+      console.log(response);
+
       return response.data?.data;
     } catch (error) {
       throw error;
@@ -46,46 +47,28 @@ export const useSiswa = defineStore("siswa", () => {
   };
   const postSiswa = async (data: StudentTypeAdd) => {
     try {
-      const response = await api.post("/student", data);
-      return {
-        status: 200,
-        data: response.data,
-      };
+      const response = await api.post("/siswa/create", data);
+      return response.data;
     } catch (error) {
-      return {
-        status: 500,
-        data: error,
-      };
+      throw error;
     }
   };
-  const editSiswaById = async (id: string, data: StudentTypeEdit) => {
+  const editSiswaById = async (data: StudentTypeEdit) => {
     try {
-      const response = await api.put(`/student/${id}`, data);
+      const response = await api.put(`/siswa/edit`, data);
 
-      return {
-        status: 200,
-        data: response.data,
-      };
-    } catch (error) {
-      return {
-        status: 500,
-        data: error,
-      };
+      return response.data;
+    } catch (error: any) {
+      throw error;
     }
   };
   const deleteSiswaById = async (id: string) => {
     try {
-      const response = await api.delete(`/student/${id}`);
+      const response = await api.delete(`/siswa/delete`, { data: { id } });
 
-      return {
-        status: 200,
-        data: response.data,
-      };
+      return response.data;
     } catch (error) {
-      return {
-        status: 500,
-        data: error,
-      };
+      throw error;
     }
   };
 

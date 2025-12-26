@@ -23,7 +23,7 @@ export const useLesson = defineStore("lesson", () => {
   };
   const getLesson = async () => {
     try {
-      const response = await api.get("/lesson");
+      const response = await api.get("/pelajaran");
 
       return response.data;
     } catch (error) {
@@ -32,7 +32,7 @@ export const useLesson = defineStore("lesson", () => {
   };
   const getLessonById = async (id: string): Promise<LessonType> => {
     try {
-      const response = await api.get(`/lesson/${id}`);
+      const response = await api.get(`/pelajaran?id=${id}`);
       return response.data;
     } catch (error) {
       throw error;
@@ -40,7 +40,7 @@ export const useLesson = defineStore("lesson", () => {
   };
   const postLesson = async (data: LessonType) => {
     try {
-      const response = await api.post("/lesson", data);
+      const response = await api.post("/pelajaran/create", data);
       return {
         status: 200,
         data: response.data,
@@ -52,9 +52,9 @@ export const useLesson = defineStore("lesson", () => {
       };
     }
   };
-  const editLessonById = async (id: string, data: LessonType) => {
+  const editLessonById = async (data: LessonType) => {
     try {
-      const response = await api.put(`/lesson/${id}`, data);
+      const response = await api.put(`/pelajaran/edit`, data);
 
       return {
         status: 200,
@@ -69,7 +69,7 @@ export const useLesson = defineStore("lesson", () => {
   };
   const deleteLessonById = async (id: string) => {
     try {
-      const response = await api.delete(`/lesson/${id}`);
+      const response = await api.delete(`/pelajaran/delete`, { data: { id } });
 
       return {
         status: 200,
