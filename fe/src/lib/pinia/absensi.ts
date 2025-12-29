@@ -5,6 +5,7 @@ import type { AbsensiType } from "@/types/absensi";
 import { getWeekDates } from "@/utils/GenerateWeeks";
 import moment from "moment";
 import type { DateType } from "@/types/date";
+import type { AbsensiTypeAdd, AbsensiTypeEdit } from "@/types/absensi/absensi";
 
 export const usePresent = defineStore("present", () => {
   const searchKelas = ref<string>("");
@@ -23,38 +24,26 @@ export const usePresent = defineStore("present", () => {
   });
   const getAbsensi = async () => {
     try {
-      const response = await api.get("/present");
-      return response.data;
+      const response = await api.get("/kehadiran");
+      return response.data?.data;
     } catch (error) {
       return [];
     }
   };
-  const postAbsensi = async (data: AbsensiType) => {
+  const postAbsensi = async (data: AbsensiTypeAdd) => {
     try {
-      const response = await api.post("/present", data);
-      return {
-        status: 200,
-        data: response.data,
-      };
+      const response = await api.post("/kehadiran/create", data);
+      return response.data;
     } catch (error) {
-      return {
-        status: 500,
-        data: error,
-      };
+      throw error;
     }
   };
-  const editAbsensi = async (data: AbsensiType) => {
+  const editAbsensi = async (data: AbsensiTypeEdit) => {
     try {
-      const response = await api.put(`/present/${data.id}`, data);
-      return {
-        status: 200,
-        data: response.data,
-      };
+      const response = await api.put(`/kehadiran/edit`, data);
+      return response.data;
     } catch (error) {
-      return {
-        status: 500,
-        data: error,
-      };
+      throw error;
     }
   };
   // composable atau file absensi.ts
@@ -72,9 +61,9 @@ export const usePresent = defineStore("present", () => {
 
     return get_absensi.reduce(
       (acc, item) => {
-        const isSameKelas = item.id_kelas === searchKelas.value;
-        const isSameMapel = item.id_lesson === searchMapel.value;
-        const isSameDate = item.date === dateNow;
+        const isSameKelas = item.kelas.id === searchKelas.value;
+        const isSameMapel = item.pelajaran.id === searchMapel.value;
+        const isSameDate = item.date.split(" ")[0] === dateNow;
 
         if (isSameKelas && isSameMapel && isSameDate) {
           if (item.status === "HADIR") acc.SumHadir++;
@@ -98,9 +87,9 @@ export const usePresent = defineStore("present", () => {
       (acc: Record<string, string[]>, week: DateType) => {
         const filteredAbsensiByWeek = get_absensi.filter(
           (item) =>
-            item.date === week.fullDate &&
-            item.id_kelas === searchKelas &&
-            item.id_lesson === searchMapel
+            item.date.split(" ")[0] === week.fullDate &&
+            item.kelas.id === searchKelas &&
+            item.pelajaran.id === searchMapel
         );
         acc[week.fullDate] = filteredAbsensiByWeek.map((item) => item.status);
 
@@ -125,9 +114,9 @@ export const usePresent = defineStore("present", () => {
       (acc: { dayName: string; statuses: string[] }[], week: DateType) => {
         const filteredAbsensiByWeek = get_absensi.filter(
           (item) =>
-            item.date === week.fullDate &&
-            item.id_kelas === searchKelas &&
-            item.id_lesson === searchMapel
+            item.date.split(" ")[0] === week.fullDate &&
+            item.kelas.id === searchKelas &&
+            item.pelajaran.id === searchMapel
         );
         const statusPresent = filteredAbsensiByWeek
           .filter((item) => item.status === "HADIR")

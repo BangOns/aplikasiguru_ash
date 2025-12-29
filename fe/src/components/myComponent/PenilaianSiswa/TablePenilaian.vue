@@ -41,37 +41,48 @@ watchEffect(() => {
   }
 
   penilaian.listNilaiSiswa = get_siswa.value
-    .filter((siswa: StudentType) => siswa.kelas === penilaian.searchKelas)
+    .filter((siswa: StudentType) => siswa.kelas.id === penilaian.searchKelas)
     .map((siswa: StudentType) => {
       // cek apakah sudah ada data sebelumnya
+
       const existing = get_nilai.value.find(
         (n: PenilaianType) =>
-          n.id_siswa === siswa.id &&
-          n.id_kelas === penilaian.searchKelas &&
-          n.id_lesson === penilaian.searchMapel
+          n.siswa.id === siswa.id &&
+          n.kelas.id === penilaian.searchKelas &&
+          n.pelajaran.id === penilaian.searchMapel
       );
+
       return (
         existing || {
           id: crypto.randomUUID(), // atau dari DB
-          id_siswa: siswa.id,
+          siswa: {
+            id: siswa.id,
+            nama: siswa.nama,
+          },
           id_kelas: penilaian.searchKelas,
           id_lesson: penilaian.searchMapel,
-          tugas: 0,
-          uts: 0,
-          uas: 0,
-          rata_rata: 0,
+          nilai: {
+            tugas: 0,
+            uts: 0,
+            uas: 0,
+            rata_rata: 0,
+          },
         }
       );
     });
 });
+console.log(penilaian.listNilaiSiswa);
+
 const getNamaSiswa = (idSiswa: string) => {
   return (
     get_siswa.value.find((siswa: StudentType) => siswa.id === idSiswa)?.nama ||
     "-"
   );
 };
-const updateRataRata = (nilai: PenilaianType) => {
-  nilai.rata_rata = (nilai.tugas + nilai.uts + nilai.uas) / 3;
+
+const updateRataRata = (penilaian: PenilaianType) => {
+  penilaian.nilai.rata_rata =
+    (penilaian.nilai.tugas + penilaian.nilai.uts + penilaian.nilai.uas) / 3;
 };
 const getColorRataRata = (nilai: number) => {
   if (nilai < 50) return "bg-red-500";
@@ -81,15 +92,15 @@ const getColorRataRata = (nilai: number) => {
 
 const saveData = (data: PenilaianType) => {
   // Validasi data sebelum menyimpan
-  if (data.tugas < 0 || data.uts < 0 || data.uas < 0) {
+  if (data.nilai.tugas < 0 || data.nilai.uts < 0 || data.nilai.uas < 0) {
     alert("Nilai tidak boleh kurang dari 0");
     return;
   }
-  if (data.tugas > 100 || data.uts > 100 || data.uas > 100) {
+  if (data.nilai.tugas > 100 || data.nilai.uts > 100 || data.nilai.uas > 100) {
     alert("Nilai tidak boleh lebih dari 100");
     return;
   }
-  if (get_nilai.value.includes(data)) {
+  if (get_nilai.value?.includes(data)) {
     mutateEditPenilaian.mutate(data);
   } else {
     mutatePostPenilaian.mutate(data);
@@ -152,7 +163,7 @@ const saveData = (data: PenilaianType) => {
             <div class="flex items-center gap-3">
               <p>{{ Number(index) + 1 }}</p>
               <p>
-                {{ getNamaSiswa(data.id_siswa) }}
+                {{ data.siswa?.nama || "-" }}
               </p>
             </div>
           </TableCell>
@@ -161,7 +172,7 @@ const saveData = (data: PenilaianType) => {
             <Input
               type="number"
               class="w-20 py-2 px-3 bg-white border"
-              v-model="data.tugas"
+              v-model="data.nilai.tugas"
               @input="updateRataRata(data)"
             />
           </TableCell>
@@ -169,7 +180,7 @@ const saveData = (data: PenilaianType) => {
             <Input
               type="number"
               class="w-20 py-2 px-3 bg-white border"
-              v-model="data.uts"
+              v-model="data.nilai.uts"
               @input="updateRataRata(data)"
             />
           </TableCell>
@@ -177,7 +188,7 @@ const saveData = (data: PenilaianType) => {
             <Input
               type="number"
               class="w-20 py-2 px-3 bg-white border"
-              v-model="data.uas"
+              v-model="data.nilai.uas"
               @input="updateRataRata(data)"
             />
           </TableCell>
@@ -185,8 +196,8 @@ const saveData = (data: PenilaianType) => {
             <Badge
               variant="default"
               class="bg-green-500 text-base"
-              :class="getColorRataRata(data.rata_rata)"
-              >{{ data.rata_rata.toFixed(2) || 0 }}</Badge
+              :class="getColorRataRata(data.nilai.rata_rata)"
+              >{{ data.nilai.rata_rata.toFixed(2) || 0 }}</Badge
             >
           </TableCell>
           <TableCell class="">

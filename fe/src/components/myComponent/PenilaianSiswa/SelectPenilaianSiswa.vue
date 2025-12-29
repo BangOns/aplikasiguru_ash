@@ -27,7 +27,7 @@ const labelFormKelasDanJurusan = computed(() => {
   if (!get_kelas.value || !get_jurusan.value) return [];
   return get_kelas.value.map((kelas: KelasType) => {
     const nameJurusan = get_jurusan.value.find(
-      (jurusan: JurusanType) => jurusan.id === kelas.jurusan
+      (jurusan: JurusanType) => jurusan.id === kelas.jurusan.id
     );
     return {
       ...kelas,
@@ -79,7 +79,7 @@ const labelFormKelasDanJurusan = computed(() => {
               :key="index"
               :value="data.id"
             >
-              {{ data.mapel }}
+              {{ data.nama_pelajaran }}
             </SelectItem>
           </SelectGroup>
         </SelectContent>

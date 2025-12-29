@@ -42,8 +42,6 @@ const filteredTeacher = computed(() => {
 
 const mutationDelete = useDeleteTeacher();
 const handleDeleteTeacher = (id: string) => {
-  console.log(id);
-
   if (confirm("Apakah anda yakin ingin menghapus data ini?")) {
     // const id_kelas = get_kelas.value
     //   .filter((j: KelasType) => j.wali_kelas === id)

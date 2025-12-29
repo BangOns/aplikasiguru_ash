@@ -7,18 +7,18 @@ export const usePenilaian = defineStore("penilaian", () => {
   const searchKelas = ref<string>("");
   const searchMapel = ref<string>("");
   const listNilaiSiswa = ref<PenilaianType[]>([]);
-  const getPenilaian = async () => {
+  const getPenilaian = async (): Promise<PenilaianType[]> => {
     try {
       const response = await api.get("/nilai_siswa");
 
-      return response.data;
+      return response.data?.data;
     } catch (error) {
       throw error;
     }
   };
   const postPenilaian = async (data: PenilaianType) => {
     try {
-      const response = await api.post("/nilai_siswa", data);
+      const response = await api.post("/nilai_siswa/create", data);
       return {
         status: 200,
         data: response.data,
@@ -32,7 +32,7 @@ export const usePenilaian = defineStore("penilaian", () => {
   };
   const editPenilaian = async (data: PenilaianType) => {
     try {
-      const response = await api.put(`/nilai_siswa/${data.id}`, data);
+      const response = await api.put(`/nilai_siswa/edit`, data);
       return {
         status: 200,
         data: response.data,

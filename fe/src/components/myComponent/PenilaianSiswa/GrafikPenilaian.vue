@@ -61,11 +61,17 @@ watchEffect(() => {
   if (list.length === 0) return;
 
   // Ambil semua nilai (tugas, uts, uas) dalam 1 array
-  const allNilai = list.flatMap((n: PenilaianType) => [n.tugas, n.uts, n.uas]);
+  const allNilai = list.flatMap((n: PenilaianType) => [
+    n.nilai.tugas,
+    n.nilai.uts,
+    n.nilai.uas,
+  ]);
 
   // Hitung rata-rata kelas
   const totalRataSiswa = list.reduce(
-    (sum, n) => sum + ((n.tugas ?? 0) + (n.uts ?? 0) + (n.uas ?? 0)) / 3,
+    (sum, n) =>
+      sum +
+      ((n.nilai.tugas ?? 0) + (n.nilai.uts ?? 0) + (n.nilai.uas ?? 0)) / 3,
     0
   );
   nilaiKelas.rata_kelas = totalRataSiswa / list.length;
@@ -90,11 +96,11 @@ watchEffect(() => {
   };
 
   // Statistik siswa berdasarkan rata-rata
-  statsSiswa.sangat_baik = list.filter((s) => s.rata_rata >= 80).length;
+  statsSiswa.sangat_baik = list.filter((s) => s.nilai.rata_rata >= 80).length;
   statsSiswa.baik = list.filter(
-    (s) => s.rata_rata >= 60 && s.rata_rata < 80
+    (s) => s.nilai.rata_rata >= 60 && s.nilai.rata_rata < 80
   ).length;
-  statsSiswa.kurang = list.filter((s) => s.rata_rata < 60).length;
+  statsSiswa.kurang = list.filter((s) => s.nilai.rata_rata < 60).length;
 });
 
 const getPercent = (siswa: number | undefined) => {
@@ -104,23 +110,23 @@ const getPercent = (siswa: number | undefined) => {
 
 const exportExcel = () => {
   const listSiswa = penilaian.listNilaiSiswa.map((item: PenilaianType) => {
-    const siswa = get_siswa.value.find(
-      (siswa: StudentType) => siswa.id === item.id_siswa
-    );
-    const kelas = get_kelas.value.find(
-      (kelas: KelasType) => kelas.id === item.id_kelas
-    );
-    const lesson = get_mapel.value.find(
-      (lesson: LessonType) => lesson.id === item.id_lesson
-    );
-    const { id, id_kelas, id_lesson, id_siswa, rata_rata, ...rest } = item;
-    return {
-      siswa: siswa?.nama || "",
-      kelas: kelas?.nama_kelas || "",
-      pelajaran: lesson?.mapel || "",
-      ...rest,
-      rata_rata: item.rata_rata?.toFixed(2) || 0,
-    };
+    // const siswa = get_siswa.value.find(
+    //   (siswa: StudentType) => siswa.id === item.siswa.id
+    // );
+    // const kelas = get_kelas.value.find(
+    //   (kelas: KelasType) => kelas.id === item.kelas.id
+    // );
+    // const lesson = get_mapel.value.find(
+    //   (lesson: LessonType) => lesson.id === item.pelajaran.id
+    // );
+    // // const { id, id_kelas, id_lesson, id_siswa, rata_rata, ...rest } = item;
+    // return {
+    //   siswa: siswa?.nama || "",
+    //   kelas: kelas?.nama_kelas || "",
+    //   pelajaran: lesson?.mapel || "",
+    //   ...rest,
+    //   rata_rata: item.rata_rata?.toFixed(2) || 0,
+    // };
   });
   // Convert data to worksheet
   const worksheet = XLSX.utils.json_to_sheet(listSiswa);

@@ -23,10 +23,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { computed, watch } from "vue";
-import type { ScheduleType } from "@/types/schedule";
+import { computed, watch, watchEffect } from "vue";
 import { useSchedule } from "@/lib/pinia/schedule";
-import { uesPostSchedule, useEditSchedule } from "@/lib/query/schedule";
+import {
+  uesPostSchedule,
+  useEditSchedule,
+  useGetScheduleById,
+} from "@/lib/query/schedule";
+import type {
+  ScheduleTypeAdd,
+  ScheduleTypeEdit,
+} from "@/types/schedule/ScheduleType";
 
 const scheduleUse = useSchedule();
 const mutationPost = uesPostSchedule();
@@ -45,22 +52,34 @@ const form = useForm({
   validateOnMount: false,
 });
 const isEditMode = computed(() => !!scheduleUse.setDatesSchedule);
+const { data: get_scheduleId } = useGetScheduleById(
+  scheduleUse.setDatesSchedule?.id || ""
+);
 
 const onSubmit = form.handleSubmit((values) => {
   const getDates = scheduleUse.datesSchedule.find(
     (date) => date.dayName === values.day
   );
-  const data: ScheduleType = {
-    id: isEditMode.value ? scheduleUse.setDatesSchedule!.id : uuidv4(),
+  const data: ScheduleTypeAdd = {
     date: getDates ? String(getDates.fullDate) : "",
     start_time: values.start_time,
     end_time: values.end_time,
     activity: values.activity,
     description: values.description,
-    is_active: true,
+    is_active: 1,
   };
+  const dataEdit: ScheduleTypeEdit = {
+    id: scheduleUse.setDatesSchedule?.id || uuidv4(),
+    date: getDates ? String(getDates.fullDate) : "",
+    start_time: values.start_time,
+    end_time: values.end_time,
+    activity: values.activity,
+    description: values.description,
+    is_active: 1,
+  };
+
   if (isEditMode.value) {
-    mutationEdit.mutate(data);
+    mutationEdit.mutate(dataEdit);
   } else {
     mutationPost.mutate(data);
   }
@@ -69,17 +88,18 @@ const onSubmit = form.handleSubmit((values) => {
 watch(scheduleUse, (newVal) => {
   if (!newVal) return; // kalau null atau undefined, stop
 
-  const { editSchedule, daySchedule, datesSchedule, setDatesSchedule } = newVal;
+  const { editSchedule, daySchedule, setDatesSchedule } = newVal;
 
   if (daySchedule) {
     form.setFieldValue("day", daySchedule);
   }
   if (editSchedule) {
-    const getDay = Array.isArray(datesSchedule)
-      ? datesSchedule.find((date) => date.fullDate === setDatesSchedule?.date)
-      : null;
+    const getDay2 = new Date(setDatesSchedule?.date || "").toLocaleDateString(
+      "id-ID",
+      { weekday: "long" }
+    );
 
-    form.setFieldValue("day", getDay?.dayName || "");
+    form.setFieldValue("day", getDay2 || "");
     form.setFieldValue("start_time", setDatesSchedule?.start_time || "");
     form.setFieldValue("end_time", setDatesSchedule?.end_time || "");
     form.setFieldValue("activity", setDatesSchedule?.activity || "");

@@ -38,7 +38,6 @@ export const useSiswa = defineStore("siswa", () => {
   const getSiswaById = async (id: string): Promise<StudentType> => {
     try {
       const response = await api.get(`/siswa?id=${id}`);
-      console.log(response);
 
       return response.data?.data;
     } catch (error) {

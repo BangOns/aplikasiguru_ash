@@ -2,6 +2,10 @@ import { toast } from "vue-sonner";
 import { useSchedule } from "../pinia/schedule";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import type { ScheduleType } from "@/types/schedule";
+import type {
+  ScheduleTypeAdd,
+  ScheduleTypeEdit,
+} from "@/types/schedule/ScheduleType";
 
 const handleMutationResponse = (data: any) => {
   const isSuccess = data?.status === 200;
@@ -53,11 +57,19 @@ export const useGetSchedule = () => {
     queryFn: () => schedule.getSchedule(),
   });
 };
+export const useGetScheduleById = (id: string) => {
+  const schedule = useSchedule();
+  return useQuery({
+    queryKey: ["schedule", id],
+    queryFn: () => schedule.getScheduleByID(id),
+    enabled: !!id,
+  });
+};
 export const uesPostSchedule = () => {
   const queryClient = useQueryClient();
   const schedule = useSchedule();
   return useMutation({
-    mutationFn: (data: ScheduleType) => schedule.postSchedule(data),
+    mutationFn: (data: ScheduleTypeAdd) => schedule.postSchedule(data),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["schedule"] });
       handleMutationResponse(data);
@@ -79,7 +91,7 @@ export const useEditSchedule = () => {
   const queryClient = useQueryClient();
   const schedule = useSchedule();
   return useMutation({
-    mutationFn: (data: ScheduleType) => schedule.editSchedules(data),
+    mutationFn: (data: ScheduleTypeEdit) => schedule.editSchedules(data),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["schedule"] });
       handleMutationEditResponse(data);
