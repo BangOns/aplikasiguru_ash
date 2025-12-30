@@ -11,7 +11,7 @@ import Vicon from "../Vicon.vue";
 import { Badge } from "@/components/ui/badge";
 
 import { Input } from "@/components/ui/input";
-import { ref, watchEffect } from "vue";
+import { watchEffect } from "vue";
 
 import { usePenilaian } from "@/lib/pinia/penilaian";
 import { useGetSiswa } from "@/lib/query/siswa";
@@ -37,7 +37,6 @@ const { data: get_kelas } = useGetKelas();
 const { data: get_lesson } = useGetLesson();
 const mutatePostPenilaian = usePostPenilaian();
 const mutateEditPenilaian = useEditPenilaian();
-const nilaiSiswa = ref<PenilaianType[]>([]);
 const penilaian = usePenilaian();
 watchEffect(async () => {
   if (

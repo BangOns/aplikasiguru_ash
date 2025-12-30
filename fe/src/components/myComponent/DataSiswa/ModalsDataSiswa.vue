@@ -78,10 +78,7 @@ const labelFormKelasDanJurusan = computed(() => {
   });
 });
 
-const { data: dataEditSiswa, isSuccess } = useGetSiswaById(
-  get_kelas.value,
-  siswa.idSiswa
-);
+const { data: dataEditSiswa, isSuccess } = useGetSiswaById(siswa.idSiswa);
 
 const onSubmit = handleSubmit((values) => {
   const payload: StudentTypeAdd = {

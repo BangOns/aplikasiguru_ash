@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import { toast } from "vue-sonner";
 import { useTeacher } from "../pinia/guru";
-import type { GuruType } from "@/types/guru";
 import type { GuruTypeEdit } from "@/types/guru/data_guru";
 const handleMutationResponse = (data: any) => {
   const isSuccess = data?.status === true;

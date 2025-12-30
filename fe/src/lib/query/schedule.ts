@@ -1,7 +1,6 @@
 import { toast } from "vue-sonner";
 import { useSchedule } from "../pinia/schedule";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
-import type { ScheduleType } from "@/types/schedule";
 import type {
   ScheduleTypeAdd,
   ScheduleTypeEdit,

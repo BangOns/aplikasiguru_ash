@@ -19,17 +19,10 @@ import { useJurusan } from "@/lib/pinia/jurusan";
 import type { JurusanType } from "@/types/siswa";
 import { computed } from "vue";
 import { useDeleteJurusan, useGetJurusan } from "@/lib/query/jurusan";
-import { useGetKelas } from "@/lib/query/kelas";
-import type { KelasType } from "@/types/siswa/data_kelas";
-import { useGetSiswa } from "@/lib/query/siswa";
-import type { StudentType } from "@/types/siswa/data_siswa";
-import { useGetLesson } from "@/lib/query/pelajaran";
-import type { LessonType } from "@/types/lesson";
+
 const jurusan = useJurusan();
 const query = useGetJurusan();
-// const { data: get_kelas } = useGetKelas();
-// const { data: get_siswa } = useGetSiswa();
-// const { data: get_lesson } = useGetLesson();
+
 const filteredJurusan = computed(() => {
   if (!query.data.value) return [];
   const searchTerm = jurusan.searchJurusan.toLowerCase();

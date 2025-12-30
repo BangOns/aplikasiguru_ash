@@ -19,7 +19,6 @@ import { useQuery } from "@tanstack/vue-query";
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
 import { computed, watchEffect } from "vue";
-import { v4 as uuidv4 } from "uuid";
 
 import z from "zod";
 import { useTeacher } from "@/lib/pinia/guru";
@@ -33,7 +32,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { GuruType } from "@/types/guru";
 import type { GuruTypeAdd, GuruTypeEdit } from "@/types/guru/data_guru";
 const formSchema = toTypedSchema(
   z.object({
@@ -82,7 +80,6 @@ const { data, isSuccess } = useQuery({
   queryFn: () => teacher.getTeacherById(teacher.idTeacher),
   enabled: isEditMode,
 });
-const allowedFields = ["nama", "telp", "email", "jkl"] as const;
 watchEffect(() => {
   if (teacher.idTeacher && isSuccess.value && data.value?.id) {
     setFieldValue("nama", data.value?.nama ?? "");

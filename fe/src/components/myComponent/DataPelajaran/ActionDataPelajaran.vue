@@ -12,14 +12,11 @@ import Vicon from "../Vicon.vue";
 
 import { Input } from "@/components/ui/input";
 import { useGetKelas } from "@/lib/query/kelas";
-import { useGetJurusan } from "@/lib/query/jurusan";
 import type { KelasType } from "@/types/siswa/data_kelas";
-import type { JurusanType } from "@/types/siswa";
 import { useLesson } from "@/lib/pinia/pelajaran";
 
 const lesson = useLesson();
 const { data: get_kelas } = useGetKelas();
-const { data: get_jurusan } = useGetJurusan();
 const resetSearch = () => {
   lesson.searchLesson = "";
   lesson.searchKelas = "";

@@ -16,8 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useGetKelas } from "@/lib/query/kelas";
-import { computed, watchEffect } from "vue";
-import { useGetJurusan } from "@/lib/query/jurusan";
+import { computed } from "vue";
 import { useGetTeacher } from "@/lib/query/guru";
 import type { JurusanType } from "@/types/siswa";
 import type { GuruType } from "@/types/guru";
@@ -28,7 +27,6 @@ import type { LessonType } from "@/types/lesson";
 const lesson = useLesson();
 const query = useGetLesson();
 const { data: get_kelas } = useGetKelas();
-const { data: get_jurusan } = useGetJurusan();
 const { data: get_teacher } = useGetTeacher();
 
 const filteredLesson = computed(() => {

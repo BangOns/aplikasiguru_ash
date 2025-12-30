@@ -23,17 +23,11 @@ import { useGetJurusan } from "@/lib/query/jurusan";
 import { useGetTeacher } from "@/lib/query/guru";
 import type { JurusanType } from "@/types/siswa";
 import type { GuruType } from "@/types/guru";
-import { useGetSiswa } from "@/lib/query/siswa";
-import { useGetLesson } from "@/lib/query/pelajaran";
-import type { StudentType } from "@/types/siswa/data_siswa";
-import type { LessonType } from "@/types/lesson";
 
 const kelas = useKelas();
 const query = useGetKelas();
 const { data: get_jurusan } = useGetJurusan();
 const { data: get_teacher } = useGetTeacher();
-const { data: get_siswa } = useGetSiswa();
-const { data: get_lesson } = useGetLesson();
 
 const filteredKelas = computed(() => {
   if (!query.data.value) return [];

@@ -3,8 +3,7 @@ import { toast } from "vue-sonner";
 
 import { useSiswa } from "../pinia/siswa";
 import type { StudentTypeEdit } from "@/types/siswa/data_siswa";
-import { computed } from "vue";
-import type { KelasType } from "@/types/siswa/data_kelas";
+
 const handleMutationResponse = (data: any) => {
   const isSuccess = data?.status === true;
   const message = isSuccess ? "Success Post Data" : "Gagal Post Data";
@@ -56,13 +55,10 @@ export const useGetSiswa = () => {
   });
 };
 
-export const useGetSiswaById = (get_kelas: KelasType[], idSiswa: string) => {
+export const useGetSiswaById = (idSiswa: string) => {
   const siswa = useSiswa();
   // Konversi ke lookup object
 
-  const kelasLookup = computed(() =>
-    Object.fromEntries(get_kelas?.map((t) => [t.id, t]) || [])
-  );
   return useQuery({
     queryKey: ["siswa-id", idSiswa],
     queryFn: () => siswa.getSiswaById(idSiswa),

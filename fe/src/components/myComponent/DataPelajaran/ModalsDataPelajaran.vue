@@ -25,15 +25,12 @@ import {
 } from "@/components/ui/select";
 import { useGetJurusan } from "@/lib/query/jurusan";
 import { useGetKelas } from "@/lib/query/kelas";
-import type { JurusanType } from "@/types/siswa";
 import type { KelasType } from "@/types/siswa/data_kelas";
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
 import { computed, watchEffect } from "vue";
 import z from "zod";
-import { v4 as uuidv4 } from "uuid";
 import { useLesson } from "@/lib/pinia/pelajaran";
-import type { LessonType } from "@/types/lesson";
 import {
   useEditLesson,
   useGetLessonById,
@@ -66,9 +63,6 @@ const isEditMode = computed(() => !!lesson.idLesson);
 const labelFormKelasDanJurusan = computed(() => {
   if (!get_kelas.value || !get_jurusan.value) return [];
   return get_kelas.value.map((kelas: KelasType) => {
-    const nameJurusan = get_jurusan.value.find(
-      (jurusan: JurusanType) => jurusan.id === kelas.jurusan.id
-    );
     return {
       ...kelas,
     };

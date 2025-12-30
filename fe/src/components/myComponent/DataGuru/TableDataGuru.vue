@@ -20,12 +20,7 @@ import { computed } from "vue";
 import { useTeacher } from "@/lib/pinia/guru";
 import { useDeleteTeacher, useGetTeacher } from "@/lib/query/guru";
 import type { GuruType } from "@/types/guru";
-import type { KelasType } from "@/types/siswa/data_kelas";
-import type { StudentType } from "@/types/siswa/data_siswa";
-import type { LessonType } from "@/types/lesson";
-import { useGetKelas } from "@/lib/query/kelas";
-import { useGetSiswa } from "@/lib/query/siswa";
-import { useGetLesson } from "@/lib/query/pelajaran";
+
 const teacher = useTeacher();
 const query = useGetTeacher();
 

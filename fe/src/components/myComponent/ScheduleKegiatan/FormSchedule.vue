@@ -10,7 +10,6 @@ import Vicon from "../Vicon.vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
 import * as z from "zod";
-import { v4 as uuidv4 } from "uuid";
 import Input from "@/components/ui/input/Input.vue";
 
 import { Button } from "@/components/ui/button";
@@ -23,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { computed, watch, watchEffect, ref, onMounted } from "vue";
+import { computed, watch } from "vue";
 import { useSchedule } from "@/lib/pinia/schedule";
 import {
   uesPostSchedule,

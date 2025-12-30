@@ -7,12 +7,7 @@ import { usePenilaian } from "@/lib/pinia/penilaian";
 import { reactive, watchEffect } from "vue";
 import type { PenilaianType } from "@/types/penilaian/penilaian";
 import { useGetPenilaian } from "@/lib/query/penilaian";
-import type { StudentType } from "@/types/siswa/data_siswa";
-import type { KelasType } from "@/types/siswa/data_kelas";
-import type { LessonType } from "@/types/lesson";
-import { useGetSiswa } from "@/lib/query/siswa";
-import { useGetKelas } from "@/lib/query/kelas";
-import { useGetLesson } from "@/lib/query/pelajaran";
+
 import * as XLSX from "xlsx";
 ChartJS.register(ArcElement, Tooltip, Legend);
 const chartdata = chartConfig;
@@ -52,9 +47,7 @@ const statsSiswa = reactive({
 });
 
 const { data: get_nilai } = useGetPenilaian();
-const { data: get_siswa } = useGetSiswa();
-const { data: get_kelas } = useGetKelas();
-const { data: get_mapel } = useGetLesson();
+
 watchEffect(() => {
   const list = penilaian.listNilaiSiswa;
 
