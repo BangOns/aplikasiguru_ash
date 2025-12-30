@@ -27,42 +27,42 @@ import { useGetLesson } from "@/lib/query/pelajaran";
 import type { LessonType } from "@/types/lesson";
 const jurusan = useJurusan();
 const query = useGetJurusan();
-const { data: get_kelas } = useGetKelas();
-const { data: get_siswa } = useGetSiswa();
-const { data: get_lesson } = useGetLesson();
+// const { data: get_kelas } = useGetKelas();
+// const { data: get_siswa } = useGetSiswa();
+// const { data: get_lesson } = useGetLesson();
 const filteredJurusan = computed(() => {
   if (!query.data.value) return [];
   const searchTerm = jurusan.searchJurusan.toLowerCase();
-  return query.data.value.filter((j: JurusanType) =>
+  return query.data.value?.filter((j: JurusanType) =>
     (j.nama_jurusan || "").toLowerCase().includes(searchTerm)
   );
 });
 const mutationDelete = useDeleteJurusan();
 const handleDeleteJurusan = (id: string) => {
   if (confirm("Apakah anda yakin ingin menghapus data ini?")) {
-    const id_kelas = get_kelas.value
-      .filter((j: KelasType) => j.jurusan === id)
-      .map((j: KelasType) => j.id);
-    const id_siswa = get_siswa.value.reduce(
-      (acc: string[], siswa: StudentType) => {
-        if (siswa.kelas && id_kelas.includes(siswa.kelas)) {
-          acc.push(siswa.id);
-        }
-        return acc;
-      },
-      []
-    );
-    const id_lesson = get_lesson.value.reduce(
-      (acc: string[], lesson: LessonType) => {
-        if (lesson.kelas && id_kelas.includes(lesson.kelas)) {
-          acc.push(lesson.id);
-        }
-        return acc;
-      },
-      []
-    );
+    // const id_kelas = get_kelas.value
+    //   .filter((j: KelasType) => j.jurusan === id)
+    //   .map((j: KelasType) => j.id);
+    // const id_siswa = get_siswa.value.reduce(
+    //   (acc: string[], siswa: StudentType) => {
+    //     if (siswa.kelas && id_kelas.includes(siswa.kelas)) {
+    //       acc.push(siswa.id);
+    //     }
+    //     return acc;
+    //   },
+    //   []
+    // );
+    // const id_lesson = get_lesson.value.reduce(
+    //   (acc: string[], lesson: LessonType) => {
+    //     if (lesson.kelas && id_kelas.includes(lesson.kelas)) {
+    //       acc.push(lesson.id);
+    //     }
+    //     return acc;
+    //   },
+    //   []
+    // );
 
-    mutationDelete.mutate({ id, id_siswa, id_kelas, id_lesson });
+    mutationDelete.mutate({ id });
   }
 };
 </script>

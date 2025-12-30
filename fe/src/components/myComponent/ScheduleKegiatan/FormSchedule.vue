@@ -23,69 +23,185 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { computed, watch } from "vue";
-import type { ScheduleType } from "@/types/schedule";
+import { computed, watch, watchEffect, ref, onMounted } from "vue";
 import { useSchedule } from "@/lib/pinia/schedule";
-import { uesPostSchedule, useEditSchedule } from "@/lib/query/schedule";
+import {
+  uesPostSchedule,
+  useEditSchedule,
+  useGetScheduleById,
+} from "@/lib/query/schedule";
+import type {
+  ScheduleTypeAdd,
+  ScheduleTypeEdit,
+} from "@/types/schedule/ScheduleType";
+import { toast } from "vue-sonner";
 
 const scheduleUse = useSchedule();
 const mutationPost = uesPostSchedule();
 const mutationEdit = useEditSchedule();
+
+// 1. Buat computed untuk properti yang sering digunakan
+const daySchedule = computed(() => scheduleUse.daySchedule);
+const editSchedule = computed(() => scheduleUse.editSchedule);
+const setDatesSchedule = computed(() => scheduleUse.setDatesSchedule);
+const datesSchedule = computed(() => scheduleUse.datesSchedule);
+
+// 2. Validasi schema
 const formSchema = toTypedSchema(
   z.object({
-    day: z.string().min(2).max(50),
-    start_time: z.string().min(2).max(50),
-    end_time: z.string().min(2).max(50),
-    activity: z.string().min(2).max(50),
-    description: z.string().min(2).max(50),
+    day: z.string().min(1, "Hari harus dipilih"),
+    start_time: z.string().min(1, "Jam mulai harus diisi"),
+    end_time: z.string().min(1, "Jam selesai harus diisi"),
+    activity: z.string().min(2, "Kegiatan minimal 2 karakter").max(50),
+    description: z.string().min(2, "Deskripsi minimal 2 karakter").max(500),
   })
 );
-const form = useForm({
+
+// 3. Setup form
+const { handleSubmit, setFieldValue, resetForm } = useForm({
   validationSchema: formSchema,
-  validateOnMount: false,
+  initialValues: {
+    day: "",
+    start_time: "",
+    end_time: "",
+    activity: "",
+    description: "",
+  },
 });
-const isEditMode = computed(() => !!scheduleUse.setDatesSchedule);
 
-const onSubmit = form.handleSubmit((values) => {
-  const getDates = scheduleUse.datesSchedule.find(
-    (date) => date.dayName === values.day
-  );
-  const data: ScheduleType = {
-    id: isEditMode.value ? scheduleUse.setDatesSchedule!.id : uuidv4(),
-    date: getDates ? String(getDates.fullDate) : "",
-    start_time: values.start_time,
-    end_time: values.end_time,
-    activity: values.activity,
-    description: values.description,
-    is_active: true,
-  };
-  if (isEditMode.value) {
-    mutationEdit.mutate(data);
-  } else {
-    mutationPost.mutate(data);
+// 4. Fetch data untuk edit mode
+const { data: get_scheduleId } = useGetScheduleById(
+  setDatesSchedule.value?.id || ""
+);
+
+// 5. Computed untuk edit mode
+const isEditMode = computed(() => !!setDatesSchedule.value?.id);
+
+// 6. Watch untuk update form berdasarkan schedule store
+watch([daySchedule, editSchedule, setDatesSchedule], () => {
+  // Jika ada daySchedule (dari calendar click)
+  if (daySchedule.value && !editSchedule.value) {
+    setFieldValue("day", daySchedule.value);
+    return;
+  }
+
+  // Jika mode edit aktif
+  if (editSchedule.value && setDatesSchedule.value) {
+    try {
+      // Format day dari date string
+      const scheduleDate = setDatesSchedule.value.date;
+      let dayName = "";
+
+      if (scheduleDate) {
+        // Coba parse date
+        const dateObj = new Date(scheduleDate);
+        if (!isNaN(dateObj.getTime())) {
+          dayName = dateObj.toLocaleDateString("id-ID", { weekday: "long" });
+        }
+      }
+
+      // Set semua field values
+      setFieldValue("day", dayName || "");
+      setFieldValue("start_time", setDatesSchedule.value.start_time || "");
+      setFieldValue("end_time", setDatesSchedule.value.end_time || "");
+      setFieldValue("activity", setDatesSchedule.value.activity || "");
+      setFieldValue("description", setDatesSchedule.value.description || "");
+    } catch (error) {
+      toast.error("Error parsing date");
+    }
   }
 });
 
-watch(scheduleUse, (newVal) => {
-  if (!newVal) return; // kalau null atau undefined, stop
+// 7. Juga watch data dari API query (jika menggunakan useGetScheduleById)
+watch(get_scheduleId, (newData) => {
+  if (newData && isEditMode.value) {
+    // Format day dari date string API
+    try {
+      const dates = new Date(newData.date);
+      const dayName = dates.toLocaleDateString("id-ID", { weekday: "long" });
 
-  const { editSchedule, daySchedule, datesSchedule, setDatesSchedule } = newVal;
-
-  if (daySchedule) {
-    form.setFieldValue("day", daySchedule);
-  }
-  if (editSchedule) {
-    const getDay = Array.isArray(datesSchedule)
-      ? datesSchedule.find((date) => date.fullDate === setDatesSchedule?.date)
-      : null;
-
-    form.setFieldValue("day", getDay?.dayName || "");
-    form.setFieldValue("start_time", setDatesSchedule?.start_time || "");
-    form.setFieldValue("end_time", setDatesSchedule?.end_time || "");
-    form.setFieldValue("activity", setDatesSchedule?.activity || "");
-    form.setFieldValue("description", setDatesSchedule?.description || "");
+      setFieldValue("day", dayName);
+      setFieldValue("start_time", newData.start_time || "");
+      setFieldValue("end_time", newData.end_time || "");
+      setFieldValue("activity", newData.activity || "");
+      setFieldValue("description", newData.description || "");
+    } catch (error) {
+      toast.error("Error parsing API date");
+      return;
+    }
   }
 });
+
+// 8. Handle submit
+const onSubmit = handleSubmit(async (values) => {
+  try {
+    // Cari full date berdasarkan day name
+    const getDate = datesSchedule.value.find(
+      (date) => date.dayName === values.day
+    );
+
+    if (!getDate?.fullDate) {
+      toast.error("Date not found for day: " + values.day);
+      return;
+    }
+
+    if (isEditMode.value && setDatesSchedule.value) {
+      // Mode edit
+      const dataEdit: ScheduleTypeEdit = {
+        id: setDatesSchedule.value.id,
+        date: String(getDate.fullDate),
+        start_time: values.start_time,
+        end_time: values.end_time,
+        activity: values.activity,
+        description: values.description,
+        is_active: 1,
+      };
+
+      await mutationEdit.mutateAsync(dataEdit);
+    } else {
+      // Mode tambah baru
+      const data: ScheduleTypeAdd = {
+        date: String(getDate.fullDate),
+        start_time: values.start_time,
+        end_time: values.end_time,
+        activity: values.activity,
+        description: values.description,
+        is_active: 1,
+      };
+
+      await mutationPost.mutateAsync(data);
+    }
+
+    // Reset form setelah berhasil
+    handleReset();
+  } catch (error) {
+    toast.error("Error submitting form");
+    return;
+  }
+});
+
+// 9. Reset form jika keluar dari edit mode
+watch(isEditMode, (newVal) => {
+  if (!newVal) {
+    handleReset();
+  }
+});
+const handleReset = () => {
+  resetForm();
+  scheduleUse.$patch({
+    daySchedule: "",
+    editSchedule: false,
+    setDatesSchedule: {
+      id: "",
+      date: "",
+      start_time: "",
+      end_time: "",
+      activity: "",
+      description: "",
+      is_active: 0,
+    },
+  });
+};
 </script>
 
 <template>
@@ -93,7 +209,9 @@ watch(scheduleUse, (newVal) => {
     <header class="w-full">
       <section class="flex font-mona-bold gap-2 items-center">
         <Vicon name="co-plus" scale="1.5" class="p-0 font-bold" />
-        <h1 class="text-lg">Tambah Jadwal Baru</h1>
+        <h1 class="text-lg">
+          {{ isEditMode ? "Edit Jadwal" : "Tambah Jadwal Baru" }}
+        </h1>
       </section>
       <section class="flex font-mona-bold items-start gap-2 mt-5">
         <Vicon
@@ -110,7 +228,7 @@ watch(scheduleUse, (newVal) => {
       </section>
     </header>
 
-    <form @submit="onSubmit" class="mt-5 space-y-4">
+    <form @submit.prevent="onSubmit" class="mt-5 space-y-4">
       <!-- Row 1: Hari & Start Time -->
       <section class="w-full flex max-md:flex-col justify-between gap-5">
         <FormField v-slot="{ componentField }" name="day" class="w-full">
@@ -137,8 +255,10 @@ watch(scheduleUse, (newVal) => {
                 </SelectContent>
               </Select>
             </FormControl>
+            <FormMessage />
           </FormItem>
         </FormField>
+
         <FormField v-slot="{ componentField }" name="start_time" class="w-full">
           <FormItem v-auto-animate class="w-full font-mona-bold">
             <FormLabel>Jam Mulai</FormLabel>
@@ -146,7 +266,7 @@ watch(scheduleUse, (newVal) => {
               <Input
                 type="time"
                 class="w-full py-2 font-mona-bold bg-white"
-                placeholder="Jam selesai"
+                placeholder="Jam mulai"
                 v-bind="componentField"
               />
             </FormControl>
@@ -155,7 +275,7 @@ watch(scheduleUse, (newVal) => {
         </FormField>
       </section>
 
-      <!-- Row 2: End Time & Mapel -->
+      <!-- Row 2: End Time & Activity -->
       <section class="w-full flex max-md:flex-col justify-between gap-5">
         <FormField v-slot="{ componentField }" name="end_time" class="w-full">
           <FormItem v-auto-animate class="w-full font-mona-bold">
@@ -179,7 +299,7 @@ watch(scheduleUse, (newVal) => {
               <Input
                 type="text"
                 class="w-full py-2 font-mona-bold bg-white"
-                placeholder="Mata pelajaran"
+                placeholder="Nama kegiatan"
                 v-bind="componentField"
               />
             </FormControl>
@@ -188,7 +308,7 @@ watch(scheduleUse, (newVal) => {
         </FormField>
       </section>
 
-      <!-- Row 3: Classroom -->
+      <!-- Deskripsi -->
       <FormField v-slot="{ componentField }" name="description" class="w-full">
         <FormItem v-auto-animate class="w-full font-mona-bold">
           <FormLabel>Deskripsi Kegiatan</FormLabel>
@@ -196,7 +316,7 @@ watch(scheduleUse, (newVal) => {
             <Input
               type="text"
               class="w-full py-2 font-mona-bold bg-white"
-              placeholder="Ruang kelas"
+              placeholder="Deskripsi kegiatan"
               v-bind="componentField"
             />
           </FormControl>
@@ -205,12 +325,24 @@ watch(scheduleUse, (newVal) => {
       </FormField>
 
       <!-- Submit Button -->
-      <Button
-        type="submit"
-        class="mt-5 bg-blue-500 hover:bg-blue-600 cursor-pointer w-full"
-      >
-        Submit Jadwal
-      </Button>
+      <div class="flex gap-3">
+        <Button
+          v-if="isEditMode"
+          type="button"
+          variant="outline"
+          class="mt-5 cursor-pointer w-1/2"
+          @click="handleReset"
+        >
+          Batal Edit
+        </Button>
+        <Button
+          type="submit"
+          class="mt-5 bg-blue-500 hover:bg-blue-600 cursor-pointer"
+          :class="isEditMode ? 'w-1/2' : 'w-full'"
+        >
+          {{ isEditMode ? "Update Jadwal" : "Submit Jadwal" }}
+        </Button>
+      </div>
     </form>
   </article>
 </template>

@@ -20,6 +20,10 @@ import { useLesson } from "@/lib/pinia/pelajaran";
 const lesson = useLesson();
 const { data: get_kelas } = useGetKelas();
 const { data: get_jurusan } = useGetJurusan();
+const resetSearch = () => {
+  lesson.searchLesson = "";
+  lesson.searchKelas = "";
+};
 </script>
 
 <template>
@@ -66,37 +70,14 @@ const { data: get_jurusan } = useGetJurusan();
           </Select>
         </section>
       </article>
-      <article class="w-full basis-1/6 space-y-1">
-        <header>
-          <h2 class="font-mona-bold">Jurusan</h2>
-        </header>
-        <section class="w-full">
-          <Select v-model="lesson.searchJurusan">
-            <SelectTrigger class="w-full py-2 px-3 border">
-              <SelectValue placeholder="Pilih Jurusan" class="font-mona" />
-            </SelectTrigger>
-            <SelectContent class="p-3">
-              <SelectGroup class="font-mona">
-                <SelectLabel class="font-mona-bold">Pilih Jurusan</SelectLabel>
-                <SelectItem
-                  v-for="(data,index) in get_jurusan as JurusanType[]"
-                  :key="index"
-                  :value="data.nama_jurusan"
-                >
-                  {{ data.nama_jurusan }}
-                </SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </section>
-      </article>
 
       <article class="full flex items-center justify-end">
         <button
+          @click="resetSearch"
           class="py-2 px-5 cursor-pointer flex items-center bg-blue-800 gap-2 hover:bg-blue-900 text-white rounded-lg font-mona-bold border"
         >
-          <Vicon name="bi-search" scale="1" />
-          <p>Search</p>
+          <Vicon name="bi-arrow-counterclockwise" scale="1" />
+          <p>Reset</p>
         </button>
       </article>
     </section>

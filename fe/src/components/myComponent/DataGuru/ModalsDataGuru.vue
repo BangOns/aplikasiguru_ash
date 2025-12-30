@@ -34,6 +34,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { GuruType } from "@/types/guru";
+import type { GuruTypeAdd, GuruTypeEdit } from "@/types/guru/data_guru";
 const formSchema = toTypedSchema(
   z.object({
     nama: z.string().min(2).max(50),
@@ -61,13 +62,16 @@ const mutation = usePostTeacher();
 const mutationEdit = useEditTeacher();
 const isEditMode = computed(() => !!teacher.idTeacher);
 const onSubmit = handleSubmit((values) => {
-  const payload: GuruType = {
-    id: isEditMode.value ? teacher.idTeacher : uuidv4(),
+  const payload: GuruTypeAdd = {
+    ...values,
+  };
+  const payloadEdit: GuruTypeEdit = {
+    id: teacher.idTeacher,
     ...values,
   };
 
   if (isEditMode.value) {
-    mutationEdit.mutate({ id: payload.id, data: payload });
+    mutationEdit.mutate({ data: payloadEdit });
   } else {
     mutation.mutate(payload);
   }
@@ -81,14 +85,23 @@ const { data, isSuccess } = useQuery({
 const allowedFields = ["nama", "telp", "email", "jkl"] as const;
 watchEffect(() => {
   if (teacher.idTeacher && isSuccess.value && data.value?.id) {
-    allowedFields.forEach((key) => {
-      setFieldValue(key, data.value[key] ?? "");
-    });
+    setFieldValue("nama", data.value?.nama ?? "");
+    setFieldValue("telp", data.value?.telp ?? "");
+    setFieldValue("email", data.value?.email ?? "");
+    setFieldValue("jkl", data.value?.jkl ?? "");
+
+    // allowedFields.forEach((key) => {
+    //   setFieldValue(key, data.value[key] ?? "");
+    // });
   } else {
+    setFieldValue("nama", "", false);
+    setFieldValue("telp", "", false);
+    setFieldValue("email", "", false);
+    setFieldValue("jkl", "", false);
     // reset semua field kecuali id
-    allowedFields.forEach((key) => {
-      setFieldValue(key, "", false);
-    });
+    // allowedFields.forEach((key) => {
+    //   setFieldValue(key, "", false);
+    // });
   }
 });
 </script>

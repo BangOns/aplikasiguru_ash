@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import api from "../axios/config";
 import type { LessonType } from "@/types/lesson";
+import type { LessonTypeAdd, LessonTypeEdit } from "@/types/lesson/lesson";
 
 export const useLesson = defineStore("lesson", () => {
   const openModalLesson = ref<boolean>(false);
@@ -21,65 +22,47 @@ export const useLesson = defineStore("lesson", () => {
   const setSearchLesson = (value: string) => {
     searchLesson.value = value;
   };
-  const getLesson = async () => {
+  const getLesson = async (): Promise<LessonType[]> => {
     try {
-      const response = await api.get("/lesson");
+      const response = await api.get("/pelajaran");
 
-      return response.data;
+      return response.data?.data;
     } catch (error) {
       throw error;
     }
   };
   const getLessonById = async (id: string): Promise<LessonType> => {
     try {
-      const response = await api.get(`/lesson/${id}`);
+      const response = await api.get(`/pelajaran?id=${id}`);
+      return response.data?.data;
+    } catch (error) {
+      throw error;
+    }
+  };
+  const postLesson = async (data: LessonTypeAdd) => {
+    try {
+      const response = await api.post("/pelajaran/create", data);
       return response.data;
     } catch (error) {
       throw error;
     }
   };
-  const postLesson = async (data: LessonType) => {
+  const editLessonById = async (data: LessonTypeEdit) => {
     try {
-      const response = await api.post("/lesson", data);
-      return {
-        status: 200,
-        data: response.data,
-      };
-    } catch (error) {
-      return {
-        status: 500,
-        data: error,
-      };
-    }
-  };
-  const editLessonById = async (id: string, data: LessonType) => {
-    try {
-      const response = await api.put(`/lesson/${id}`, data);
+      const response = await api.put(`/pelajaran/edit`, data);
 
-      return {
-        status: 200,
-        data: response.data,
-      };
+      return response.data;
     } catch (error) {
-      return {
-        status: 500,
-        data: error,
-      };
+      throw error;
     }
   };
   const deleteLessonById = async (id: string) => {
     try {
-      const response = await api.delete(`/lesson/${id}`);
+      const response = await api.delete(`/pelajaran/delete`, { data: { id } });
 
-      return {
-        status: 200,
-        data: response.data,
-      };
+      return response.data;
     } catch (error) {
-      return {
-        status: 500,
-        data: error,
-      };
+      throw error;
     }
   };
 

@@ -2,11 +2,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import { toast } from "vue-sonner";
 
 import { useSiswa } from "../pinia/siswa";
-import type { StudentType } from "@/types/siswa/data_siswa";
+import type { StudentTypeEdit } from "@/types/siswa/data_siswa";
 import { computed } from "vue";
 import type { KelasType } from "@/types/siswa/data_kelas";
 const handleMutationResponse = (data: any) => {
-  const isSuccess = data?.status === 200;
+  const isSuccess = data?.status === true;
   const message = isSuccess ? "Success Post Data" : "Gagal Post Data";
 
   toast(message, {
@@ -20,7 +20,7 @@ const handleMutationResponse = (data: any) => {
   });
 };
 const handleMutationEditResponse = (data: any) => {
-  const isSuccess = data?.status === 200;
+  const isSuccess = data?.status === true;
   const message = isSuccess ? "Success Edit Data" : "Gagal Edit Data";
 
   toast(message, {
@@ -34,7 +34,7 @@ const handleMutationEditResponse = (data: any) => {
   });
 };
 const handleMutationDeleteResponse = (data: any) => {
-  const isSuccess = data?.status === 200;
+  const isSuccess = data?.status === true;
   const message = isSuccess ? "Success Delete Data" : "Gagal Delete Data";
 
   toast(message, {
@@ -69,10 +69,11 @@ export const useGetSiswaById = (get_kelas: KelasType[], idSiswa: string) => {
     enabled: !!idSiswa,
     select: (data) => ({
       ...data,
-      kelas: kelasLookup.value[data.kelas],
+      // kelas: kelasLookup.value[data.kelas],
     }),
   });
 };
+
 export const useGetgetSiswaByIdBiasa = (idSiswa: string) => {
   const siswa = useSiswa();
 
@@ -101,8 +102,8 @@ export const useEditSiswa = () => {
   const siswa = useSiswa();
 
   return useMutation({
-    mutationFn: ({ data }: { data: StudentType }) =>
-      siswa.editSiswaById(data.id, data),
+    mutationFn: ({ data }: { data: StudentTypeEdit }) =>
+      siswa.editSiswaById(data),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["siswa"] });
       handleMutationEditResponse(data);

@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import api from "../axios/config";
 import { ref } from "vue";
 import type { GuruType } from "@/types/guru";
+import type { GuruTypeAdd, GuruTypeEdit } from "@/types/guru/data_guru";
 
 export const useTeacher = defineStore("teacher", () => {
   const openModalTeacher = ref<boolean>(false);
@@ -20,95 +21,76 @@ export const useTeacher = defineStore("teacher", () => {
   const setSearchTeacher = (value: string) => {
     searchTeacher.value = value;
   };
-  const postTeacher = async (data: GuruType) => {
+  const postTeacher = async (data: GuruTypeAdd) => {
     try {
-      const response = await api.post("/teacher", data);
-      return {
-        status: 200,
-        data: response.data,
-      };
-    } catch (error) {
-      return {
-        status: 500,
-        data: error,
-      };
-    }
-  };
-  const getTeacher = async () => {
-    try {
-      const response = await api.get("/teacher");
-
-      return response.data;
-    } catch (error) {
-      return [];
-    }
-  };
-  const editTeacherById = async (id: string, data: GuruType) => {
-    try {
-      const response = await api.put(`/teacher/${id}`, data);
-
-      return {
-        status: 200,
-        data: response.data,
-      };
-    } catch (error) {
-      return {
-        status: 500,
-        data: error,
-      };
-    }
-  };
-
-  const deleteTeacherById = async (
-    idTeacher: string,
-    idSiswa: string[] = [],
-    idKelas: string[] = [],
-    idLesson: string[] = []
-  ) => {
-    try {
-      // Hapus teacher utama dulu
-      const TeacherResponse = await api.delete(`/teacher/${idTeacher}`);
-
-      // Gabungkan semua promise delete lain
-      const deletePromises: Promise<any>[] = [];
-
-      if (idSiswa.length > 0) {
-        deletePromises.push(
-          ...idSiswa.map((id) => api.delete(`/student/${id}`))
-        );
-      }
-      if (idLesson.length > 0) {
-        deletePromises.push(
-          ...idLesson.map((id) => api.delete(`/lesson/${id}`))
-        );
-      }
-      if (idKelas.length > 0) {
-        deletePromises.push(...idKelas.map((id) => api.delete(`/kelas/${id}`)));
-      }
-      // Jalankan semua delete secara paralel
-      if (deletePromises.length > 0) {
-        await Promise.all(deletePromises);
-      }
-
-      return {
-        status: 200,
-        data: TeacherResponse.data,
-      };
-    } catch (error: any) {
-      return {
-        status: error?.response?.status || 500,
-        data: error?.response?.data || error,
-      };
-    }
-  };
-  const getTeacherById = async (id: string): Promise<GuruType> => {
-    try {
-      const response = await api.get(`/teacher/${id}`);
+      const response = await api.post("/wali_kelas/create", data);
       return response.data;
     } catch (error) {
       throw error;
     }
   };
+  const getTeacher = async () => {
+    try {
+      const response = await api.get("/wali_kelas");
+
+      return response.data?.data;
+    } catch (error) {
+      throw error;
+    }
+  };
+  const getTeacherById = async (id: string): Promise<GuruType> => {
+    try {
+      const response = await api.get(`/wali_kelas?id=${id}`);
+      return response.data?.data;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const editTeacherById = async (data: GuruTypeEdit) => {
+    try {
+      const response = await api.put(`/wali_kelas/edit`, data);
+
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const deleteTeacherById = async (id: string) => {
+    try {
+      // Hapus teacher utama dulu
+      const response = await api.delete(`/wali_kelas/delete`, {
+        data: { id },
+      });
+
+      // Gabungkan semua promise delete lain
+      // const deletePromises: Promise<any>[] = [];
+
+      // if (idSiswa.length > 0) {
+      //   deletePromises.push(
+      //     ...idSiswa.map((id) => api.delete(`/student/${id}`))
+      //   );
+      // }
+      // if (idLesson.length > 0) {
+      //   deletePromises.push(
+      //     ...idLesson.map((id) => api.delete(`/lesson/${id}`))
+      //   );
+      // }
+      // if (idKelas.length > 0) {
+      //   deletePromises.push(...idKelas.map((id) => api.delete(`/kelas/${id}`)));
+      // }
+      // // Jalankan semua delete secara paralel
+      // if (deletePromises.length > 0) {
+      //   await Promise.all(deletePromises);
+      // }
+
+      return response?.data;
+    } catch (error: any) {
+      throw error;
+    }
+  };
+
   return {
     openModalTeacher,
     idTeacher,

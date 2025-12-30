@@ -41,6 +41,7 @@ import {
 } from "@/lib/query/pelajaran";
 import { useGetTeacher } from "@/lib/query/guru";
 import type { GuruType } from "@/types/guru";
+import type { LessonTypeAdd, LessonTypeEdit } from "@/types/lesson/lesson";
 
 const formSchema = toTypedSchema(
   z.object({
@@ -66,29 +67,31 @@ const labelFormKelasDanJurusan = computed(() => {
   if (!get_kelas.value || !get_jurusan.value) return [];
   return get_kelas.value.map((kelas: KelasType) => {
     const nameJurusan = get_jurusan.value.find(
-      (jurusan: JurusanType) => jurusan.id === kelas.jurusan
+      (jurusan: JurusanType) => jurusan.id === kelas.jurusan.id
     );
     return {
       ...kelas,
-      jurusan: nameJurusan?.nama_jurusan,
     };
   });
 });
 
-const { data: dataEditLesson, isSuccess } = useGetLessonById(
-  get_kelas.value,
-  get_teacher.value,
-  lesson.idLesson
-);
+const { data: dataEditLesson, isSuccess } = useGetLessonById(lesson.idLesson);
 
 const onSubmit = handleSubmit((values) => {
-  const payload: LessonType = {
-    id: isEditMode.value ? lesson.idLesson : uuidv4(),
-    ...values,
+  const payload: LessonTypeAdd = {
+    nama_pelajaran: values.mapel,
+    kelasId: values.kelas,
+    wali_kelasId: values.teacher,
+  };
+  const payloadEdit: LessonTypeEdit = {
+    id: lesson.idLesson,
+    nama_pelajaran: values.mapel,
+    kelasId: values.kelas,
+    wali_kelasId: values.teacher,
   };
 
   if (isEditMode.value) {
-    mutationEdit.mutate({ data: payload });
+    mutationEdit.mutate({ data: payloadEdit });
   } else {
     mutation.mutate(payload);
   }
@@ -97,9 +100,9 @@ const onSubmit = handleSubmit((values) => {
 
 watchEffect(() => {
   if (lesson.idLesson && isSuccess.value && dataEditLesson.value?.id) {
-    setFieldValue("mapel", dataEditLesson.value.mapel);
-    setFieldValue("kelas", dataEditLesson.value.kelas.id);
-    setFieldValue("teacher", dataEditLesson.value.teacher.id);
+    setFieldValue("mapel", dataEditLesson.value?.nama_pelajaran ?? "");
+    setFieldValue("kelas", dataEditLesson.value.kelas?.id ?? "");
+    setFieldValue("teacher", dataEditLesson.value.guru?.id ?? "");
   } else {
     setFieldValue("mapel", "", false);
     setFieldValue("kelas", "", false);
@@ -152,7 +155,8 @@ watchEffect(() => {
                       :key="index"
                       :value="data.id"
                     >
-                      {{ data.nama_kelas }}-{{ data.jurusan }}
+                      {{ data.nama_kelas || "-" }} |
+                      {{ data.jurusan?.nama_jurusan || "-" }}
                     </SelectItem>
                   </SelectGroup>
                 </SelectContent>

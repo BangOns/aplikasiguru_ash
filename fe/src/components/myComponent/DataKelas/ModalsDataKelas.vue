@@ -30,10 +30,9 @@ import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
 import { computed } from "vue";
 import { watchEffect } from "vue";
-import { v4 as uuidv4 } from "uuid";
 
 import z from "zod";
-import type { KelasType } from "@/types/siswa/data_kelas";
+import type { KelasAdd, KelasEdit } from "@/types/siswa/data_kelas";
 import { useEditKelas, useGetKelasById, usePostKelas } from "@/lib/query/kelas";
 const kelas = useKelas();
 const { data: get_jurusan } = useGetJurusan();
@@ -44,8 +43,8 @@ const mutationEdit = useEditKelas();
 const formSchema = toTypedSchema(
   z.object({
     nama_kelas: z.string().min(1).max(50),
-    jurusan: z.string().min(1).max(50),
-    wali_kelas: z.string().min(1).max(50),
+    jurusan: z.optional(z.string().max(50)),
+    wali_kelas: z.optional(z.string().max(50)),
   })
 );
 const { handleSubmit, errors, setFieldValue } = useForm({
@@ -53,20 +52,23 @@ const { handleSubmit, errors, setFieldValue } = useForm({
   validateOnMount: false,
 });
 const isEditMode = computed(() => !!kelas.idKelas);
-const {
-  data: kelasData,
-  isSuccess,
-  data,
-} = useGetKelasById(get_jurusan.value, get_teacher.value, kelas.idKelas);
+const { data: kelasData, isSuccess, data } = useGetKelasById(kelas.idKelas);
 
 const onSubmit = handleSubmit((values) => {
-  const payload: KelasType = {
-    id: isEditMode.value ? kelas.idKelas : uuidv4(),
-    ...values,
+  const payload: KelasAdd = {
+    nama_kelas: values.nama_kelas,
+    jurusanId: values.jurusan || "",
+    wali_kelasId: values.wali_kelas || "",
+  };
+  const payloadEdit: KelasEdit = {
+    id: kelas.idKelas,
+    nama_kelas: values.nama_kelas,
+    jurusanId: values.jurusan || "",
+    wali_kelasId: values.wali_kelas || "",
   };
 
   if (isEditMode.value) {
-    mutationEdit.mutate({ id: payload.id, data: payload });
+    mutationEdit.mutate({ data: payloadEdit });
   } else {
     mutation.mutate(payload);
   }
@@ -77,7 +79,7 @@ watchEffect(() => {
   if (kelas.idKelas && isSuccess.value && data.value?.id) {
     setFieldValue("nama_kelas", kelasData.value?.nama_kelas);
     setFieldValue("jurusan", kelasData.value?.jurusan?.id);
-    setFieldValue("wali_kelas", kelasData.value?.wali_kelas);
+    setFieldValue("wali_kelas", kelasData.value?.wali_kelas?.id);
   } else {
     setFieldValue("nama_kelas", "", false);
     setFieldValue("jurusan", "", false);

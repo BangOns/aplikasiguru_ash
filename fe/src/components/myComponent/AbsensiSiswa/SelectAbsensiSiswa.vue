@@ -39,11 +39,18 @@ const { data: get_kelas } = useGetKelas();
 const { data: get_jurusan } = useGetJurusan();
 const { data: get_mapel } = useGetLesson();
 const { data: get_absensi } = useGetAbsensi();
+const absenData = ref({
+  kelas: "",
+  pelajaran: "",
+  siswa: "",
+  status: "",
+  date: "",
+});
 const labelFormKelasDanJurusan = computed(() => {
   if (!get_kelas.value || !get_jurusan.value) return [];
   return get_kelas.value.map((kelas: KelasType) => {
     const nameJurusan = get_jurusan.value.find(
-      (jurusan: JurusanType) => jurusan.id === kelas.jurusan
+      (jurusan: JurusanType) => jurusan.id === kelas.jurusan.id
     );
     return {
       ...kelas,
@@ -54,43 +61,31 @@ const labelFormKelasDanJurusan = computed(() => {
 const listSiswa = computed(() => {
   if (!absensi.searchKelas || !absensi.searchMapel) return [];
   return get_siswa.value.filter(
-    (siswa: StudentType) => siswa.kelas === absensi.searchKelas
+    (siswa: StudentType) => siswa.kelas.id === absensi.searchKelas
   );
 });
 
 watchEffect(() => {
-  if (!get_absensi.value) return;
+  if (!get_absensi.value) return [];
 
-  absensi.listAbsensi = get_absensi.value
-    .filter(
-      (absen: AbsensiType) =>
-        absen.id_kelas === absensi.searchKelas &&
-        absen.id_lesson === absensi.searchMapel
-    )
-    .map((absen: AbsensiType) => {
-      const siswa = get_siswa.value.find(
-        (siswa: StudentType) => siswa.id === absen.id_siswa
-      );
-      const kelas = get_kelas.value.find(
-        (kelas: KelasType) => kelas.id === absen.id_kelas
-      );
-      const lesson = get_mapel.value.find(
-        (lesson: LessonType) => lesson.id === absen.id_lesson
-      );
-
-      const { id, id_kelas, id_lesson, id_siswa, ...rest } = absen;
-
-      return {
-        siswa: siswa?.nama || "",
-        kelas: kelas?.nama_kelas || "",
-        pelajaran: lesson?.mapel || "",
-        ...rest,
-      };
-    });
+  absensi.listAbsensi = get_absensi.value.filter(
+    (absen: AbsensiType) =>
+      absen.kelas?.id === absensi.searchKelas &&
+      absen.pelajaran?.id === absensi.searchMapel
+  );
+  absenData.value = get_absensi.value.map((absen: AbsensiType) => {
+    return {
+      kelas: absen.kelas?.nama_kelas,
+      pelajaran: absen.pelajaran?.nama_pelajaran,
+      siswa: absen.siswa?.nama,
+      status: absen.status,
+      date: absen.date.split(" ")[0],
+    };
+  });
 });
 const exportExcel = () => {
   // Convert data to worksheet
-  const worksheet = XLSX.utils.json_to_sheet(absensi.listAbsensi);
+  const worksheet = XLSX.utils.json_to_sheet([absenData.value]);
   // Buat Workbook baru dan tambahkan worksheet
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, "Data Absensi Siswa");
@@ -168,7 +163,7 @@ onMounted(() => {
                   :key="index"
                   :value="data.id"
                 >
-                  {{ data.mapel }}
+                  {{ data.nama_pelajaran }}
                 </SelectItem>
               </SelectGroup>
             </SelectContent>
@@ -218,7 +213,12 @@ onMounted(() => {
       </section>
       <template v-else v-for="value in listSiswa" :key="value.id">
         <CardSiswa
-          :props="value"
+          :siswa="value as StudentType"
+          :id-absensi="
+            absensi.listAbsensi
+              .find((absen) => absen.siswa.id === value.id)
+              ?.id?.toString() ?? ''
+          "
           :date="(dateIndonesia as string) + ' - ' + (timeNow as string)"
         />
       </template>

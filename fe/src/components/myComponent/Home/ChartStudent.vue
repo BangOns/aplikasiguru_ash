@@ -33,9 +33,9 @@ const chartGrafik = reactive({
 watchEffect(() => {
   if (get_nilai.value) {
     const allNilai = get_nilai.value.flatMap((n: PenilaianType) => [
-      n.tugas,
-      n.uts,
-      n.uas,
+      n.nilai.tugas,
+      n.nilai.uts,
+      n.nilai.uas,
     ]);
     // Data chart (kategori nilai)
     const kurang40 = allNilai.filter((v: number) => v < 40).length;
@@ -58,7 +58,9 @@ watchEffect(() => {
 </script>
 
 <template>
-  <section class="w-full basis-1/3 p-4 bg-slate-50 shadow-sm border rounded-lg">
+  <section
+    class="w-full md:basis-4/6 lg:basis-3/4 p-4 bg-slate-50 shadow-sm border rounded-lg"
+  >
     <header class="w-full flex justify-between items-center">
       <h2 class="font-mona-bold text-xl">Student performance</h2>
     </header>

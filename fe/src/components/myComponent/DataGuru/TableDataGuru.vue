@@ -28,9 +28,7 @@ import { useGetSiswa } from "@/lib/query/siswa";
 import { useGetLesson } from "@/lib/query/pelajaran";
 const teacher = useTeacher();
 const query = useGetTeacher();
-const { data: get_kelas } = useGetKelas();
-const { data: get_siswa } = useGetSiswa();
-const { data: get_lesson } = useGetLesson();
+
 const filteredTeacher = computed(() => {
   if (!query.data.value) return [];
   const searchTerm = teacher.searchTeacher.toLowerCase();
@@ -42,30 +40,7 @@ const filteredTeacher = computed(() => {
 const mutationDelete = useDeleteTeacher();
 const handleDeleteTeacher = (id: string) => {
   if (confirm("Apakah anda yakin ingin menghapus data ini?")) {
-    const id_kelas = get_kelas.value
-      .filter((j: KelasType) => j.wali_kelas === id)
-      .map((j: KelasType) => j.id);
-
-    const id_siswa = get_siswa.value.reduce(
-      (acc: string[], siswa: StudentType) => {
-        if (siswa.kelas && id_kelas.includes(siswa.kelas)) {
-          acc.push(siswa.id);
-        }
-        return acc;
-      },
-      []
-    );
-    const id_lesson = get_lesson.value.reduce(
-      (acc: string[], lesson: LessonType) => {
-        if (lesson.kelas && id_kelas.includes(lesson.kelas)) {
-          acc.push(lesson.id);
-        }
-        return acc;
-      },
-      []
-    );
-
-    mutationDelete.mutate({ id, id_siswa, id_kelas, id_lesson });
+    mutationDelete.mutate({ id });
   }
 };
 </script>
@@ -133,23 +108,23 @@ const handleDeleteTeacher = (id: string) => {
             <div class="flex items-center gap-3">
               <p>{{ Number(index) + 1 }}</p>
               <p>
-                {{ values.nama }}
+                {{ values?.nama || "-" }}
               </p>
             </div>
           </TableCell>
           <TableCell class="text-center">
             <p>
-              {{ values.email }}
+              {{ values?.email || "-" }}
             </p>
           </TableCell>
           <TableCell class="text-center">
             <p>
-              {{ values.telp }}
+              {{ values?.telp || "-" }}
             </p>
           </TableCell>
           <TableCell class="text-center">
             <p>
-              {{ values.jkl }}
+              {{ values?.jkl || "-" }}
             </p>
           </TableCell>
 

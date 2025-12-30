@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Vicon from "../Vicon.vue";
-import { computed, ref, watchEffect } from "vue";
+import { computed, ref } from "vue";
 import { getWeekDates } from "@/utils/GenerateWeeks";
 import moment from "moment";
 import type { ScheduleType } from "@/types/schedule";
@@ -13,12 +13,23 @@ const scheduleUse = useSchedule();
 const { data: get_schedule } = useGetSchedule();
 const dates = computed(() => {
   const date = getWeekDates(weeks.value, get_schedule.value);
+
   scheduleUse.datesSchedule = date;
+
   return date;
 });
 
 const editSchedules = (data: ScheduleType) => {
-  scheduleUse.setDatesSchedule = data;
+  const newData = {
+    id: data.id,
+    date: data.date,
+    start_time: data.start_time,
+    end_time: data.end_time,
+    activity: data.activity,
+    description: data.description,
+    is_active: data.is_active ? 1 : 0,
+  };
+  scheduleUse.setDatesSchedule = newData;
   scheduleUse.editSchedule = true;
   scrollToForm();
 };
@@ -42,11 +53,6 @@ const scrollToForm = () => {
     block: "start",
   });
 };
-watchEffect(() => {
-  console.log(dates.value);
-
-  // console.log(scheduleUse.datesSchedule);
-});
 </script>
 
 <template>

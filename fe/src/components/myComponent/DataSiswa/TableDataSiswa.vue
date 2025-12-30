@@ -34,14 +34,14 @@ const filteredSiswa = computed(() => {
   const searchTerm = siswa.searchSiswa?.toLowerCase() || "";
   const searchTermKelas = siswa.searchKelas?.toLowerCase() || "";
   const searchTermJurusan = siswa.searchJurusan?.toLowerCase() || "";
-
+  // return get_siswa.value;
   return get_siswa.value
     .map((siswaItem: StudentType) => {
       const kelas = get_kelas.value?.find(
-        (item: KelasType) => item.id === siswaItem.kelas
+        (item: KelasType) => item.id === siswaItem.kelas.id
       );
       const jurusan = get_jurusan.value?.find(
-        (item: JurusanType) => item.id === kelas?.jurusan
+        (item: JurusanType) => item.id === siswaItem?.jurusan.id
       );
 
       return {
@@ -139,13 +139,13 @@ watchEffect(() => {
           </TableCell>
 
           <TableCell>
-            <p>{{ data.kelas }}</p>
+            <p>{{ data?.kelas || "-" }}</p>
           </TableCell>
           <TableCell>
-            <p>{{ data.jurusan }}</p>
+            <p>{{ data?.jurusan || "-" }}</p>
           </TableCell>
           <TableCell class="font-mona-bold">
-            <p>{{ data.jkl }}</p>
+            <p>{{ data?.jkl || "-" }}</p>
           </TableCell>
 
           <TableCell class="">

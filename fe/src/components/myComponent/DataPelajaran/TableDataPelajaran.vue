@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useGetKelas } from "@/lib/query/kelas";
-import { computed } from "vue";
+import { computed, watchEffect } from "vue";
 import { useGetJurusan } from "@/lib/query/jurusan";
 import { useGetTeacher } from "@/lib/query/guru";
 import type { JurusanType } from "@/types/siswa";
@@ -36,34 +36,27 @@ const filteredLesson = computed(() => {
 
   const searchTerm = lesson.searchLesson.toLowerCase();
   const searchTermKelas = lesson.searchKelas.toLowerCase();
-  const searchTermJurusan = lesson.searchJurusan.toLowerCase();
 
   return query.data.value
-    .map((lessonItem: LessonType) => {
+    ?.map((lessonItem: LessonType) => {
       const kelas = get_kelas.value?.find(
-        (item: GuruType) => item.id === lessonItem.kelas
+        (item: GuruType) => item.id === lessonItem?.kelas?.id
       );
-      const jurusan = kelas
-        ? get_jurusan.value?.find(
-            (item: JurusanType) => item.id === kelas.jurusan
-          )
-        : [];
+
       const teacher = get_teacher.value?.find(
-        (item: JurusanType) => item.id === lessonItem.teacher
+        (item: JurusanType) => item.id === lessonItem.guru?.id
       );
 
       return {
         ...lessonItem,
         teacher: teacher?.nama ?? "",
         kelas: kelas?.nama_kelas ?? "",
-        jurusan: jurusan?.nama_jurusan ?? "",
       };
     })
     .filter(
       (lessonMerged: any) =>
         (lessonMerged.mapel || "").toLowerCase().includes(searchTerm) &&
-        (lessonMerged.kelas || "").toLowerCase().includes(searchTermKelas) &&
-        (lessonMerged.jurusan || "").toLowerCase().includes(searchTermJurusan)
+        (lessonMerged.kelas || "").toLowerCase().includes(searchTermKelas)
     );
 });
 
@@ -104,11 +97,7 @@ const handleDeleteLesson = (id: string) => {
 
     <!-- Empty State -->
     <section
-      v-else-if="
-        !query.data.value ||
-        query.data.value.length === 0 ||
-        filteredLesson.length === 0
-      "
+      v-else-if="!query.data.value || filteredLesson?.length === 0"
       class="w-full h-40 flex items-center justify-center"
     >
       <p>No data available</p>
@@ -123,7 +112,7 @@ const handleDeleteLesson = (id: string) => {
             </div>
           </TableHead>
           <TableHead class="text-black text-center">Kelas</TableHead>
-          <TableHead class="text-black text-center">Jurusan</TableHead>
+          <!-- <TableHead class="text-black text-center">Jurusan</TableHead> -->
           <TableHead class="text-black text-center">Guru Pengajar</TableHead>
           <TableHead class="text-black text-center"> </TableHead>
         </TableRow>
@@ -138,19 +127,17 @@ const handleDeleteLesson = (id: string) => {
             <div class="flex items-center gap-3">
               <p>{{ Number(index) + 1 }}</p>
               <p>
-                {{ data?.mapel }}
+                {{ data?.nama_pelajaran || "" }}
               </p>
             </div>
           </TableCell>
 
           <TableCell>
-            <p>{{ data.kelas }}</p>
+            <p>{{ data?.kelas || "-" }}</p>
           </TableCell>
+
           <TableCell>
-            <p>{{ data.jurusan }}</p>
-          </TableCell>
-          <TableCell>
-            <p>{{ data.teacher }}</p>
+            <p>{{ data.teacher || "-" }}</p>
           </TableCell>
 
           <TableCell class="">

@@ -25,6 +25,7 @@ const siswa = useSiswa();
 const { data: get_siswa, isPending, isError, error } = useGetSiswa();
 const { data: get_kelas } = useGetKelas();
 const { data: get_jurusan } = useGetJurusan();
+
 const filteredSiswa = computed(() => {
   if (!get_siswa.value) return [];
 
@@ -35,10 +36,10 @@ const filteredSiswa = computed(() => {
   return get_siswa.value
     .map((siswaItem: StudentType) => {
       const kelas = get_kelas.value?.find(
-        (item: KelasType) => item.id === siswaItem.kelas
+        (item: KelasType) => item.id === siswaItem.kelas.id
       );
       const jurusan = get_jurusan.value?.find(
-        (item: JurusanType) => item.id === kelas?.jurusan
+        (item: JurusanType) => item.id === siswaItem?.jurusan.id
       );
 
       return {
@@ -141,19 +142,19 @@ watchEffect(() => {
               <div class="flex items-center gap-3">
                 <p>{{ Number(index) + 1 }}</p>
                 <p>
-                  {{ data.nama }}
+                  {{ data.nama || "-" }}
                 </p>
               </div>
             </TableCell>
 
             <TableCell>
-              <p>{{ data.kelas }}</p>
+              <p>{{ data?.kelas || "-" }}</p>
             </TableCell>
             <TableCell>
-              <p>{{ data.jurusan }}</p>
+              <p>{{ data?.jurusan || "-" }}</p>
             </TableCell>
             <TableCell class="font-mona-bold">
-              <p>{{ data.jkl }}</p>
+              <p>{{ data.jkl || "-" }}</p>
             </TableCell>
 
             <!-- <TableCell class="">

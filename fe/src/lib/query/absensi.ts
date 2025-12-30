@@ -3,7 +3,7 @@ import { toast } from "vue-sonner";
 import { usePresent } from "../pinia/absensi";
 
 const handleMutationResponse = (data: any) => {
-  const isSuccess = data?.status === 200;
+  const isSuccess = data?.status === true;
   const message = isSuccess ? "Success Post Data" : "Gagal Post Data";
 
   toast(message, {
@@ -17,7 +17,7 @@ const handleMutationResponse = (data: any) => {
   });
 };
 const handleMutationEditResponse = (data: any) => {
-  const isSuccess = data?.status === 200;
+  const isSuccess = data?.status === true;
   const message = isSuccess ? "Success Edit Data" : "Gagal Edit Data";
 
   toast(message, {
@@ -30,9 +30,9 @@ const handleMutationEditResponse = (data: any) => {
     duration: 1000,
   });
 };
-// const handleMutationDeleteResponse = (data: any) => {
-//   const isSuccess = data?.status === 200;
-//   const message = isSuccess ? "Success Delete Data" : "Gagal Delete Data";
+const handleMutationDeleteResponse = (data: any) => {
+  const isSuccess = data?.status === true;
+  const message = isSuccess ? "Success Delete Data" : "Gagal Delete Data";
 
 //   toast(message, {
 //     style: {

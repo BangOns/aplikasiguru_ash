@@ -1,10 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import { toast } from "vue-sonner";
 import { useKelas } from "../pinia/kelas";
-import type { KelasType } from "@/types/siswa/data_kelas";
-import { computed } from "vue";
-import type { JurusanType } from "@/types/siswa";
-import type { GuruType } from "@/types/guru";
+import type { KelasEdit } from "@/types/siswa/data_kelas";
+
 const handleMutationResponse = (data: any) => {
   const isSuccess = data?.status === 200;
   const message = isSuccess ? "Success Post Data" : "Gagal Post Data";
@@ -56,27 +54,16 @@ export const useGetKelas = () => {
   });
 };
 
-export const useGetKelasById = (
-  get_jurusan: JurusanType[],
-  get_teacher: GuruType[],
-  idKelas: string
-) => {
+export const useGetKelasById = (idKelas: string) => {
   const kelas = useKelas();
   // Konversi ke lookup object
-  const jurusanLookup = computed(() =>
-    Object.fromEntries(get_jurusan?.map((j) => [j.id, j]) || [])
-  );
-  const teacherLookup = computed(() =>
-    Object.fromEntries(get_teacher?.map((t) => [t.id, t]) || [])
-  );
+
   return useQuery({
     queryKey: ["kelas-id", idKelas],
     queryFn: () => kelas.getKelasById(idKelas),
     enabled: !!idKelas,
     select: (data) => ({
       ...data,
-      jurusan: jurusanLookup.value[data.jurusan],
-      teacher: teacherLookup.value[data.wali_kelas],
     }),
   });
 };
@@ -108,8 +95,7 @@ export const useEditKelas = () => {
   const kelas = useKelas();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: KelasType }) =>
-      kelas.editKelasById(id, data),
+    mutationFn: ({ data }: { data: KelasEdit }) => kelas.editKelasById(data),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["kelas"] });
       handleMutationEditResponse(data);
@@ -121,15 +107,7 @@ export const useDeleteKelas = () => {
   const kelas = useKelas();
 
   return useMutation({
-    mutationFn: ({
-      id,
-      id_siswa = [],
-      id_lesson = [],
-    }: {
-      id: string;
-      id_siswa: string[];
-      id_lesson: string[];
-    }) => kelas.deleteKelasById(id, id_siswa, id_lesson),
+    mutationFn: ({ id }: { id: string }) => kelas.deleteKelasById(id),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["kelas"] });
       queryClient.invalidateQueries({ queryKey: ["siswa"] });

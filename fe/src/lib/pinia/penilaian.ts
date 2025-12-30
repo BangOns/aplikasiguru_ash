@@ -1,47 +1,39 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import api from "../axios/config";
-import type { PenilaianType } from "@/types/penilaian/penilaian";
+import type {
+  PenilaianType,
+  PenilaianTypeAdd,
+  PenilaianTypeEdit,
+} from "@/types/penilaian/penilaian";
 
 export const usePenilaian = defineStore("penilaian", () => {
   const searchKelas = ref<string>("");
   const searchMapel = ref<string>("");
   const listNilaiSiswa = ref<PenilaianType[]>([]);
-  const getPenilaian = async () => {
+  const getPenilaian = async (): Promise<PenilaianType[]> => {
     try {
       const response = await api.get("/nilai_siswa");
 
+      return response.data?.data;
+    } catch (error) {
+      throw error;
+    }
+  };
+  const postPenilaian = async (data: PenilaianTypeAdd) => {
+    try {
+      const response = await api.post("/nilai_siswa/create", data);
       return response.data;
     } catch (error) {
       throw error;
     }
   };
-  const postPenilaian = async (data: PenilaianType) => {
+  const editPenilaian = async (data: PenilaianTypeEdit) => {
     try {
-      const response = await api.post("/nilai_siswa", data);
-      return {
-        status: 200,
-        data: response.data,
-      };
+      const response = await api.put(`/nilai_siswa/edit`, data);
+      return response.data;
     } catch (error) {
-      return {
-        status: 500,
-        data: error,
-      };
-    }
-  };
-  const editPenilaian = async (data: PenilaianType) => {
-    try {
-      const response = await api.put(`/nilai_siswa/${data.id}`, data);
-      return {
-        status: 200,
-        data: response.data,
-      };
-    } catch (error) {
-      return {
-        status: 500,
-        data: error,
-      };
+      throw error;
     }
   };
   return {

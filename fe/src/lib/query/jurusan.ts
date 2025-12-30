@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query";
 import { toast } from "vue-sonner";
 import { useJurusan } from "../pinia/jurusan";
 const handleMutationResponse = (data: any) => {
-  const isSuccess = data?.status === 200;
+  const isSuccess = data?.status === true;
   const message = isSuccess ? "Success Post Data" : "Gagal Post Data";
 
   toast(message, {
@@ -17,7 +17,7 @@ const handleMutationResponse = (data: any) => {
   });
 };
 const handleMutationEditResponse = (data: any) => {
-  const isSuccess = data?.status === 200;
+  const isSuccess = data?.status === true;
   const message = isSuccess ? "Success Edit Data" : "Gagal Edit Data";
 
   toast(message, {
@@ -38,7 +38,7 @@ export const useGetJurusan = () => {
   });
 };
 const handleMutationDeleteResponse = (data: any) => {
-  const isSuccess = data?.status === 200;
+  const isSuccess = data?.status === true;
   const message = isSuccess ? "Success Delete Data" : "Gagal Delete Data";
 
   toast(message, {
@@ -70,8 +70,8 @@ export const useEditJurusan = () => {
   const jurusan = useJurusan();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: JurusanType }) =>
-      jurusan.editJurusanById(id, data),
+    mutationFn: ({ data }: { data: JurusanType }) =>
+      jurusan.editJurusanById(data),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["jurusan"] });
       handleMutationEditResponse(data);
@@ -85,15 +85,12 @@ export const useDeleteJurusan = () => {
   return useMutation({
     mutationFn: ({
       id,
-      id_kelas = [],
-      id_siswa = [],
-      id_lesson = [],
     }: {
       id: string;
-      id_kelas: string[];
-      id_siswa: string[];
-      id_lesson: string[];
-    }) => jurusan.deleteJurusanById(id, id_siswa, id_kelas, id_lesson),
+      // id_kelas: string[];
+      // id_siswa: string[];
+      // id_lesson: string[];
+    }) => jurusan.deleteJurusanById(id),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["jurusan"] });
       handleMutationDeleteResponse(data);

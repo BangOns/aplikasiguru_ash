@@ -8,11 +8,14 @@ import {
   usePostAbsensi,
 } from "@/lib/query/absensi";
 import type { AbsensiType, StatusAbsensi } from "@/types/absensi";
-import { v4 as uuidv4 } from "uuid";
 import { ref, watchEffect } from "vue";
 import moment from "moment";
+import type { AbsensiTypeAdd, AbsensiTypeEdit } from "@/types/absensi/absensi";
 
-const { props } = defineProps<{ props: StudentType }>();
+const { siswa, idAbsensi } = defineProps<{
+  siswa: StudentType;
+  idAbsensi: string;
+}>();
 const absensi = usePresent();
 const mutationPost = usePostAbsensi();
 const mutationEdit = useEditAbsensi();
@@ -23,21 +26,29 @@ const dateNow = moment().format("YYYY-MM-DD");
 const handlePostAbsensi = (status: StatusAbsensi) => {
   const isEditMode = get_absensi.value?.find(
     (item: AbsensiType) =>
-      item.id_siswa === props.id &&
-      item.id_lesson === absensi.searchMapel &&
-      item.date === dateNow
+      item.siswa.id === siswa.id &&
+      item.pelajaran.id === absensi.searchMapel &&
+      item.date.split(" ")[0] === dateNow
   );
-  const data: AbsensiType = {
-    id: isEditMode ? isEditMode.id : uuidv4(),
+
+  const data: AbsensiTypeAdd = {
     date: dateNow,
-    id_siswa: props.id,
-    id_kelas: absensi.searchKelas,
-    id_lesson: absensi.searchMapel,
+    siswaId: siswa.id,
+    kelasId: absensi.searchKelas,
+    pelajaranId: absensi.searchMapel,
+    status: status,
+  };
+  const dataEdit: AbsensiTypeEdit = {
+    id: idAbsensi,
+    date: dateNow,
+    siswaId: siswa.id,
+    kelasId: absensi.searchKelas,
+    pelajaranId: absensi.searchMapel,
     status: status,
   };
 
   if (isEditMode) {
-    mutationEdit.mutate(data);
+    mutationEdit.mutate(dataEdit);
   } else {
     mutationPost.mutate(data);
   }
@@ -45,9 +56,9 @@ const handlePostAbsensi = (status: StatusAbsensi) => {
 watchEffect(() => {
   StatusNow.value = get_absensi.value?.find(
     (item: AbsensiType) =>
-      item.id_siswa === props.id &&
-      item.id_lesson === absensi.searchMapel &&
-      item.date === dateNow
+      item.siswa.id === siswa.id &&
+      item.pelajaran.id === absensi.searchMapel &&
+      item.date.split(" ")[0] === dateNow
   )?.status;
 });
 </script>
@@ -60,15 +71,15 @@ watchEffect(() => {
       >
         <h1 class="font-mona-bold text-xl text-white">
           {{
-            props.nama
+            siswa?.nama
               .split(" ")
               .map((item) => item.charAt(0))
-              .join("")
+              .join("") || "-"
           }}
         </h1>
       </figure>
       <section class="items-center flex">
-        <h1 class="font-mona-bold">{{ props.nama }}</h1>
+        <h1 class="font-mona-bold">{{ siswa.nama }}</h1>
       </section>
     </header>
     <article class="w-full mt-5 space-y-2">

@@ -19,8 +19,10 @@ export function getWeekDates(
     let newDate;
     if (datesSchedule.length > 0) {
       newDate = datesSchedule.filter(
-        (date) => date.date === currentDate.toISOString().split("T")[0]
+        (date) =>
+          date.date.split(" ")[0] === currentDate.toISOString().split("T")[0]
       );
+
       if (newDate.length > 0) {
         weekDates.push({
           dayName: currentDate.toLocaleDateString("id-ID", { weekday: "long" }),

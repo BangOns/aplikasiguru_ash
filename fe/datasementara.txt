@@ -1,0 +1,62 @@
+    <TableBody class="w-full overflow-y-auto">
+        <TableRow
+          class="border-none text-center"
+          v-for="(data, index) in filteredSiswa"
+          :key="index"
+        >
+          <TableCell class="text-left" :colspan="2">
+            <div class="flex items-center gap-3">
+              <p>{{ Number(index) + 1 }}</p>
+              <p>
+                {{ data.nama }}
+              </p>
+            </div>
+          </TableCell>
+
+          <TableCell>
+            <p>{{ data.kelas }}</p>
+          </TableCell>
+          <TableCell>
+            <p>{{ data.jurusan }}</p>
+          </TableCell>
+          <TableCell class="font-mona-bold">
+            <p>{{ data.jkl }}</p>
+          </TableCell>
+
+          <TableCell class="">
+            <DropdownMenu>
+              <DropdownMenuTrigger class="cursor-pointer">
+                <Vicon name="bi-three-dots-vertical" scale="1.5" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                side="left"
+                align="start"
+                class="font-mona space-y-2"
+              >
+                <DropdownMenuItem
+                  @click="siswa.openModalsWithEdit(data.id)"
+                  class="flex w-full p-2 items-center gap-2 cursor-pointer bg-amber-500 hover:bg-amber-600 text-white"
+                >
+                  <Vicon
+                    name="fa-regular-edit"
+                    scale="1.5"
+                    class="text-white"
+                  />
+                  <p class="pt-1">Edit</p>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  @click="() => handleDeleteSiswa(data.id)"
+                  class="flex w-full p-2 items-center gap-2 cursor-pointer bg-red-500 hover:bg-red-600 text-white"
+                >
+                  <Vicon
+                    name="md-deleteforever"
+                    scale="1.5"
+                    class="text-white"
+                  />
+                  <p class="pt-1">Hapus</p>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </TableCell>
+        </TableRow>
+      </TableBody>
