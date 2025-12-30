@@ -19,3 +19,21 @@ export type PenilaianType = {
     rata_rata: number;
   };
 };
+
+export type PenilaianTypeAdd = {
+  siswaId: string;
+  kelasId: string;
+  pelajaranId: string;
+  tugas: number;
+  uts: number;
+  uas: number;
+};
+export type PenilaianTypeEdit = {
+  id: string;
+  siswaId: string;
+  kelasId: string;
+  pelajaranId: string;
+  tugas: number;
+  uts: number;
+  uas: number;
+};

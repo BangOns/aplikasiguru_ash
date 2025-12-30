@@ -1,20 +1,44 @@
 <script setup lang="ts">
 import Calendar from "@/components/ui/calendar/Calendar.vue";
 import type { DateValue } from "@internationalized/date";
-import type { Ref } from "vue";
-import { getLocalTimeZone, today } from "@internationalized/date";
-import { ref } from "vue";
+import { getLocalTimeZone, parseDate, today } from "@internationalized/date";
+import { computed } from "vue";
 import ChartStudent from "./ChartStudent.vue";
+import { useGetSchedule } from "@/lib/query/schedule";
+import type { ScheduleType } from "@/types/schedule";
 
-const value = ref(today(getLocalTimeZone())) as Ref<DateValue>;
+const { data } = useGetSchedule();
+
+const defaultPlaceholder = today(getLocalTimeZone());
+const scheduleDates = computed(() => {
+  if (!data.value) return [];
+
+  return data.value
+    .map((item: ScheduleType) => {
+      try {
+        return parseDate(item.date.split(" ")[0]);
+      } catch (error) {
+        return null;
+      }
+    })
+    .filter((date: DateValue): date is DateValue => date !== null);
+});
+const isDateWithoutSchedule = (dateValue: DateValue) => {
+  return !scheduleDates.value.some(
+    (scheduleDate: DateValue) =>
+      scheduleDate.year === dateValue.year &&
+      scheduleDate.month === dateValue.month &&
+      scheduleDate.day === dateValue.day
+  );
+};
 </script>
 
 <template>
   <article
-    class="w-full flex max-xl:flex-col xl:justify-between gap-3 mt-5 max-lg:px-5"
+    class="w-full flex max-xl:flex-col xl:justify-between gap-5 mt-5 max-lg:px-5"
   >
     <!-- Notifications -->
-    <section
+    <!-- <section
       class="w-full basis-2/5 p-4 bg-slate-50 shadow-sm border rounded-lg"
     >
       <header class="w-full flex justify-between items-center">
@@ -53,7 +77,7 @@ const value = ref(today(getLocalTimeZone())) as Ref<DateValue>;
           </p>
         </section>
       </article>
-    </section>
+    </section> -->
     <!-- Statistik -->
     <ChartStudent />
     <!-- Calendar -->
@@ -61,9 +85,12 @@ const value = ref(today(getLocalTimeZone())) as Ref<DateValue>;
       class="w-full basis-1/3 bg-slate-50 shadow-sm flex justify-center rounded-lg"
     >
       <Calendar
-        v-model="value"
-        class="rounded-lg border w-full font-mona-bold"
-      />
+        :model-value="scheduleDates"
+        :is-date-disabled="isDateWithoutSchedule"
+        :default-placeholder="defaultPlaceholder"
+        class="rounded-lg border w-full font-mona-bold **:data-[slot=calendar-cell-trigger]:size-12!"
+      >
+      </Calendar>
     </section>
   </article>
 </template>

@@ -21,6 +21,11 @@ const siswa = useSiswa();
 const { data: get_kelas } = useGetKelas();
 const { data: get_jurusan } = useGetJurusan();
 
+const resetSearch = () => {
+  siswa.searchSiswa = "";
+  siswa.searchJurusan = "";
+  siswa.searchKelas = "";
+};
 const exportExcel = () => {
   // Convert data to worksheet
   const worksheet = XLSX.utils.json_to_sheet(siswa.setDataSiswa);
@@ -102,12 +107,13 @@ const exportExcel = () => {
         </section>
       </article>
 
-      <article class="full flex items-center gap-5 justify-end">
+      <article class="flex items-center gap-5 justify-end">
         <button
+          @click="resetSearch"
           class="py-2 px-5 cursor-pointer flex items-center bg-blue-800 gap-2 hover:bg-blue-900 text-white rounded-lg font-mona-bold border"
         >
-          <Vicon name="bi-search" scale="1" />
-          <p>Search</p>
+          <Vicon name="bi-arrow-counterclockwise" scale="1" />
+          <p>Reset</p>
         </button>
         <button
           @click="exportExcel"

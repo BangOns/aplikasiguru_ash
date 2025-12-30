@@ -32,11 +32,10 @@ const query = useGetJurusan();
 // const { data: get_lesson } = useGetLesson();
 const filteredJurusan = computed(() => {
   if (!query.data.value) return [];
-  return query.data.value;
-  // const searchTerm = jurusan.searchJurusan.toLowerCase();
-  // return query.data.value.filter((j: JurusanType) =>
-  //   (j.nama_jurusan || "").toLowerCase().includes(searchTerm)
-  // );
+  const searchTerm = jurusan.searchJurusan.toLowerCase();
+  return query.data.value?.filter((j: JurusanType) =>
+    (j.nama_jurusan || "").toLowerCase().includes(searchTerm)
+  );
 });
 const mutationDelete = useDeleteJurusan();
 const handleDeleteJurusan = (id: string) => {

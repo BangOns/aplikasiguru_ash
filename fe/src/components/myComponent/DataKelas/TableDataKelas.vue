@@ -41,34 +41,32 @@ const filteredKelas = computed(() => {
   const searchTerm = kelas.searchKelas.toLowerCase();
   const searchTermJurusan = kelas.searchJurusan.toLowerCase();
   const searchTermWaliKelas = kelas.searchWaliKelas.toLowerCase();
-  return query.data.value;
-  // return query.data.value
-  //   .map((kelasItem: KelasType) => {
-  //     const jurusan = get_jurusan.value?.find(
-  //       (item: JurusanType) => item.id === kelasItem.jurusan
-  //     );
-  //     const wali_kelas = get_teacher.value?.find(
-  //       (item: GuruType) => item.id === kelasItem.wali_kelas
-  //     );
+  return query.data.value
+    .map((kelasItem: KelasType) => {
+      const jurusan = get_jurusan.value?.find(
+        (item: JurusanType) => item.id === kelasItem.jurusan.id
+      );
+      const wali_kelas = get_teacher.value?.find(
+        (item: GuruType) => item.id === kelasItem.wali_kelas.id
+      );
 
-  //     return {
-  //       ...kelasItem,
-  //       jurusan,
-  //       wali_kelas,
-  //       jurusanNama: jurusan?.nama_jurusan,
-  //       wali_kelasNama: wali_kelas?.nama,
-  //     };
-  //   })
-  //   .filter(
-  //     (kelasMerged: any) =>
-  //       (kelasMerged.nama_kelas || "").toLowerCase().includes(searchTerm) &&
-  //       (kelasMerged.jurusanNama || "")
-  //         .toLowerCase()
-  //         .includes(searchTermJurusan) &&
-  //       (kelasMerged.wali_kelasNama || "")
-  //         .toLowerCase()
-  //         .includes(searchTermWaliKelas)
-  //   );
+      return {
+        ...kelasItem,
+
+        jurusan: jurusan?.nama_jurusan,
+        wali_kelas: wali_kelas?.nama,
+      };
+    })
+    .filter(
+      (kelasMerged: any) =>
+        (kelasMerged.nama_kelas || "").toLowerCase().includes(searchTerm) &&
+        (kelasMerged.jurusanNama || "")
+          .toLowerCase()
+          .includes(searchTermJurusan) &&
+        (kelasMerged.wali_kelasNama || "")
+          .toLowerCase()
+          .includes(searchTermWaliKelas)
+    );
 });
 
 const mutationDelete = useDeleteKelas();
@@ -162,10 +160,10 @@ const handleDeleteKelas = (id: string) => {
           </TableCell>
 
           <TableCell>
-            <p>{{ data.wali_kelas?.nama || "-" }}</p>
+            <p>{{ data.wali_kelas || "-" }}</p>
           </TableCell>
           <TableCell>
-            <p>{{ data.jurusan?.nama_jurusan || "-" }}</p>
+            <p>{{ data.jurusan || "-" }}</p>
           </TableCell>
 
           <TableCell class="">

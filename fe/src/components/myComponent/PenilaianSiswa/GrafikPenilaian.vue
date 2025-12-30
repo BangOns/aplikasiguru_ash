@@ -71,9 +71,13 @@ watchEffect(() => {
   const totalRataSiswa = list.reduce(
     (sum, n) =>
       sum +
-      ((n.nilai.tugas ?? 0) + (n.nilai.uts ?? 0) + (n.nilai.uas ?? 0)) / 3,
+      ((Number(n.nilai.tugas) ?? 0) +
+        Number(n.nilai.uts ?? 0) +
+        Number(n.nilai.uas ?? 0)) /
+        3,
     0
   );
+
   nilaiKelas.rata_kelas = totalRataSiswa / list.length;
 
   // Nilai tertinggi & terendah
@@ -110,23 +114,25 @@ const getPercent = (siswa: number | undefined) => {
 
 const exportExcel = () => {
   const listSiswa = penilaian.listNilaiSiswa.map((item: PenilaianType) => {
-    // const siswa = get_siswa.value.find(
+    // const siswa = get_siswa.value?.find(
     //   (siswa: StudentType) => siswa.id === item.siswa.id
     // );
-    // const kelas = get_kelas.value.find(
+    // const kelas = get_kelas.value?.find(
     //   (kelas: KelasType) => kelas.id === item.kelas.id
     // );
-    // const lesson = get_mapel.value.find(
+    // const lesson = get_mapel.value?.find(
     //   (lesson: LessonType) => lesson.id === item.pelajaran.id
     // );
-    // // const { id, id_kelas, id_lesson, id_siswa, rata_rata, ...rest } = item;
-    // return {
-    //   siswa: siswa?.nama || "",
-    //   kelas: kelas?.nama_kelas || "",
-    //   pelajaran: lesson?.mapel || "",
-    //   ...rest,
-    //   rata_rata: item.rata_rata?.toFixed(2) || 0,
-    // };
+    const { siswa, kelas, pelajaran } = item;
+    return {
+      siswa: siswa?.nama || "",
+      kelas: kelas?.nama_kelas || "",
+      pelajaran: pelajaran?.nama_pelajaran || "",
+      tugas: item.nilai.tugas?.toFixed(2) || 0,
+      uts: item.nilai.uts?.toFixed(2) || 0,
+      uas: item.nilai.uas?.toFixed(2) || 0,
+      rata_rata: item.nilai.rata_rata?.toFixed(2) || 0,
+    };
   });
   // Convert data to worksheet
   const worksheet = XLSX.utils.json_to_sheet(listSiswa);

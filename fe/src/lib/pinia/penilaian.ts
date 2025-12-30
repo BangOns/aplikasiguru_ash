@@ -1,7 +1,11 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import api from "../axios/config";
-import type { PenilaianType } from "@/types/penilaian/penilaian";
+import type {
+  PenilaianType,
+  PenilaianTypeAdd,
+  PenilaianTypeEdit,
+} from "@/types/penilaian/penilaian";
 
 export const usePenilaian = defineStore("penilaian", () => {
   const searchKelas = ref<string>("");
@@ -16,32 +20,20 @@ export const usePenilaian = defineStore("penilaian", () => {
       throw error;
     }
   };
-  const postPenilaian = async (data: PenilaianType) => {
+  const postPenilaian = async (data: PenilaianTypeAdd) => {
     try {
       const response = await api.post("/nilai_siswa/create", data);
-      return {
-        status: 200,
-        data: response.data,
-      };
+      return response.data;
     } catch (error) {
-      return {
-        status: 500,
-        data: error,
-      };
+      throw error;
     }
   };
-  const editPenilaian = async (data: PenilaianType) => {
+  const editPenilaian = async (data: PenilaianTypeEdit) => {
     try {
       const response = await api.put(`/nilai_siswa/edit`, data);
-      return {
-        status: 200,
-        data: response.data,
-      };
+      return response.data;
     } catch (error) {
-      return {
-        status: 500,
-        data: error,
-      };
+      throw error;
     }
   };
   return {

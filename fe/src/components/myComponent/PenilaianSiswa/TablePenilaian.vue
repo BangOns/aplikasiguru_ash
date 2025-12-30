@@ -16,31 +16,41 @@ import { ref, watchEffect } from "vue";
 import { usePenilaian } from "@/lib/pinia/penilaian";
 import { useGetSiswa } from "@/lib/query/siswa";
 import type { StudentType } from "@/types/siswa/data_siswa";
-import type { PenilaianType } from "@/types/penilaian/penilaian";
+import type {
+  PenilaianType,
+  PenilaianTypeAdd,
+  PenilaianTypeEdit,
+} from "@/types/penilaian/penilaian";
 import {
   useEditPenilaian,
   useGetPenilaian,
   usePostPenilaian,
 } from "@/lib/query/penilaian";
+import { useGetKelas } from "@/lib/query/kelas";
+import { useGetLesson } from "@/lib/query/pelajaran";
+import type { KelasType } from "@/types/siswa/data_kelas";
+import type { LessonType } from "@/types/lesson";
 
 const { data: get_siswa, isPending, isError, error } = useGetSiswa();
 const { data: get_nilai } = useGetPenilaian();
+const { data: get_kelas } = useGetKelas();
+const { data: get_lesson } = useGetLesson();
 const mutatePostPenilaian = usePostPenilaian();
 const mutateEditPenilaian = useEditPenilaian();
-const penilaian = usePenilaian();
 const nilaiSiswa = ref<PenilaianType[]>([]);
-watchEffect(() => {
+const penilaian = usePenilaian();
+watchEffect(async () => {
   if (
     !penilaian.searchKelas ||
     !penilaian.searchMapel ||
     !get_siswa.value ||
     !get_nilai.value
   ) {
-    nilaiSiswa.value = [];
+    penilaian.listNilaiSiswa = [];
     return;
   }
 
-  penilaian.listNilaiSiswa = get_siswa.value
+  penilaian.listNilaiSiswa = await get_siswa.value
     .filter((siswa: StudentType) => siswa.kelas.id === penilaian.searchKelas)
     .map((siswa: StudentType) => {
       // cek apakah sudah ada data sebelumnya
@@ -52,37 +62,56 @@ watchEffect(() => {
           n.pelajaran.id === penilaian.searchMapel
       );
 
-      return (
-        existing || {
+      if (existing) {
+        return {
+          ...existing,
+          nilai: { ...existing.nilai },
+          siswa: { ...existing.siswa },
+          kelas: { ...existing.kelas },
+          pelajaran: { ...existing.pelajaran },
+        };
+      } else {
+        const getDataKelasById = get_kelas?.value?.find(
+          (kelas: KelasType) => kelas.id === penilaian.searchKelas
+        );
+        const getDataMapelById = get_lesson?.value?.find(
+          (mapel: LessonType) => mapel.id === penilaian.searchMapel
+        );
+        return {
           id: crypto.randomUUID(), // atau dari DB
           siswa: {
             id: siswa.id,
             nama: siswa.nama,
           },
-          id_kelas: penilaian.searchKelas,
-          id_lesson: penilaian.searchMapel,
+          kelas: getDataKelasById?.id
+            ? {
+                id: getDataKelasById.id,
+                nama_kelas: getDataKelasById.nama_kelas,
+              }
+            : null,
+          pelajaran: getDataMapelById?.id
+            ? {
+                id: getDataMapelById.id,
+                nama_pelajaran: getDataMapelById.nama_pelajaran,
+              }
+            : null,
           nilai: {
             tugas: 0,
             uts: 0,
             uas: 0,
             rata_rata: 0,
           },
-        }
-      );
+        };
+      }
     });
 });
-console.log(penilaian.listNilaiSiswa);
-
-const getNamaSiswa = (idSiswa: string) => {
-  return (
-    get_siswa.value.find((siswa: StudentType) => siswa.id === idSiswa)?.nama ||
-    "-"
-  );
-};
 
 const updateRataRata = (penilaian: PenilaianType) => {
   penilaian.nilai.rata_rata =
-    (penilaian.nilai.tugas + penilaian.nilai.uts + penilaian.nilai.uas) / 3;
+    (Number(penilaian.nilai.tugas) +
+      Number(penilaian.nilai.uts) +
+      Number(penilaian.nilai.uas)) /
+    3;
 };
 const getColorRataRata = (nilai: number) => {
   if (nilai < 50) return "bg-red-500";
@@ -91,20 +120,48 @@ const getColorRataRata = (nilai: number) => {
 };
 
 const saveData = (data: PenilaianType) => {
-  // Validasi data sebelum menyimpan
-  if (data.nilai.tugas < 0 || data.nilai.uts < 0 || data.nilai.uas < 0) {
-    alert("Nilai tidak boleh kurang dari 0");
-    return;
-  }
-  if (data.nilai.tugas > 100 || data.nilai.uts > 100 || data.nilai.uas > 100) {
-    alert("Nilai tidak boleh lebih dari 100");
-    return;
-  }
-  if (get_nilai.value?.includes(data)) {
-    mutateEditPenilaian.mutate(data);
+  const findData = get_nilai.value?.find(
+    (n: PenilaianType) => n.id === data.id
+  );
+  if (findData) {
+    const dataPenialaiSiswaEdit: PenilaianTypeEdit = {
+      id: data.id,
+      kelasId: data.kelas.id,
+      siswaId: data.siswa.id,
+      pelajaranId: data.pelajaran.id,
+      tugas: data.nilai.tugas,
+      uts: data.nilai.uts,
+      uas: data.nilai.uas,
+    };
+    // Edit data
+    mutateEditPenilaian.mutate(dataPenialaiSiswaEdit);
   } else {
-    mutatePostPenilaian.mutate(data);
+    // Validasi data sebelum menyimpan
+    const dataPenilaianSiswa: PenilaianTypeAdd = {
+      kelasId: data.kelas.id,
+      siswaId: data.siswa.id,
+      pelajaranId: data.pelajaran.id,
+      tugas: data.nilai.tugas,
+      uts: data.nilai.uts,
+      uas: data.nilai.uas,
+    };
+    // Tambah data
+    mutatePostPenilaian.mutate(dataPenilaianSiswa);
   }
+
+  // if (data.nilai.tugas < 0 || data.nilai.uts < 0 || data.nilai.uas < 0) {
+  //   alert("Nilai tidak boleh kurang dari 0");
+  //   return;
+  // }
+  // if (data.nilai.tugas > 100 || data.nilai.uts > 100 || data.nilai.uas > 100) {
+  //   alert("Nilai tidak boleh lebih dari 100");
+  //   return;
+  // }
+  // if (get_nilai.value?.includes(data)) {
+  //   mutateEditPenilaian.mutate(data);
+  // } else {
+  //   mutatePostPenilaian.mutate(data);
+  // }
 };
 </script>
 
@@ -196,8 +253,8 @@ const saveData = (data: PenilaianType) => {
             <Badge
               variant="default"
               class="bg-green-500 text-base"
-              :class="getColorRataRata(data.nilai.rata_rata)"
-              >{{ data.nilai.rata_rata.toFixed(2) || 0 }}</Badge
+              :class="getColorRataRata(Number(data?.nilai?.rata_rata))"
+              >{{ Number(data?.nilai?.rata_rata)?.toFixed(2) || 0 }}</Badge
             >
           </TableCell>
           <TableCell class="">

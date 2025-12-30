@@ -34,40 +34,30 @@ const { data: get_teacher } = useGetTeacher();
 const filteredLesson = computed(() => {
   if (!query.data.value) return [];
 
-  // const searchTerm = lesson.searchLesson.toLowerCase();
-  // const searchTermKelas = lesson.searchKelas.toLowerCase();
-  // const searchTermJurusan = lesson.searchJurusan.toLowerCase();
+  const searchTerm = lesson.searchLesson.toLowerCase();
+  const searchTermKelas = lesson.searchKelas.toLowerCase();
 
-  if (Array.isArray(query.data.value)) {
-    return query.data.value as LessonType[];
-  }
-  return [];
-  // .map((lessonItem: LessonType) => {
-  //   const kelas = get_kelas.value?.find(
-  //     (item: GuruType) => item.id === lessonItem.kelas
-  //   );
-  //   const jurusan = kelas
-  //     ? get_jurusan.value?.find(
-  //         (item: JurusanType) => item.id === kelas.jurusan
-  //       )
-  //     : [];
-  //   const teacher = get_teacher.value?.find(
-  //     (item: JurusanType) => item.id === lessonItem.teacher
-  //   );
+  return query.data.value
+    ?.map((lessonItem: LessonType) => {
+      const kelas = get_kelas.value?.find(
+        (item: GuruType) => item.id === lessonItem?.kelas?.id
+      );
 
-  // return {
-  //   ...lessonItem,
-  //   teacher: teacher?.nama ?? "",
-  //   kelas: kelas?.nama_kelas ?? "",
-  //   jurusan: jurusan?.nama_jurusan ?? "",
-  // };
-  // })
-  // .filter(
-  //   (lessonMerged: any) =>
-  //     (lessonMerged.mapel || "").toLowerCase().includes(searchTerm) &&
-  //     (lessonMerged.kelas || "").toLowerCase().includes(searchTermKelas) &&
-  //     (lessonMerged.jurusan || "").toLowerCase().includes(searchTermJurusan)
-  // );
+      const teacher = get_teacher.value?.find(
+        (item: JurusanType) => item.id === lessonItem.guru?.id
+      );
+
+      return {
+        ...lessonItem,
+        teacher: teacher?.nama ?? "",
+        kelas: kelas?.nama_kelas ?? "",
+      };
+    })
+    .filter(
+      (lessonMerged: any) =>
+        (lessonMerged.mapel || "").toLowerCase().includes(searchTerm) &&
+        (lessonMerged.kelas || "").toLowerCase().includes(searchTermKelas)
+    );
 });
 
 const mutationDelete = useDeleteLesson();
@@ -143,11 +133,11 @@ const handleDeleteLesson = (id: string) => {
           </TableCell>
 
           <TableCell>
-            <p>{{ data?.kelas.nama_kelas || "-" }}</p>
+            <p>{{ data?.kelas || "-" }}</p>
           </TableCell>
 
           <TableCell>
-            <p>{{ data.guru?.nama || "-" }}</p>
+            <p>{{ data.teacher || "-" }}</p>
           </TableCell>
 
           <TableCell class="">

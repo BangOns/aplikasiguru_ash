@@ -5,6 +5,9 @@ import { Input } from "@/components/ui/input";
 import { useJurusan } from "@/lib/pinia/jurusan";
 
 const jurusan = useJurusan();
+const resetSearch = () => {
+  jurusan.searchJurusan = "";
+};
 </script>
 
 <template>
@@ -29,10 +32,11 @@ const jurusan = useJurusan();
       </article>
       <article class="full flex items-center justify-end">
         <button
+          @click="resetSearch"
           class="py-2 px-5 cursor-pointer flex items-center bg-blue-800 gap-2 hover:bg-blue-900 text-white rounded-lg font-mona-bold border"
         >
-          <Vicon name="bi-search" scale="1" />
-          <p>Search</p>
+          <Vicon name="bi-arrow-counterclockwise" scale="1" />
+          <p>Reset</p>
         </button>
       </article>
     </section>

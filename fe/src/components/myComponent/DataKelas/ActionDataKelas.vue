@@ -20,6 +20,11 @@ import type { GuruType } from "@/types/guru";
 const kelas = useKelas();
 const { data: get_jurusan } = useGetJurusan();
 const { data: get_teacher } = useGetTeacher();
+const resetSearch = () => {
+  kelas.searchKelas = "";
+  kelas.searchJurusan = "";
+  kelas.searchKelas = "";
+};
 </script>
 
 <template>
@@ -96,10 +101,11 @@ const { data: get_teacher } = useGetTeacher();
 
       <article class="full flex items-center justify-end">
         <button
+          @click="resetSearch"
           class="py-2 px-5 cursor-pointer flex items-center bg-blue-800 gap-2 hover:bg-blue-900 text-white rounded-lg font-mona-bold border"
         >
-          <Vicon name="bi-search" scale="1" />
-          <p>Search</p>
+          <Vicon name="bi-arrow-counterclockwise" scale="1" />
+          <p>Reset</p>
         </button>
       </article>
     </section>

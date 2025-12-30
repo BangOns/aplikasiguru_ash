@@ -88,7 +88,7 @@ watchEffect(() => {
         </article>
       </section>
     </article>
-    <article class="flex basis-1/3">
+    <!-- <article class="flex basis-1/3">
       <section class="p-1 w-full flex gap-5">
         <figure
           class="basis-1/6 md:basis-1/5 lg:basis-1/3 w-full h-full flex items-center"
@@ -115,6 +115,6 @@ watchEffect(() => {
           </section>
         </article>
       </section>
-    </article>
+    </article> -->
   </section>
 </template>
